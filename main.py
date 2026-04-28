@@ -18,11 +18,8 @@ crews_config = {
     "771": {"color": "c-green", "members": {"예란": "jyssing", "나래~~~": "narae282", "박예솜:)": "tgqnpji1xc", "이밍+♥": "aighty9", "지숙♥_.": "uyrt8888", "푸글리♡": "vnfmadl93", "이나율♥": "cmj20822", "한채아♥": "snfkddl1024", "김봄비": "bombbi"}}
 }
 
-now = datetime.now()
-target_year, target_month = now.year, now.month
-
-def fetch_b_value(uid):
-    api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={target_year}&month={target_month}"
+def fetch_b_value(uid, year, month):
+    api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month}"
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Referer": "https://poong.today/"}
     try:
         res = requests.get(api_url, headers=headers, timeout=10)
@@ -38,27 +35,31 @@ def get_gauge_style(count):
     else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "text": "#9ca3af"}
 
 def generate_html():
+    # 이미지 생성 시점의 시간을 새로 가져옵니다.
+    current_now = datetime.now()
+    target_year, target_month = current_now.year, current_now.month
+    
     all_tasks = []
     for crew_name, info in crews_config.items():
         for nick, uid in info['members'].items():
             all_tasks.append({'crew': crew_name, 'nick': nick, 'uid': uid})
 
     with ThreadPoolExecutor(max_workers=15) as executor:
-        results = list(executor.map(lambda t: {**t, 'count': fetch_b_value(t['uid'])}, all_tasks))
+        results = list(executor.map(lambda t: {**t, 'count': fetch_b_value(t['uid'], target_year, target_month)}, all_tasks))
 
     final_data = []
     for crew_name, info in crews_config.items():
         m_list = sorted([r for r in results if r['crew'] == crew_name], key=lambda x: x['count'], reverse=True)
         total = sum(m['count'] for m in m_list)
-        final_data.append({"name": crew_name, "color": info['color'], "total": total, "avg": int(total/len(m_list)), "member_count": len(m_list), "members": m_list, "max": m_list[0]['count'] if m_list else 1})
+        final_data.append({"name": crew_name, "color": info['color'], "total": total, "avg": int(total/len(m_list)) if m_list else 0, "member_count": len(m_list), "members": m_list, "max": m_list[0]['count'] if m_list else 1})
 
     final_data.sort(key=lambda x: x['avg'], reverse=True)
 
     html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
     body {{ 
-        background: #0f172a; color: #f8fafc; font-family: sans-serif; 
+        background: #0f172a; color: #f8fafc; font-family: 'Pretendard', sans-serif; 
         margin: 0; padding: 40px; width: 1450px;
-        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
     }}
     .top-bar {{
         display: flex; justify-content: space-between; align-items: flex-end;
@@ -97,7 +98,7 @@ def generate_html():
         <div class="top-bar">
             <div class="status-info">
                 <div class="live-dot"></div>
-                <div class="update-time">LIVE: {now.strftime('%Y.%m.%d %H:%M')}</div>
+                <div class="update-time">LIVE: {current_now.strftime('%Y.%m.%d %H:%M')}</div>
             </div>
             <div class="source-info">DATA SOURCE: POONG.TODAY</div>
         </div>
@@ -119,21 +120,20 @@ def save_chart_image(html_content):
         browser = p.chromium.launch()
         context = browser.new_context(
             viewport={'width': 1500, 'height': 2200},
-            device_scale_factor=2 # 2배 고해상도 설정
+            device_scale_factor=2
         )
         page = context.new_page()
         page.set_content(html_content)
-        time.sleep(3) # 렌더링 대기
+        time.sleep(3)
         page.screenshot(path="chart.png", full_page=True, animations="disabled")
         browser.close()
 
 if __name__ == "__main__":
-    print(f"📡 {target_year}년 {target_month}월 고해상도 라이브 대시보드 생성 중...")
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(generated_html)
     try:
         save_chart_image(generated_html)
-        print("✅ 성공: 모든 파일이 생성되었습니다.")
+        print("Success")
     except Exception as e:
-        print(f"❌ 실패: {e}")
+        print(f"Error: {e}")
