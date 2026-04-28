@@ -1,6 +1,6 @@
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timedelta, timezone # 시간대 설정을 위해 추가
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
@@ -35,8 +35,9 @@ def get_gauge_style(count):
     else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "text": "#9ca3af"}
 
 def generate_html():
-    # 이미지 생성 시점의 시간을 새로 가져옵니다.
-    current_now = datetime.now()
+    # 한국 시간(KST) 설정 및 현재 시간 획득
+    kst = timezone(timedelta(hours=9))
+    current_now = datetime.now(kst)
     target_year, target_month = current_now.year, current_now.month
     
     all_tasks = []
@@ -98,7 +99,7 @@ def generate_html():
         <div class="top-bar">
             <div class="status-info">
                 <div class="live-dot"></div>
-                <div class="update-time">LIVE: {current_now.strftime('%Y.%m.%d %H:%M')}</div>
+                <div class="update-time">UPDATED: {current_now.strftime('%Y.%m.%d %H:%M')}</div>
             </div>
             <div class="source-info">DATA SOURCE: POONG.TODAY</div>
         </div>
