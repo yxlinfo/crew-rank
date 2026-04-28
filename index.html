@@ -1,0 +1,542 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
+    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 20px; }
+    .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+    .crew-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 15px; }
+    .crew-name { font-size: 1.35rem; font-weight: 800; }
+    .m-num { font-size: 0.85rem; opacity: 0.6; margin-left: 5px; font-weight: 400; }
+    .stats { text-align: right; font-size: 0.85rem; color: #94a3b8; }
+    .member-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .nick { width: 130px; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e2e8f0; }
+    .rank-1 { color: #fbbf24; font-weight: 800; } .rank-2 { color: #cbd5e1; } .rank-3 { color: #d97706; }
+    .bar-bg { flex-grow: 1; background: #020617; height: 16px; border-radius: 10px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; position: relative; border-radius: 10px; }
+    .bar-fill::after { content: ''; position: absolute; top:0; left:0; right:0; bottom:50%; background: rgba(255,255,255,0.1); }
+    .count { width: 90px; text-align: right; font-size: 0.85rem; font-weight: 800; font-family: monospace; }
+    /* 크루 포인트 색상 */
+    .c-red { color: #f87171; } .c-white { color: #fff; } .c-gold { color: #fbbf24; } .c-pink { color: #f472b6; }
+    .c-cyan { color: #22d3ee; } .c-purple { color: #c084fc; } .c-orange { color: #fb923c; } 
+    .c-teal { color: #2dd4bf; } .c-lime { color: #a3e635; } .c-green { color: #4ade80; }
+    </style></head><body><div class="grid"><div class="crew-card"><div class="header">
+            <div class="crew-name c-white">씨나인<span class="m-num">(13명)</span></div>
+            <div class="stats">TOTAL: 9,154,223<br>AVG: 704,171</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 체온_♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #991b1b, #ef4444);"></div></div>
+                <div class="count" style="color:#ef4444">2,543,189</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 혜루찡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:57.61860404397786%; background:linear-gradient(90deg, #991b1b, #ef4444);"></div></div>
+                <div class="count" style="color:#ef4444">1,465,350</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 쁠리vvely</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:31.467106848920785%; background:linear-gradient(90deg, #9a3412, #f97316);"></div></div>
+                <div class="count" style="color:#f97316">800,268</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; BJ채리</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:31.35645836782087%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">797,454</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 애순이</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:24.489568018735532%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">622,816</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 인지연JYEON</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:23.598482063267813%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">600,154</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 하이희야♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:22.900264195858036%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">582,397</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 초초</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:21.111840291854044%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">536,914</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; [윤이솔]</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:17.347786578189826%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">441,187</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 아윤♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:12.989557598747083%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">330,349</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 히나_♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:9.521156312016133%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">242,141</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; #초린</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:4.598439203692687%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">116,947</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 리하♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:2.9512946147533667%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">75,057</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-red">광우상사<span class="m-num">(11명)</span></div>
+            <div class="stats">TOTAL: 7,438,273<br>AVG: 676,206</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 아이빈</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #991b1b, #ef4444);"></div></div>
+                <div class="count" style="color:#ef4444">1,157,875</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 미숑.♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:93.12827377739393%; background:linear-gradient(90deg, #991b1b, #ef4444);"></div></div>
+                <div class="count" style="color:#ef4444">1,078,309</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 서윤슬@</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:85.49187088416281%; background:linear-gradient(90deg, #9a3412, #f97316);"></div></div>
+                <div class="count" style="color:#f97316">989,889</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 원영님♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:73.82584475871748%; background:linear-gradient(90deg, #9a3412, #f97316);"></div></div>
+                <div class="count" style="color:#f97316">854,811</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 가을이♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:72.9464752240095%; background:linear-gradient(90deg, #9a3412, #f97316);"></div></div>
+                <div class="count" style="color:#f97316">844,629</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 이온♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:57.857022562884595%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">669,912</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 미디♡.</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:45.248580373529094%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">523,922</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 안둥♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:39.87934794343085%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">461,753</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 맹이.zip</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:26.484292345892257%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">306,655</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 임주연♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:25.78525315772428%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">298,561</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 파미</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:21.760293641368886%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">251,957</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-cyan">YXL<span class="m-num">(14명)</span></div>
+            <div class="stats">TOTAL: 6,781,015<br>AVG: 484,358</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 리윤_♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #991b1b, #ef4444);"></div></div>
+                <div class="count" style="color:#ef4444">1,009,351</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 후잉♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:77.77978126538736%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">785,071</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 너의˚멜로디</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:64.15677004332487%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">647,567</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 백나현</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:59.13156077519118%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">596,845</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 소다♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:56.66968180543736%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">571,996</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 하랑짱♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:49.93624616213785%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">504,032</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 류서하♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:44.48957795652851%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">449,056</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; #율무</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:44.428251420962575%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">448,437</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 냥냥수주</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:42.2907392968353%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">426,862</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 김유정S2</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:35.93606188531046%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">362,721</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; ZO아름♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:34.7811613601215%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">351,064</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 미로。</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:22.041688173885994%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">222,478</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 유나연º-º</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:20.30770267231122%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">204,976</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 서니_♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:19.8700947440484%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">200,559</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-purple">이노레이블<span class="m-num">(13명)</span></div>
+            <div class="stats">TOTAL: 4,212,174<br>AVG: 324,013</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 설탱♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">719,872</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 이월♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:77.17858174786629%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">555,587</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 애지니♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:76.50735130689901%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">550,755</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 꽃부기♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:75.35381290007112%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">542,451</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 밤비♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:54.82502444879089%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">394,670</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; #누리-</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:51.90700568990043%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">373,664</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 히냥이♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:47.763769114509245%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">343,838</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 리에♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:38.226101306899004%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">275,179</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 이리원♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:27.839949324324326%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">200,412</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 연보민</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:14.570368065433856%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">104,888</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; [SO]박소연</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:10.518814455903271%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">75,722</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 설인_♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:7.160995288051208%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">51,550</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 유복이!</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:3.276415807254623%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">23,586</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-gold">더케이<span class="m-num">(15명)</span></div>
+            <div class="stats">TOTAL: 3,712,664<br>AVG: 247,510</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 앙체리♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">573,380</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 강한빛♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:78.68376992570371%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">451,157</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 유더♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:76.48156545397468%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">438,530</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; [BJ]에디양</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:62.13575639192159%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">356,274</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; ! 채채</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:59.942446545048654%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">343,698</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 포카린</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:56.50667968886254%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">323,998</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 푸린♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:50.54152568976944%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">289,795</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 채리나</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:38.61278733126374%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">221,398</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 차시월</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:29.055948934389058%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">166,601</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 한슬댕</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:25.85161672887091%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">148,228</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 엘♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:20.32282256095434%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">116,527</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 퀸다미♧</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:15.56838396874673%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">89,266</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 지아콩</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:14.807631936935367%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">84,904</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 우아한♡우와</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:10.282011929261571%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">58,955</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 소냥이에요</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:8.712023439952562%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">49,953</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-pink">정선컴퍼니<span class="m-num">(12명)</span></div>
+            <div class="stats">TOTAL: 2,642,641<br>AVG: 220,220</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 ♥백설♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">520,761</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 윤수♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:74.39881250708098%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">387,440</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 김규리♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:68.06865337458066%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">354,475</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 윤세빈♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:51.97777867390223%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">270,680</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 햇동이♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:42.275055159660575%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">220,152</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; ♡김베리♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:33.43568354773111%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">174,120</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 나의유주♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:33.19680237191341%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">172,876</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 유서림♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:28.67169392485228%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">149,311</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 율비♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:27.468838872342594%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">143,047</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 한아영♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:24.120469850852885%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">125,610</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 바미♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:16.73704444073193%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">87,160</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 채보미=3=</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:7.106714980576502%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">37,009</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-orange">GD컴퍼니<span class="m-num">(7명)</span></div>
+            <div class="stats">TOTAL: 1,489,355<br>AVG: 212,765</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 설인아님♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #9a3412, #f97316);"></div></div>
+                <div class="count" style="color:#f97316">912,980</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 ♥유현♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:19.386404959582904%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">176,994</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 쥬브리</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:12.757125019168%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">116,470</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 아링</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:9.304146859734058%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">84,945</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 은아린!!</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:8.379701636399483%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">76,505</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; E윤아♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:8.077285373173563%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">73,744</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 해리님♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:5.226510986001884%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">47,717</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-lime">문에이<span class="m-num">(16명)</span></div>
+            <div class="stats">TOTAL: 2,228,570<br>AVG: 139,285</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 김하연님♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #a16207, #eab308);"></div></div>
+                <div class="count" style="color:#eab308">589,115</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 미지수♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:46.01512438148749%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">271,082</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 슈나♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:35.257462464883766%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">207,707</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 설현미</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:26.57528665880176%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">156,559</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; E-;이은♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:25.63625098664947%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">151,027</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 강형민이</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:22.600001697461447%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">133,140</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 뮤엘♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:21.887916620693755%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">128,945</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 하임*</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:18.00191813143444%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">106,052</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 천시아S2</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:15.18939426088285%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">89,483</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 박재열</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:15.151201378338694%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">89,258</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; .장지민</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:12.542203135211292%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">73,888</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 예니__</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:12.380435059368713%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">72,935</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 현강림2</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:11.832664250613208%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">69,708</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 서언수</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:8.226067915432472%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">48,461</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 표냥이♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:3.524099708885362%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">20,761</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; #다인</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:3.4711389117574667%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">20,449</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-teal">쇼케이<span class="m-num">(14명)</span></div>
+            <div class="stats">TOTAL: 1,949,663<br>AVG: 139,261</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 한유나♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">286,800</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 송화양</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:91.48744769874477%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">262,386</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 송유이♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:89.19351464435147%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">255,807</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 도예빈♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:75.45327754532775%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
+                <div class="count" style="color:#22c55e">216,400</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 재온ly</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:60.17154811715481%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">172,572</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; ＠서단</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:58.21757322175733%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">166,968</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 쏘피♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:51.982566248256624%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">149,086</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 정인♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:46.037656903765686%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">132,036</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 새봄_♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:41.09728033472803%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">117,867</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 이로♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:35.13807531380753%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">100,776</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 유이나.♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:20.928172942817294%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">60,022</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; ♥제니♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:10.091701534170154%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">28,943</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 도하정♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">0</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; @유톨</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">0</div>
+            </div></div><div class="crew-card"><div class="header">
+            <div class="crew-name c-green">771<span class="m-num">(8명)</span></div>
+            <div class="stats">TOTAL: 566,096<br>AVG: 70,762</div>
+        </div><div class="member-row">
+                <div class="nick rank-1">🥇 지숙♥_.</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div></div>
+                <div class="count" style="color:#3b82f6">174,341</div>
+            </div><div class="member-row">
+                <div class="nick rank-2">🥈 나래~~~</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:51.089531435520044%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">89,070</div>
+            </div><div class="member-row">
+                <div class="nick rank-3">🥉 예란</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:46.640778703804614%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">81,314</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 이나율♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:46.226647776484015%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">80,592</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 푸글리♡</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:38.76712878783534%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">67,587</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 박예솜:)</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:22.843737273504225%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">39,826</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 한채아♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:11.82739573594278%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">20,620</div>
+            </div><div class="member-row">
+                <div class="nick ">&nbsp;&nbsp;&nbsp; 이밍+♥</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:7.310959556271904%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div></div>
+                <div class="count" style="color:#9ca3af">12,746</div>
+            </div></div></div></body></html>
