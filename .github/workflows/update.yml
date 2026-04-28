@@ -1,33 +1,36 @@
-name: Update Crew Ranking
+name: Update Crew Ranking and Image
 
 on:
   schedule:
-    # 매 시간 0분에 실행 (한국 시간 기준 매 시 정각)
-    - cron: '0 * * * *' 
-  workflow_dispatch: # 언제든 수동으로 실행하고 싶을 때 버튼을 누를 수 있게 유지
+    - cron: '0 * * * *' # 매 시간 정각에 실행
+  workflow_dispatch:      # 수동 실행 버튼 허용
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install requests playwright
+          # Playwright 실행에 필요한 브라우저 및 시스템 라이브러리 설치
+          python -m playwright install chromium --with-deps
 
       - name: Run script
         run: python main.py
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
-          publish_branch: gh-pages # 결과물을 gh-pages 브랜치에 저장
+          publish_branch: gh-pages
