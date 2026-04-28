@@ -4,7 +4,7 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 10개 크루 및 전원 명단 (기존 명단 유지)
+# 1. 10개 크루 및 전원 명단
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -54,14 +54,33 @@ def generate_html():
 
     final_data.sort(key=lambda x: x['avg'], reverse=True)
 
-    # 고화질 렌더링을 위한 CSS 최적화 포함
     html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
     body {{ 
-        background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 20px; width: 1450px;
-        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; /* 글자 선명도 향상 */
+        background: #0f172a; color: #f8fafc; font-family: sans-serif; 
+        margin: 0; padding: 40px; width: 1450px;
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
     }}
+    .top-bar {{
+        display: flex; justify-content: space-between; align-items: flex-end;
+        margin-bottom: 30px; padding: 0 10px;
+        border-bottom: 1px solid #334155; padding-bottom: 15px;
+    }}
+    .status-info {{ display: flex; align-items: center; gap: 12px; }}
+    .live-dot {{
+        width: 10px; height: 10px; background: #ef4444; border-radius: 50%;
+        box-shadow: 0 0 10px #ef4444; animation: blink 1.5s infinite;
+    }}
+    .update-time {{ font-size: 1rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.02em; }}
+    .source-info {{ font-size: 0.85rem; color: #475569; font-weight: 400; }}
+
+    @keyframes blink {{
+        0% {{ opacity: 1; transform: scale(1); }} 
+        50% {{ opacity: 0.4; transform: scale(0.9); }} 
+        100% {{ opacity: 1; transform: scale(1); }}
+    }}
+
     .grid {{ display: grid; gap: 15px; grid-template-columns: repeat(3, 1fr); }}
-    .crew-card {{ background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }}
+    .crew-card {{ background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }}
     .header {{ display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 12px; }}
     .crew-name {{ font-size: 1.15rem; font-weight: 800; }}
     .stats {{ text-align: right; font-size: 0.8rem; color: #94a3b8; line-height: 1.4; }}
@@ -73,7 +92,16 @@ def generate_html():
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} 
     .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
-    </style></head><body><h2 style="text-align:center; margin-bottom:30px;">📊 {target_year}년 {target_month}월 실적 현황 (1시간 주기 갱신)</h2><div class="grid">"""
+    </style></head>
+    <body>
+        <div class="top-bar">
+            <div class="status-info">
+                <div class="live-dot"></div>
+                <div class="update-time">LIVE: {now.strftime('%Y.%m.%d %H:%M')}</div>
+            </div>
+            <div class="source-info">DATA SOURCE: POONG.TODAY</div>
+        </div>
+        <div class="grid">"""
 
     for c in final_data:
         html += f"""<div class="crew-card"><div class="header"><div class="crew-name {c['color']}">{c['name']} <small style="font-size:0.75em; opacity:0.6;">({c['member_count']}명)</small></div><div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div></div>"""
@@ -89,26 +117,23 @@ def generate_html():
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        # [수정] device_scale_factor=2를 추가하여 2배 고해상도로 캡처
         context = browser.new_context(
             viewport={'width': 1500, 'height': 2200},
-            device_scale_factor=2
+            device_scale_factor=2 # 2배 고해상도 설정
         )
         page = context.new_page()
         page.set_content(html_content)
-        time.sleep(3) # 폰트 및 스타일 렌더링 대기
+        time.sleep(3) # 렌더링 대기
         page.screenshot(path="chart.png", full_page=True, animations="disabled")
         browser.close()
 
 if __name__ == "__main__":
-    print(f"📡 {target_year}년 {target_month}월 데이터 집계 및 고해상도 이미지 생성 중...")
+    print(f"📡 {target_year}년 {target_month}월 고해상도 라이브 대시보드 생성 중...")
     generated_html = generate_html()
-    
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(generated_html)
-        
     try:
         save_chart_image(generated_html)
-        print("✅ 성공: index.html 및 고해상도 chart.png 생성 완료")
+        print("✅ 성공: 모든 파일이 생성되었습니다.")
     except Exception as e:
-        print(f"❌ 실패: 이미지 생성 중 오류 발생 -> {e}")
+        print(f"❌ 실패: {e}")
