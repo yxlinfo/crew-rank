@@ -1,0 +1,33 @@
+name: Update Crew Ranking
+
+on:
+  schedule:
+    # 매 시간 0분에 실행 (한국 시간 기준 매 시 정각)
+    - cron: '0 * * * *' 
+  workflow_dispatch: # 언제든 수동으로 실행하고 싶을 때 버튼을 누를 수 있게 유지
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Run script
+        run: python main.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages # 결과물을 gh-pages 브랜치에 저장
