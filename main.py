@@ -1,7 +1,10 @@
 import requests
 import time
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+from playwright.sync_api import sync_playwright  # 추가
 
-# 1. 10개 크루 및 126명 전원 명단 (정확한 ID 매칭)
+# 1. 크루 명단 설정 (기존과 동일)
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803"}},
@@ -15,7 +18,17 @@ crews_config = {
     "771": {"color": "c-green", "members": {"예란": "jyssing", "나래~~~": "narae282", "박예솜:)": "tgqnpji1xc", "이밍+♥": "aighty9", "지숙♥_.": "uyrt8888", "푸글리♡": "vnfmadl93", "이나율♥": "cmj20822", "한채아♥": "snfkddl1024"}}
 }
 
-# 2. 구간별 그라데이션 및 텍스트 색상 설정
+now = datetime.now()
+target_year, target_month = now.year, now.month
+
+def fetch_b_value(uid):
+    api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={target_year}&month={target_month}"
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Referer": "https://poong.today/"}
+    try:
+        res = requests.get(api_url, headers=headers, timeout=10)
+        return res.json().get('b', 0) if res.status_code == 200 else 0
+    except: return 0
+
 def get_gauge_style(count):
     if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "text": "#ef4444"}
     elif count >= 800000: return {"grad": "linear-gradient(90deg, #9a3412, #f97316)", "text": "#f97316"}
@@ -24,84 +37,74 @@ def get_gauge_style(count):
     elif count >= 100000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)", "text": "#3b82f6"}
     else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "text": "#9ca3af"}
 
-# 3. 데이터 수집 함수 (사용자 성공 로직)
-def fetch_b_value(uid):
-    api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year=2026&month=4"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)", "Referer": "https://poong.today/"}
-    try:
-        res = requests.get(api_url, headers=headers, timeout=10)
-        if res.status_code == 200:
-            data = res.json()
-            return data.get('b', 0)
-        return 0
-    except: return 0
-
-def run():
-    final_data = []
-    print("📡 126명 전원 실시간 데이터 수집 중... (약 1분 소요)")
-
+def generate_html():
+    all_tasks = []
     for crew_name, info in crews_config.items():
-        print(f"📥 {crew_name} 분석 중 ({len(info['members'])}명)...")
-        m_list = []
         for nick, uid in info['members'].items():
-            count = fetch_b_value(uid)
-            m_list.append({"nick": nick, "count": count})
-            time.sleep(0.05) # 서버 부하 방지
-        
-        m_list.sort(key=lambda x: x['count'], reverse=True)
-        total = sum(m['count'] for m in m_list)
-        final_data.append({
-            "name": crew_name, "color": info['color'], "total": total,
-            "avg": int(total/len(m_list)) if m_list else 0, 
-            "member_count": len(m_list), "members": m_list, 
-            "max": m_list[0]['count'] if m_list else 1
-        })
+            all_tasks.append({'crew': crew_name, 'nick': nick, 'uid': uid})
 
-    # 크루 평균별 정렬
+    with ThreadPoolExecutor(max_workers=15) as executor:
+        results = list(executor.map(lambda t: {**t, 'count': fetch_b_value(t['uid'])}, all_tasks))
+
+    final_data = []
+    for crew_name, info in crews_config.items():
+        m_list = sorted([r for r in results if r['crew'] == crew_name], key=lambda x: x['count'], reverse=True)
+        total = sum(m['count'] for m in m_list)
+        final_data.append({"name": crew_name, "color": info['color'], "total": total, "avg": int(total/len(m_list)), "member_count": len(m_list), "members": m_list, "max": m_list[0]['count'] if m_list else 1})
+
     final_data.sort(key=lambda x: x['avg'], reverse=True)
 
-    # HTML 렌더링
-    html = """<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
-    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 20px; }
-    .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
-    .crew-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-    .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 15px; }
-    .crew-name { font-size: 1.35rem; font-weight: 800; }
-    .m-num { font-size: 0.85rem; opacity: 0.6; margin-left: 5px; font-weight: 400; }
-    .stats { text-align: right; font-size: 0.85rem; color: #94a3b8; }
-    .member-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .nick { width: 130px; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e2e8f0; }
-    .rank-1 { color: #fbbf24; font-weight: 800; } .rank-2 { color: #cbd5e1; } .rank-3 { color: #d97706; }
-    .bar-bg { flex-grow: 1; background: #020617; height: 16px; border-radius: 10px; overflow: hidden; position: relative; }
-    .bar-fill { height: 100%; position: relative; border-radius: 10px; }
-    .bar-fill::after { content: ''; position: absolute; top:0; left:0; right:0; bottom:50%; background: rgba(255,255,255,0.1); }
-    .count { width: 90px; text-align: right; font-size: 0.85rem; font-weight: 800; font-family: monospace; }
-    /* 크루 포인트 색상 */
-    .c-red { color: #f87171; } .c-white { color: #fff; } .c-gold { color: #fbbf24; } .c-pink { color: #f472b6; }
-    .c-cyan { color: #22d3ee; } .c-purple { color: #c084fc; } .c-orange { color: #fb923c; } 
-    .c-teal { color: #2dd4bf; } .c-lime { color: #a3e635; } .c-green { color: #4ade80; }
-    </style></head><body><div class="grid">"""
+    html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
+    body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 20px; width: 1200px; }} /* 너비 고정 */
+    .grid {{ display: grid; gap: 20px; grid-template-columns: repeat(2, 1fr); }} /* 이미지용 2열 배치 */
+    .crew-card {{ background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 18px; }}
+    .header {{ display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 15px; }}
+    .crew-name {{ font-size: 1.35rem; font-weight: 800; }}
+    .stats {{ text-align: right; font-size: 0.85rem; color: #94a3b8; }}
+    .member-row {{ display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }}
+    .nick {{ width: 130px; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    .bar-bg {{ flex-grow: 1; background: #020617; height: 16px; border-radius: 10px; overflow: hidden; }}
+    .bar-fill {{ height: 100%; border-radius: 10px; }}
+    .count {{ width: 90px; text-align: right; font-size: 0.85rem; font-weight: 800; }}
+    .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
+    .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} 
+    .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
+    </style></head><body><h2 style="text-align:center;">📊 {target_year}년 {target_month}월 실적 현황</h2><div class="grid">"""
 
     for c in final_data:
-        html += f"""<div class="crew-card"><div class="header">
-            <div class="crew-name {c['color']}">{c['name']}<span class="m-num">({c['member_count']}명)</span></div>
-            <div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div>
-        </div>"""
+        html += f"""<div class="crew-card"><div class="header"><div class="crew-name {c['color']}">{c['name']} <small style="font-size:0.7em; opacity:0.6;">({c['member_count']}명)</small></div><div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div></div>"""
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['count'])
-            rank_class = f"rank-{i+1}" if i < 3 else ""
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
             w = (m['count'] / c['max'] * 100) if c['max'] > 0 else 0
-            
-            html += f"""<div class="member-row">
-                <div class="nick {rank_class}">{medal} {m['nick']}</div>
-                <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
-                <div class="count" style="color:{style['text']}">{m['count']:,}</div>
-            </div>"""
+            html += f"""<div class="member-row"><div class="nick">{medal} {m['nick']}</div><div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div><div class="count" style="color:{style['text']}">{m['count']:,}</div></div>"""
         html += "</div>"
-
     html += "</div></body></html>"
-    with open("index.html", "w", encoding="utf-8") as f: f.write(html)
-    print("\n✅ 126명 전원 명단 및 시각화가 완료된 index.html이 생성되었습니다!")
+    return html
 
-if __name__ == "__main__": run()
+# [핵심 수정] HTML을 이미지로 저장하는 함수
+def save_chart_image(html_content):
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={'width': 1250, 'height': 2000})
+        page.set_content(html_content)
+        # 페이지 로딩 대기
+        time.sleep(2) 
+        # grid 영역을 캡처하거나 전체 페이지 캡처
+        page.screenshot(path="chart.png", full_page=True, animations="disabled")
+        browser.close()
+
+if __name__ == "__main__":
+    print("🚀 데이터 수집 및 이미지 생성 시작...")
+    generated_html = generate_html()
+    
+    # 1. HTML 파일 저장
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(generated_html)
+        
+    # 2. 이미지 파일 저장
+    try:
+        save_chart_image(generated_html)
+        print("✅ 이미지(chart.png) 생성 완료!")
+    except Exception as e:
+        print(f"❌ 이미지 생성 실패: {e}")
