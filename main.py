@@ -20,13 +20,21 @@ crews_config = {
 
 def fetch_b_value(uid, year, month):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month}"
-    headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://poong.today/"}
-    for _ in range(3):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Referer": "https://poong.today/",
+        "Accept": "application/json, text/plain, */*"
+    }
+    for _ in range(5): # Retry up to 5 times
         try:
-            res = requests.get(api_url, headers=headers, timeout=10)
-            if res.status_code == 200: return res.json().get('b', 0)
-            time.sleep(1)
-        except: time.sleep(1)
+            res = requests.get(api_url, headers=headers, timeout=15)
+            if res.status_code == 200:
+                val = res.json().get('b', 0)
+                time.sleep(0.1) # Brief pause to avoid overwhelming server
+                return val
+            time.sleep(2)
+        except:
+            time.sleep(2)
     return 0
 
 def get_gauge_style(count):
@@ -47,7 +55,8 @@ def generate_html():
         for nick, uid in info['members'].items():
             all_tasks.append({'crew': crew_name, 'nick': nick, 'uid': uid})
 
-    with ThreadPoolExecutor(max_workers=8) as executor:
+    # Speed reduced to avoid IP block/timeouts (max_workers=3)
+    with ThreadPoolExecutor(max_workers=3) as executor:
         results = list(executor.map(lambda t: {**t, 'count': fetch_b_value(t['uid'], target_year, target_month)}, all_tasks))
 
     final_data = []
@@ -86,7 +95,6 @@ def generate_html():
     .member-row {{ display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }}
     .nick {{ width: 140px; font-size: 1.1rem; font-weight: 700; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
     
-    /* [최종] 게이지 바 얇게(10px) 적용 */
     .bar-bg {{ flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 5px; }}
     
