@@ -4,13 +4,13 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 10개 크루 및 전원 명단
+# 1. 크루 명단 (기존과 동일)
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
     "더케이": {"color": "c-gold", "members": {"! 채채": "dreamch77", "퀸다미♧": "damikim", "[BJ]에디양": "yhm777", "차시월": "kcktksal12", "소냥이에요": "ssoi0911", "엘♥": "elleeayo", "한슬댕": "eeseuu", "푸린♡": "pu1030", "채리나": "sso123", "강한빛♡": "vvkk80", "포카린": "kerin0308", "지아콩": "mxxjiaa2358", "우아한♡우와": "onevley77"}},
     "정선컴퍼니": {"color": "c-pink", "members": {"♡김베리♡": "hhy789", "나의유주♥": "youxzu", "김규리♥": "xgyuri2", "서이안": "lllloq", "윤수♥": "whdbstn7", "햇동이♥": "kariveal", "윤세빈♥": "yuyu0929", "율비♡": "yulbee", "채보미=3=": "coqhal1992", "♥백설♥": "yin3745", "유서림♥": "elixxir", "당신의채안♥": "your75", "아유님♥": "seola1420"}},
-    "YXL": {"color": "c-cyan", "members": {"리윤_♥": "sladk51", "후잉♥": "jaeha010", "냥냥수주": "star49", "류서하♥": "smkim82372", "#율무": "offside629", "하랑짱♥": "asy1218", "미로。": "fhwm0602", "유na연º-º": "jeewon1202", "김유정S2": "tkek55", "소다♥": "zbxlzzz", "백나현": "wk3220", "서니_♥": "iluvpp", "ZO아름♡": "ahrum0912", "너의˚멜로디": "meldoy777"}},
+    "YXL": {"color": "c-cyan", "members": {"리윤_♥": "sladk51", "후잉♥": "jaeha010", "냥냥수주": "star49", "류서하♥": "smkim82372", "#율무": "offside629", "하랑짱♥": "asy1218", "미로。": "fhwm0602", "유나연º-º": "jeewon1202", "김유정S2": "tkek55", "소다♥": "zbxlzzz", "백나현": "wk3220", "서니_♥": "iluvpp", "ZO아름♡": "ahrum0912", "너의˚멜로디": "meldoy777"}},
     "이노레이블": {"color": "c-purple", "members": {"꽃부기♥": "flowerboogie", "#누리-": "nooree", "이월♥": "bc3yu2fl", "설탱♥": "baek224983", "애지니♡": "yeeeee00", "밤비♥": "sonhj2244", "리에♡": "lia0322", "이리원♥": "nrini1213", "히냥이♥": "qkrrkgml1231", "설인_♥": "sul0509", "연보민": "duzzangg", "유복이!": "ekffl1031", "[SO]박소연": "ss2312"}},
     "GD컴퍼니": {"color": "c-orange", "members": {"설인아님♥": "inaa04", "♥유현♥": "kyhkyh825", "E윤아♡": "jssisabel", "쥬브리": "dbswn2312", "은아린!!": "pinepine0", "아링": "jungym0116", "해리님♥": "haeri0324"}},
     "쇼케이": {"color": "c-teal", "members": {"송화양": "sejin453", "＠서단": "banghyo9724", "쏘피♥": "1frogmonkey1", "도하정♥": "pig24680", "♥제니♥": "dooly44", "송유이♥": "dm0229", "재온ly": "awdrgy45", "도예빈♥": "doyebean", "정인♥": "wjddls10", "한유나♥": "xodrnaka95", "이로♥": "akikxxo", "@유톨": "imyutol", "유이나.♡": "todayjm", "새봄_♡": "fm0307"}},
@@ -68,7 +68,7 @@ def generate_html():
     final_data.sort(key=lambda x: x['avg'], reverse=True)
 
     html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
-    body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 40px; width: 1550px; -webkit-font-smoothing: antialiased; }}
+    body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 40px; width: 1600px; -webkit-font-smoothing: antialiased; }}
     .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; border-bottom: 2px solid #334155; padding-bottom: 20px; }}
     .status-info {{ display: flex; align-items: center; gap: 15px; }}
     .live-dot {{ width: 14px; height: 14px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 15px #ef4444; animation: blink 1.5s infinite; }}
@@ -77,16 +77,19 @@ def generate_html():
     .grid {{ display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); }}
     .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 20px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }}
     .header {{ display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #334155; padding-bottom: 15px; margin-bottom: 30px; }}
-    .crew-name {{ font-size: 1.5rem; font-weight: 900; }}
-    .stats {{ text-align: right; font-size: 1.05rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }}
+    .crew-name {{ font-size: 1.55rem; font-weight: 900; }}
+    .stats {{ text-align: right; font-size: 1.1rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }}
     
-    .member-row {{ display: flex; align-items: center; gap: 12px; margin-bottom: 25px; height: 48px; }} /* 간격 및 높이 충분히 확보 */
-    .nick {{ width: 140px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; }}
+    /* 줄 간격 대폭 확대 및 행 높이 고정 */
+    .member-row {{ display: flex; align-items: center; gap: 15px; margin-bottom: 28px; height: 52px; }} 
+    .nick {{ width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }}
     .bar-bg {{ flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 5px; }}
-    .count-container {{ width: 115px; text-align: right; display: flex; flex-direction: column; justify-content: center; }}
-    .count-main {{ font-size: 1.15rem; font-weight: 900; line-height: 1; }}
-    .count-today {{ font-size: 0.85rem; font-weight: 800; color: #f87171; margin-top: 5px; line-height: 1; }} /* 빨간색 강조 */
+    
+    /* 숫자 영역 너비 확장 및 정렬 교정 */
+    .count-container {{ width: 130px; text-align: right; display: flex; flex-direction: column; justify-content: center; }}
+    .count-main {{ font-size: 1.2rem; font-weight: 900; line-height: 1; }}
+    .count-today {{ font-size: 0.95rem; font-weight: 800; color: #f87171; margin-top: 6px; line-height: 1; }}
     
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} 
@@ -106,7 +109,7 @@ def generate_html():
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
-            # 풍을 받은 기록이 있는 경우에만 빨간색 갯수 표시
+            # 빨간색 당일 수치 (값이 있을 때만 표시)
             today_label = f'<div class="count-today">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
             
             html += f"""<div class="member-row">
@@ -124,7 +127,8 @@ def generate_html():
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        context = browser.new_context(viewport={'width': 1550, 'height': 2800}, device_scale_factor=2)
+        # 높이를 넉넉하게 3500으로 확장 (이미지가 잘리지 않게)
+        context = browser.new_context(viewport={'width': 1600, 'height': 3500}, device_scale_factor=2)
         page = context.new_page()
         page.set_content(html_content)
         time.sleep(3)

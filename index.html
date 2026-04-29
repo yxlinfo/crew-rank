@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
-    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 40px; width: 1550px; -webkit-font-smoothing: antialiased; }
+    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 40px; width: 1600px; -webkit-font-smoothing: antialiased; }
     .top-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; border-bottom: 2px solid #334155; padding-bottom: 20px; }
     .status-info { display: flex; align-items: center; gap: 15px; }
     .live-dot { width: 14px; height: 14px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 15px #ef4444; animation: blink 1.5s infinite; }
@@ -8,16 +8,19 @@
     .grid { display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); }
     .crew-card { background: #1e293b; border: 1px solid #475569; border-radius: 20px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
     .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #334155; padding-bottom: 15px; margin-bottom: 30px; }
-    .crew-name { font-size: 1.5rem; font-weight: 900; }
-    .stats { text-align: right; font-size: 1.05rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }
+    .crew-name { font-size: 1.55rem; font-weight: 900; }
+    .stats { text-align: right; font-size: 1.1rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }
     
-    .member-row { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; height: 48px; } /* 간격 및 높이 충분히 확보 */
-    .nick { width: 140px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; }
+    /* 줄 간격 대폭 확대 및 행 높이 고정 */
+    .member-row { display: flex; align-items: center; gap: 15px; margin-bottom: 28px; height: 52px; } 
+    .nick { width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }
     .bar-bg { flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 5px; }
-    .count-container { width: 115px; text-align: right; display: flex; flex-direction: column; justify-content: center; }
-    .count-main { font-size: 1.15rem; font-weight: 900; line-height: 1; }
-    .count-today { font-size: 0.85rem; font-weight: 800; color: #f87171; margin-top: 5px; line-height: 1; } /* 빨간색 강조 */
+    
+    /* 숫자 영역 너비 확장 및 정렬 교정 */
+    .count-container { width: 130px; text-align: right; display: flex; flex-direction: column; justify-content: center; }
+    .count-main { font-size: 1.2rem; font-weight: 900; line-height: 1; }
+    .count-today { font-size: 0.95rem; font-weight: 800; color: #f87171; margin-top: 6px; line-height: 1; }
     
     .c-red { color: #f87171; } .c-white { color: #fff; } .c-gold { color: #fbbf24; } .c-pink { color: #f472b6; }
     .c-cyan { color: #22d3ee; } .c-purple { color: #c084fc; } .c-orange { color: #fb923c; } 
@@ -25,7 +28,7 @@
     </style></head>
     <body>
         <div class="top-bar">
-            <div class="status-info"><div class="live-dot"></div><div class="update-time">UPDATED: 2026.04.29 13:38</div></div>
+            <div class="status-info"><div class="live-dot"></div><div class="update-time">UPDATED: 2026.04.29 13:44</div></div>
             <div style="font-size: 1rem; color: #64748b; font-weight: 500;">DATA SOURCE: POONG.TODAY</div>
         </div>
         <div class="grid"><div class="crew-card"><div class="header"><div class="crew-name c-red">광우상사 <small style="font-size:0.7em; opacity:0.7;">(11명)</small></div><div class="stats">TOTAL: 7,490,340<br>AVG: 680,940</div></div><div class="member-row">
@@ -295,7 +298,7 @@
                     
                 </div>
             </div><div class="member-row">
-                <div class="nick">&nbsp;&nbsp;&nbsp; 유na연º-º</div>
+                <div class="nick">&nbsp;&nbsp;&nbsp; 유나연º-º</div>
                 <div class="bar-bg"><div class="bar-fill" style="width:20.30770267231122%; background:linear-gradient(90deg, #166534, #22c55e);"></div></div>
                 <div class="count-container">
                     <div class="count-main" style="color:#22c55e">204,976</div>
