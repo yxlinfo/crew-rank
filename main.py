@@ -1,6 +1,6 @@
 import requests
 import time
-from datetime import datetime, timedelta, timezone # 시간대 설정을 위해 추가
+from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
@@ -20,11 +20,21 @@ crews_config = {
 
 def fetch_b_value(uid, year, month):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month}"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Referer": "https://poong.today/"}
-    try:
-        res = requests.get(api_url, headers=headers, timeout=10)
-        return res.json().get('b', 0) if res.status_code == 200 else 0
-    except: return 0
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", 
+        "Referer": "https://poong.today/"
+    }
+    
+    # [리뉴얼] 데이터 안정성을 위해 최대 3번 재시도
+    for _ in range(3):
+        try:
+            res = requests.get(api_url, headers=headers, timeout=10)
+            if res.status_code == 200:
+                return res.json().get('b', 0)
+            time.sleep(1.5) # 실패 시 약간 대기 후 재시도
+        except:
+            time.sleep(1.5)
+    return 0
 
 def get_gauge_style(count):
     if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "text": "#ef4444"}
@@ -35,7 +45,6 @@ def get_gauge_style(count):
     else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "text": "#9ca3af"}
 
 def generate_html():
-    # 한국 시간(KST) 설정 및 현재 시간 획득
     kst = timezone(timedelta(hours=9))
     current_now = datetime.now(kst)
     target_year, target_month = current_now.year, current_now.month
@@ -45,7 +54,8 @@ def generate_html():
         for nick, uid in info['members'].items():
             all_tasks.append({'crew': crew_name, 'nick': nick, 'uid': uid})
 
-    with ThreadPoolExecutor(max_workers=15) as executor:
+    # [리뉴얼] 과부하 방지를 위해 max_workers를 8로 조정하여 차단 가능성 감소
+    with ThreadPoolExecutor(max_workers=8) as executor:
         results = list(executor.map(lambda t: {**t, 'count': fetch_b_value(t['uid'], target_year, target_month)}, all_tasks))
 
     final_data = []
