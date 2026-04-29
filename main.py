@@ -20,20 +20,13 @@ crews_config = {
 
 def fetch_b_value(uid, year, month):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month}"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", 
-        "Referer": "https://poong.today/"
-    }
-    
-    # [리뉴얼] 데이터 안정성을 위해 최대 3번 재시도
+    headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://poong.today/"}
     for _ in range(3):
         try:
             res = requests.get(api_url, headers=headers, timeout=10)
-            if res.status_code == 200:
-                return res.json().get('b', 0)
-            time.sleep(1.5) # 실패 시 약간 대기 후 재시도
-        except:
-            time.sleep(1.5)
+            if res.status_code == 200: return res.json().get('b', 0)
+            time.sleep(1)
+        except: time.sleep(1)
     return 0
 
 def get_gauge_style(count):
@@ -54,7 +47,6 @@ def generate_html():
         for nick, uid in info['members'].items():
             all_tasks.append({'crew': crew_name, 'nick': nick, 'uid': uid})
 
-    # [리뉴얼] 과부하 방지를 위해 max_workers를 8로 조정하여 차단 가능성 감소
     with ThreadPoolExecutor(max_workers=8) as executor:
         results = list(executor.map(lambda t: {**t, 'count': fetch_b_value(t['uid'], target_year, target_month)}, all_tasks))
 
@@ -68,39 +60,38 @@ def generate_html():
 
     html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
     body {{ 
-        background: #0f172a; color: #f8fafc; font-family: 'Pretendard', sans-serif; 
-        margin: 0; padding: 40px; width: 1450px;
+        background: #0f172a; color: #f8fafc; font-family: sans-serif; 
+        margin: 0; padding: 40px; width: 1550px;
         -webkit-font-smoothing: antialiased;
     }}
     .top-bar {{
         display: flex; justify-content: space-between; align-items: flex-end;
-        margin-bottom: 30px; padding: 0 10px;
-        border-bottom: 1px solid #334155; padding-bottom: 15px;
+        margin-bottom: 35px; padding: 0 10px; border-bottom: 2px solid #334155; padding-bottom: 20px;
     }}
-    .status-info {{ display: flex; align-items: center; gap: 12px; }}
+    .status-info {{ display: flex; align-items: center; gap: 15px; }}
     .live-dot {{
-        width: 10px; height: 10px; background: #ef4444; border-radius: 50%;
-        box-shadow: 0 0 10px #ef4444; animation: blink 1.5s infinite;
+        width: 14px; height: 14px; background: #ef4444; border-radius: 50%;
+        box-shadow: 0 0 15px #ef4444; animation: blink 1.5s infinite;
     }}
-    .update-time {{ font-size: 1rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.02em; }}
-    .source-info {{ font-size: 0.85rem; color: #475569; font-weight: 400; }}
+    .update-time {{ font-size: 1.25rem; font-weight: 800; color: #f8fafc; }}
+    
+    @keyframes blink {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.4; }} 100% {{ opacity: 1; }} }}
 
-    @keyframes blink {{
-        0% {{ opacity: 1; transform: scale(1); }} 
-        50% {{ opacity: 0.4; transform: scale(0.9); }} 
-        100% {{ opacity: 1; transform: scale(1); }}
-    }}
-
-    .grid {{ display: grid; gap: 15px; grid-template-columns: repeat(3, 1fr); }}
-    .crew-card {{ background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }}
-    .header {{ display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 12px; }}
-    .crew-name {{ font-size: 1.15rem; font-weight: 800; }}
-    .stats {{ text-align: right; font-size: 0.8rem; color: #94a3b8; line-height: 1.4; }}
-    .member-row {{ display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }}
-    .nick {{ width: 110px; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #e2e8f0; }}
-    .bar-bg {{ flex-grow: 1; background: #020617; height: 14px; border-radius: 10px; overflow: hidden; }}
-    .bar-fill {{ height: 100%; border-radius: 10px; }}
-    .count {{ width: 75px; text-align: right; font-size: 0.8rem; font-weight: 800; }}
+    .grid {{ display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); }}
+    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 20px; padding: 25px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); }}
+    .header {{ display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #334155; padding-bottom: 15px; margin-bottom: 25px; }}
+    .crew-name {{ font-size: 1.5rem; font-weight: 900; }}
+    .stats {{ text-align: right; font-size: 1.05rem; color: #cbd5e1; line-height: 1.6; font-weight: 700; }}
+    
+    .member-row {{ display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }}
+    .nick {{ width: 140px; font-size: 1.1rem; font-weight: 700; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    
+    /* [최종] 게이지 바 얇게(10px) 적용 */
+    .bar-bg {{ flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }}
+    .bar-fill {{ height: 100%; border-radius: 5px; }}
+    
+    .count {{ width: 100px; text-align: right; font-size: 1.1rem; font-weight: 900; }}
+    
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} 
     .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
@@ -111,12 +102,12 @@ def generate_html():
                 <div class="live-dot"></div>
                 <div class="update-time">UPDATED: {current_now.strftime('%Y.%m.%d %H:%M')}</div>
             </div>
-            <div class="source-info">DATA SOURCE: POONG.TODAY</div>
+            <div style="font-size: 1rem; color: #64748b; font-weight: 500;">DATA SOURCE: POONG.TODAY</div>
         </div>
         <div class="grid">"""
 
     for c in final_data:
-        html += f"""<div class="crew-card"><div class="header"><div class="crew-name {c['color']}">{c['name']} <small style="font-size:0.75em; opacity:0.6;">({c['member_count']}명)</small></div><div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div></div>"""
+        html += f"""<div class="crew-card"><div class="header"><div class="crew-name {c['color']}">{c['name']} <small style="font-size:0.7em; opacity:0.7;">({c['member_count']}명)</small></div><div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div></div>"""
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['count'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
@@ -130,7 +121,7 @@ def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
         context = browser.new_context(
-            viewport={'width': 1500, 'height': 2200},
+            viewport={'width': 1550, 'height': 2500},
             device_scale_factor=2
         )
         page = context.new_page()
@@ -141,10 +132,8 @@ def save_chart_image(html_content):
 
 if __name__ == "__main__":
     generated_html = generate_html()
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(generated_html)
+    with open("index.html", "w", encoding="utf-8") as f: f.write(generated_html)
     try:
         save_chart_image(generated_html)
         print("Success")
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exception as e: print(f"Error: {e}")
