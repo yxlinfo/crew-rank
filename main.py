@@ -28,20 +28,18 @@ def fetch_data(uid, year, month, day):
                 json_data = res.json()
                 monthly = json_data.get('b', 0)
                 daily = 0
-                
-                # [수정 완료] d 리스트 내의 d 키값이 날짜임
                 daily_list = json_data.get('d', []) 
                 for item in daily_list:
                     if str(item.get('d')) == str(day):
                         daily = item.get('b', 0)
                         break
-                
                 time.sleep(0.1)
                 return {"monthly": monthly, "daily": daily}
             time.sleep(1)
         except: time.sleep(1)
     return {"monthly": 0, "daily": 0}
 
+# 누적 수치에 따른 게이지 색상 결정 함수
 def get_gauge_style(count):
     if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "text": "#ef4444"}
     elif count >= 800000: return {"grad": "linear-gradient(90deg, #9a3412, #f97316)", "text": "#f97316"}
@@ -84,18 +82,17 @@ def generate_html():
     .crew-name {{ font-size: 1.55rem; font-weight: 900; }}
     .stats {{ text-align: right; font-size: 1.1rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }}
     
-    .member-row {{ display: flex; align-items: center; gap: 15px; margin-bottom: 28px; height: 52px; }} 
-    .nick {{ width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }}
+    .member-row {{ display: flex; align-items: center; gap: 15px; margin-bottom: 28px; height: 52px; position: relative; }} 
+    .nick {{ width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; }}
     .bar-bg {{ flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 5px; }}
     
-    .count-container {{ width: 135px; text-align: right; display: flex; flex-direction: column; justify-content: center; }}
-    .count-main {{ font-size: 1.2rem; font-weight: 900; line-height: 1; }}
-    .count-today {{ font-size: 0.95rem; font-weight: 800; color: #f87171; margin-top: 6px; line-height: 1; }}
+    .count-container {{ width: 140px; text-align: right; position: relative; height: 52px; }}
+    .count-main {{ font-size: 1.25rem; font-weight: 900; position: absolute; top: 0; right: 0; }}
+    .count-today {{ font-size: 0.95rem; font-weight: 800; color: #f87171; position: absolute; bottom: 0; right: 0; }}
     
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
-    .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} 
-    .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
+    .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
     </style></head>
     <body>
         <div class="top-bar">
@@ -110,10 +107,7 @@ def generate_html():
             style = get_gauge_style(m['v']['monthly'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
-            
-            # 당일 수치가 있을 때만 빨간색 강조 표시
             today_label = f'<div class="count-today">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
-            
             html += f"""<div class="member-row">
                 <div class="nick">{medal} {m['nick']}</div>
                 <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
