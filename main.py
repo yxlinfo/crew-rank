@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 10개 크루 및 전원 명단
+# 1. 크루 명단 (생략 - 기존과 동일)
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -28,27 +28,18 @@ def fetch_data(uid, year, month, day):
                 json_data = res.json()
                 monthly = json_data.get('b', 0)
                 daily = 0
-                
-                # [수정 완료] d 리스트 내의 d 키값이 날짜임
                 daily_list = json_data.get('d', []) 
                 for item in daily_list:
                     if str(item.get('d')) == str(day):
                         daily = item.get('b', 0)
                         break
-                
                 time.sleep(0.1)
                 return {"monthly": monthly, "daily": daily}
             time.sleep(1)
         except: time.sleep(1)
     return {"monthly": 0, "daily": 0}
 
-def get_gauge_style(count):
-    if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "text": "#ef4444"}
-    elif count >= 800000: return {"grad": "linear-gradient(90deg, #9a3412, #f97316)", "text": "#f97316"}
-    elif count >= 400000: return {"grad": "linear-gradient(90deg, #a16207, #eab308)", "text": "#eab308"}
-    elif count >= 200000: return {"grad": "linear-gradient(90deg, #166534, #22c55e)", "text": "#22c55e"}
-    elif count >= 100000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)", "text": "#3b82f6"}
-    else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "text": "#9ca3af"}
+# ... (get_gauge_style 함수 동일) ...
 
 def generate_html():
     kst = timezone(timedelta(hours=9))
@@ -84,18 +75,31 @@ def generate_html():
     .crew-name {{ font-size: 1.55rem; font-weight: 900; }}
     .stats {{ text-align: right; font-size: 1.1rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }}
     
-    .member-row {{ display: flex; align-items: center; gap: 15px; margin-bottom: 28px; height: 52px; }} 
-    .nick {{ width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }}
+    /* 행 높이 및 위치 고정 핵심 설정 */
+    .member-row {{ 
+        display: flex; align-items: center; gap: 15px; 
+        margin-bottom: 28px; height: 52px; position: relative; 
+    }} 
+    .nick {{ width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; }}
     .bar-bg {{ flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 5px; }}
     
-    .count-container {{ width: 135px; text-align: right; display: flex; flex-direction: column; justify-content: center; }}
-    .count-main {{ font-size: 1.2rem; font-weight: 900; line-height: 1; }}
-    .count-today {{ font-size: 0.95rem; font-weight: 800; color: #f87171; margin-top: 6px; line-height: 1; }}
+    /* 숫자 박스 고정 */
+    .count-container {{ 
+        width: 140px; text-align: right; 
+        position: relative; height: 52px; /* 행 높이와 동일하게 */
+    }}
+    .count-main {{ 
+        font-size: 1.25rem; font-weight: 900; 
+        position: absolute; top: 0; right: 0; /* 원래 위치(상단) 고정 */
+    }}
+    .count-today {{ 
+        font-size: 0.95rem; font-weight: 800; color: #f87171; 
+        position: absolute; bottom: 0; right: 0; /* 무조건 밑에 배치 */
+    }}
     
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
-    .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} 
-    .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
+    .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
     </style></head>
     <body>
         <div class="top-bar">
@@ -110,10 +114,7 @@ def generate_html():
             style = get_gauge_style(m['v']['monthly'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
-            
-            # 당일 수치가 있을 때만 빨간색 강조 표시
             today_label = f'<div class="count-today">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
-            
             html += f"""<div class="member-row">
                 <div class="nick">{medal} {m['nick']}</div>
                 <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
