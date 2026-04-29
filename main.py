@@ -28,11 +28,14 @@ def fetch_data(uid, year, month, day):
                 json_data = res.json()
                 monthly = json_data.get('b', 0)
                 daily = 0
-                # 날짜 비교 로직 강화 (숫자/문자열 타입 일치화)
-                for d in json_data.get('list', []):
-                    if str(d.get('d')) == str(day):
-                        daily = d.get('b', 0)
+                
+                # [수정 완료] d 리스트 내의 d 키값이 날짜임
+                daily_list = json_data.get('d', []) 
+                for item in daily_list:
+                    if str(item.get('d')) == str(day):
+                        daily = item.get('b', 0)
                         break
+                
                 time.sleep(0.1)
                 return {"monthly": monthly, "daily": daily}
             time.sleep(1)
@@ -108,7 +111,7 @@ def generate_html():
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
-            # 당일 수치 렌더링 (값이 있을 때만 표시)
+            # 당일 수치가 있을 때만 빨간색 강조 표시
             today_label = f'<div class="count-today">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
             
             html += f"""<div class="member-row">
@@ -126,7 +129,7 @@ def generate_html():
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        context = browser.new_context(viewport={'width': 1600, 'height': 3500}, device_scale_factor=2)
+        context = browser.new_context(viewport={'width': 1600, 'height': 3800}, device_scale_factor=2)
         page = context.new_page()
         page.set_content(html_content)
         time.sleep(3)
