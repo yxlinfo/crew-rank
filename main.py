@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 10개 크루 및 전원 명단 (기존 명단 유지)
+# 1. 10개 크루 및 전원 명단
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -71,41 +71,45 @@ def generate_html():
     html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
     body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 40px; width: 1600px; -webkit-font-smoothing: antialiased; }}
     .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 2px solid #334155; padding-bottom: 20px; }}
-    .status-info {{ display: flex; align-items: center; gap: 15px; }}
-    .live-dot {{ width: 12px; height: 12px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 12px #ef4444; animation: blink 1.5s infinite; }}
     .update-time {{ font-size: 1.1rem; font-weight: 800; }}
-    @keyframes blink {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0.4; }} 100% {{ opacity: 1; }} }}
     
-    .grid {{ display: grid; gap: 15px; grid-template-columns: repeat(3, 1fr); }}
-    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 16px; padding: 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }}
-    .header {{ display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 20px; }}
-    .crew-name {{ font-size: 1.4rem; font-weight: 900; }}
-    .stats {{ text-align: right; font-size: 1rem; color: #cbd5e1; font-weight: 700; line-height: 1.5; }}
+    .grid {{ display: grid; gap: 45px 20px; grid-template-columns: repeat(3, 1fr); }} /* 제목 공간 확보를 위해 세로 gap 조정 */
     
-    /* 촘촘한 배치를 위한 수정 포인트 */
+    /* 제목 카드 외부 좌측 상단 배치 */
+    .crew-outer-header {{ 
+        display: flex; justify-content: space-between; align-items: flex-end; 
+        margin-bottom: 12px; padding: 0 5px; 
+    }}
+    .crew-outer-title {{ font-size: 1.5rem; font-weight: 900; }}
+    
+    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 16px; padding: 18px 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }}
+    
+    /* 카드 내부 상단에는 TOTAL/AVG 수치만 우측 정렬 */
+    .header {{ display: flex; justify-content: flex-end; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 18px; }}
+    .stats {{ text-align: right; font-size: 0.95rem; color: #cbd5e1; font-weight: 700; line-height: 1.5; }}
+    
+    /* 행 정렬 완전 고정 및 촘촘한 간격 */
     .member-row {{ 
         display: flex; align-items: center; gap: 12px; 
-        margin-bottom: 18px; /* 간격을 32px -> 18px로 대폭 축소 */
-        height: 36px; /* 행 높이를 50px -> 36px로 축소 */
-        position: relative; 
+        margin-bottom: 20px; /* 멤버 간 촘촘한 간격 */
+        height: 34px; position: relative; 
     }} 
-    .nick {{ width: 140px; font-size: 1.05rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+    .nick {{ width: 140px; font-size: 1.05rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }}
     .bar-bg {{ flex-grow: 1; background: #020617; height: 8px; border-radius: 4px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 4px; }}
     
+    /* 숫자 박스 수평 고정 */
     .count-container {{ 
-        width: 130px; text-align: right; 
-        height: 36px; position: relative;
+        width: 140px; text-align: right; 
+        height: 34px; position: relative;
     }}
     .count-main {{ 
         font-size: 1.15rem; font-weight: 900; 
-        line-height: 36px; /* 행 높이와 맞춰 수평 고정 */
+        line-height: 34px; /* 행 높이와 동일하게 맞춰 수평 고정 */
     }}
     .count-today {{ 
         font-size: 0.85rem; font-weight: 800; color: #f87171; 
-        position: absolute; 
-        bottom: -13px; /* 메인 수치 바로 아래 딱 붙여서 표시 */
-        right: 0;
+        position: absolute; bottom: -13px; right: 0; 
         white-space: nowrap;
     }}
     
@@ -114,35 +118,44 @@ def generate_html():
     </style></head>
     <body>
         <div class="top-bar">
-            <div class="status-info"><div class="live-dot"></div><div class="update-time">UPDATED: {now.strftime('%Y.%m.%d %H:%M')}</div></div>
+            <div class="update-time">UPDATED: {now.strftime('%Y.%m.%d %H:%M')}</div>
             <div style="font-size: 0.9rem; color: #64748b; font-weight: 500;">DATA SOURCE: POONG.TODAY</div>
         </div>
         <div class="grid">"""
 
     for c in final_data:
-        html += f"""<div class="crew-card"><div class="header"><div class="crew-name {c['color']}">{c['name']} <small style="font-size:0.7em; opacity:0.7;">({c['member_count']}명)</small></div><div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div></div>"""
+        html += f"""
+        <div class="crew-wrapper">
+            <div class="crew-outer-header">
+                <div class="crew-outer-title {c['color']}">{c['name']} <span style="font-size:0.75em; opacity:0.8;">({c['member_count']}명)</span></div>
+            </div>
+            <div class="crew-card">
+                <div class="header">
+                    <div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div>
+                </div>"""
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['v']['monthly'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             today_label = f'<div class="count-today">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
             
-            html += f"""<div class="member-row">
-                <div class="nick">{medal} {m['nick']}</div>
-                <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
-                <div class="count-container">
-                    <div class="count-main" style="color:{style['text']}">{m['v']['monthly']:,}</div>
-                    {today_label}
-                </div>
-            </div>"""
-        html += "</div>"
+            html += f"""
+                <div class="member-row">
+                    <div class="nick">{medal} {m['nick']}</div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
+                    <div class="count-container">
+                        <div class="count-main" style="color:{style['text']}">{m['v']['monthly']:,}</div>
+                        {today_label}
+                    </div>
+                </div>"""
+        html += "</div></div>"
     html += "</div></body></html>"
     return html
 
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        context = browser.new_context(viewport={'width': 1600, 'height': 3000}, device_scale_factor=2)
+        context = browser.new_context(viewport={'width': 1600, 'height': 3200}, device_scale_factor=2)
         page = context.new_page()
         page.set_content(html_content)
         time.sleep(3)
