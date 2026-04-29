@@ -70,46 +70,42 @@ def generate_html():
 
     html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>
     body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0; padding: 40px; width: 1600px; -webkit-font-smoothing: antialiased; }}
-    .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 2px solid #334155; padding-bottom: 20px; }}
-    .update-time {{ font-size: 1.1rem; font-weight: 800; }}
+    .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; border-bottom: 2px solid #334155; padding-bottom: 15px; }}
     
-    .grid {{ display: grid; gap: 45px 20px; grid-template-columns: repeat(3, 1fr); }} /* 제목 공간 확보를 위해 세로 gap 조정 */
+    .grid {{ display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); }}
+    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 16px; padding: 15px 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }}
     
-    /* 제목 카드 외부 좌측 상단 배치 */
-    .crew-outer-header {{ 
-        display: flex; justify-content: space-between; align-items: flex-end; 
-        margin-bottom: 12px; padding: 0 5px; 
+    /* 헤더: 이름은 좌상단 고정, 수치는 우측 두 줄 배치 */
+    .header {{ 
+        display: flex; justify-content: space-between; align-items: flex-start; 
+        border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 15px; 
     }}
-    .crew-outer-title {{ font-size: 1.5rem; font-weight: 900; }}
+    .crew-title {{ 
+        font-size: 1.45rem; font-weight: 900; margin-top: -2px; 
+    }}
+    .stats {{ text-align: right; font-size: 0.9rem; color: #cbd5e1; font-weight: 700; line-height: 1.5; }}
     
-    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 16px; padding: 18px 20px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }}
-    
-    /* 카드 내부 상단에는 TOTAL/AVG 수치만 우측 정렬 */
-    .header {{ display: flex; justify-content: flex-end; border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 18px; }}
-    .stats {{ text-align: right; font-size: 0.95rem; color: #cbd5e1; font-weight: 700; line-height: 1.5; }}
-    
-    /* 행 정렬 완전 고정 및 촘촘한 간격 */
+    /* 촘촘한 멤버 행 배치 */
     .member-row {{ 
         display: flex; align-items: center; gap: 12px; 
-        margin-bottom: 20px; /* 멤버 간 촘촘한 간격 */
-        height: 34px; position: relative; 
+        margin-bottom: 16px; height: 32px; position: relative; 
     }} 
-    .nick {{ width: 140px; font-size: 1.05rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }}
+    .nick {{ width: 145px; font-size: 1.05rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }}
     .bar-bg {{ flex-grow: 1; background: #020617; height: 8px; border-radius: 4px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 4px; }}
     
-    /* 숫자 박스 수평 고정 */
+    /* 숫자 박스 수평 완전 고정 */
     .count-container {{ 
-        width: 140px; text-align: right; 
-        height: 34px; position: relative;
+        width: 130px; text-align: right; 
+        height: 32px; position: relative;
     }}
     .count-main {{ 
         font-size: 1.15rem; font-weight: 900; 
-        line-height: 34px; /* 행 높이와 동일하게 맞춰 수평 고정 */
+        line-height: 32px; 
     }}
     .count-today {{ 
         font-size: 0.85rem; font-weight: 800; color: #f87171; 
-        position: absolute; bottom: -13px; right: 0; 
+        position: absolute; bottom: -12px; right: 0; 
         white-space: nowrap;
     }}
     
@@ -118,21 +114,18 @@ def generate_html():
     </style></head>
     <body>
         <div class="top-bar">
-            <div class="update-time">UPDATED: {now.strftime('%Y.%m.%d %H:%M')}</div>
+            <div style="font-size: 1.1rem; font-weight: 800;">UPDATED: {now.strftime('%Y.%m.%d %H:%M')}</div>
             <div style="font-size: 0.9rem; color: #64748b; font-weight: 500;">DATA SOURCE: POONG.TODAY</div>
         </div>
         <div class="grid">"""
 
     for c in final_data:
         html += f"""
-        <div class="crew-wrapper">
-            <div class="crew-outer-header">
-                <div class="crew-outer-title {c['color']}">{c['name']} <span style="font-size:0.75em; opacity:0.8;">({c['member_count']}명)</span></div>
-            </div>
-            <div class="crew-card">
-                <div class="header">
-                    <div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div>
-                </div>"""
+        <div class="crew-card">
+            <div class="header">
+                <div class="crew-title {c['color']}">{c['name']} <span style="font-size:0.75em; opacity:0.8;">({c['member_count']}명)</span></div>
+                <div class="stats">TOTAL: {c['total']:,}<br>AVG: {c['avg']:,}</div>
+            </div>"""
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['v']['monthly'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
@@ -140,22 +133,22 @@ def generate_html():
             today_label = f'<div class="count-today">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
             
             html += f"""
-                <div class="member-row">
-                    <div class="nick">{medal} {m['nick']}</div>
-                    <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
-                    <div class="count-container">
-                        <div class="count-main" style="color:{style['text']}">{m['v']['monthly']:,}</div>
-                        {today_label}
-                    </div>
-                </div>"""
-        html += "</div></div>"
+            <div class="member-row">
+                <div class="nick">{medal} {m['nick']}</div>
+                <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
+                <div class="count-container">
+                    <div class="count-main" style="color:{style['text']}">{m['v']['monthly']:,}</div>
+                    {today_label}
+                </div>
+            </div>"""
+        html += "</div>"
     html += "</div></body></html>"
     return html
 
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        context = browser.new_context(viewport={'width': 1600, 'height': 3200}, device_scale_factor=2)
+        context = browser.new_context(viewport={'width': 1600, 'height': 3800}, device_scale_factor=2)
         page = context.new_page()
         page.set_content(html_content)
         time.sleep(3)
