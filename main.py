@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 크루 명단 (생략 - 기존과 동일)
+# 1. 10개 크루 및 전원 명단
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -39,7 +39,14 @@ def fetch_data(uid, year, month, day):
         except: time.sleep(1)
     return {"monthly": 0, "daily": 0}
 
-# ... (get_gauge_style 함수 동일) ...
+# 누적 수치에 따른 게이지 색상 결정 함수
+def get_gauge_style(count):
+    if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "text": "#ef4444"}
+    elif count >= 800000: return {"grad": "linear-gradient(90deg, #9a3412, #f97316)", "text": "#f97316"}
+    elif count >= 400000: return {"grad": "linear-gradient(90deg, #a16207, #eab308)", "text": "#eab308"}
+    elif count >= 200000: return {"grad": "linear-gradient(90deg, #166534, #22c55e)", "text": "#22c55e"}
+    elif count >= 100000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)", "text": "#3b82f6"}
+    else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "text": "#9ca3af"}
 
 def generate_html():
     kst = timezone(timedelta(hours=9))
@@ -75,28 +82,14 @@ def generate_html():
     .crew-name {{ font-size: 1.55rem; font-weight: 900; }}
     .stats {{ text-align: right; font-size: 1.1rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }}
     
-    /* 행 높이 및 위치 고정 핵심 설정 */
-    .member-row {{ 
-        display: flex; align-items: center; gap: 15px; 
-        margin-bottom: 28px; height: 52px; position: relative; 
-    }} 
+    .member-row {{ display: flex; align-items: center; gap: 15px; margin-bottom: 28px; height: 52px; position: relative; }} 
     .nick {{ width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; }}
     .bar-bg {{ flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 5px; }}
     
-    /* 숫자 박스 고정 */
-    .count-container {{ 
-        width: 140px; text-align: right; 
-        position: relative; height: 52px; /* 행 높이와 동일하게 */
-    }}
-    .count-main {{ 
-        font-size: 1.25rem; font-weight: 900; 
-        position: absolute; top: 0; right: 0; /* 원래 위치(상단) 고정 */
-    }}
-    .count-today {{ 
-        font-size: 0.95rem; font-weight: 800; color: #f87171; 
-        position: absolute; bottom: 0; right: 0; /* 무조건 밑에 배치 */
-    }}
+    .count-container {{ width: 140px; text-align: right; position: relative; height: 52px; }}
+    .count-main {{ font-size: 1.25rem; font-weight: 900; position: absolute; top: 0; right: 0; }}
+    .count-today {{ font-size: 0.95rem; font-weight: 800; color: #f87171; position: absolute; bottom: 0; right: 0; }}
     
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
