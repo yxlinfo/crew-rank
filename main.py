@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 크루 명단 (기존과 동일)
+# 1. 10개 크루 및 전원 명단
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -28,8 +28,9 @@ def fetch_data(uid, year, month, day):
                 json_data = res.json()
                 monthly = json_data.get('b', 0)
                 daily = 0
+                # 날짜 비교 로직 강화 (숫자/문자열 타입 일치화)
                 for d in json_data.get('list', []):
-                    if d.get('d') == day:
+                    if str(d.get('d')) == str(day):
                         daily = d.get('b', 0)
                         break
                 time.sleep(0.1)
@@ -80,14 +81,12 @@ def generate_html():
     .crew-name {{ font-size: 1.55rem; font-weight: 900; }}
     .stats {{ text-align: right; font-size: 1.1rem; color: #cbd5e1; font-weight: 700; line-height: 1.6; }}
     
-    /* 줄 간격 대폭 확대 및 행 높이 고정 */
     .member-row {{ display: flex; align-items: center; gap: 15px; margin-bottom: 28px; height: 52px; }} 
     .nick {{ width: 150px; font-size: 1.15rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; }}
     .bar-bg {{ flex-grow: 1; background: #020617; height: 10px; border-radius: 5px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 5px; }}
     
-    /* 숫자 영역 너비 확장 및 정렬 교정 */
-    .count-container {{ width: 130px; text-align: right; display: flex; flex-direction: column; justify-content: center; }}
+    .count-container {{ width: 135px; text-align: right; display: flex; flex-direction: column; justify-content: center; }}
     .count-main {{ font-size: 1.2rem; font-weight: 900; line-height: 1; }}
     .count-today {{ font-size: 0.95rem; font-weight: 800; color: #f87171; margin-top: 6px; line-height: 1; }}
     
@@ -109,7 +108,7 @@ def generate_html():
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;&nbsp;"
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
-            # 빨간색 당일 수치 (값이 있을 때만 표시)
+            # 당일 수치 렌더링 (값이 있을 때만 표시)
             today_label = f'<div class="count-today">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
             
             html += f"""<div class="member-row">
@@ -127,7 +126,6 @@ def generate_html():
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        # 높이를 넉넉하게 3500으로 확장 (이미지가 잘리지 않게)
         context = browser.new_context(viewport={'width': 1600, 'height': 3500}, device_scale_factor=2)
         page = context.new_page()
         page.set_content(html_content)
