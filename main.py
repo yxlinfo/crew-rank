@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 크루 설정 (데이터 유지를 위해 반드시 포함)
+# 1. 크루 설정 데이터 (기존 데이터 유지)
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -32,16 +32,12 @@ def fetch_data(uid, year, month, day):
     return {"monthly": 0, "daily": 0}
 
 def get_gauge_style(count):
-    styles = [
-        (1000000, "linear-gradient(90deg, #991b1b, #ef4444)", "#ef4444"),
-        (800000, "linear-gradient(90deg, #9a3412, #f97316)", "#f97316"),
-        (400000, "linear-gradient(90deg, #a16207, #eab308)", "#eab308"),
-        (200000, "linear-gradient(90deg, #166534, #22c55e)", "#22c55e"),
-        (100000, "linear-gradient(90deg, #1e3a8a, #3b82f6)", "#3b82f6"),
-        (0, "linear-gradient(90deg, #4b5563, #9ca3af)", "#9ca3af")
-    ]
-    for threshold, grad, point in styles:
-        if count >= threshold: return {"grad": grad, "point": point}
+    if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "point": "#ef4444"}
+    elif count >= 800000: return {"grad": "linear-gradient(90deg, #9a3412, #f97316)", "point": "#f97316"}
+    elif count >= 400000: return {"grad": "linear-gradient(90deg, #a16207, #eab308)", "point": "#eab308"}
+    elif count >= 200000: return {"grad": "linear-gradient(90deg, #166534, #22c55e)", "point": "#22c55e"}
+    elif count >= 100000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)", "point": "#3b82f6"}
+    else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "point": "#9ca3af"}
 
 def generate_html():
     kst = timezone(timedelta(hours=9))
@@ -60,37 +56,48 @@ def generate_html():
     final_data.sort(key=lambda x: x['avg'], reverse=True)
 
     html = f"""<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-    body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; padding: 15px; width: 100%; max-width: 900px; margin: 0 auto; }}
-    .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; border-bottom: 2px solid #334155; padding-bottom: 10px; }}
+    body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }}
     
-    /* 반응형 그리드: 기본 3열(PC), 768px 이하 2열(모바일) */
-    .grid {{ display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); padding-bottom: 50px; }}
-    @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }} }}
-
-    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 12px; padding: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }}
-    .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 12px; }}
+    /* [PC 기본값] */
+    .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; border-bottom: 2px solid #334155; padding-bottom: 8px; }}
+    .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
+    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 10px; padding: 12px; }}
+    .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 10px; }}
     .crew-title {{ font-size: 1.1rem; font-weight: 900; }}
-    .stats {{ text-align: right; font-size: 0.8rem; color: #cbd5e1; font-weight: 700; }}
+    .stats {{ text-align: right; font-size: 0.8rem; color: #cbd5e1; font-weight: 700; line-height: 1.4; }}
     
-    .member-row {{ display: flex; align-items: center; gap: 6px; margin-bottom: 14px; height: 32px; position: relative; }} 
-    .nick {{ flex: 0 0 85px; font-size: 0.85rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+    .member-row {{ display: flex; align-items: center; gap: 8px; margin-bottom: 15px; height: 32px; position: relative; }} 
+    .nick {{ flex: 0 0 90px; font-size: 0.9rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; }}
     .bar-bg {{ flex: 1; background: #334155; height: 7px; border-radius: 4px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 4px; }}
-    
-    .count-container {{ flex: 0 0 90px; text-align: right; height: 32px; position: relative; display: flex; flex-direction: column; justify-content: center; }}
-    .count-main {{ font-size: 1rem; font-weight: 900; color: #ffffff; line-height: 1; }}
+    .count-container {{ flex: 0 0 90px; text-align: right; position: relative; }}
+    .count-main {{ font-size: 1rem; font-weight: 900; color: #ffffff; }}
     .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; bottom: -12px; right: 0; white-space: nowrap; }}
-    
+
+    /* [모바일 최적화: 360px~375px 뷰포트 대응] */
+    @media (max-width: 768px) {{
+        .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
+        .crew-card {{ padding: 6px; }}
+        .crew-title {{ font-size: 0.8rem; }}
+        .stats {{ font-size: 0.6rem; }}
+        .member-row {{ gap: 3px; height: 24px; margin-bottom: 10px; }}
+        .nick {{ flex: 0 0 55px; font-size: 0.7rem; }}
+        .bar-bg {{ height: 4px; }}
+        .count-container {{ flex: 0 0 55px; }}
+        .count-main {{ font-size: 0.8rem; }}
+        .count-today {{ font-size: 0.6rem; bottom: -9px; }}
+    }}
+
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
     </style></head>
     <body>
         <div class="top-bar">
-            <div style="font-size: 0.9rem; font-weight: 800;">UPDATED: {now.strftime('%Y.%m.%d %H:%M')}</div>
-            <div style="font-size: 0.75rem; color: #64748b;">DATA SOURCE: POONG.TODAY</div>
+            <div style="font-size: 0.85rem; font-weight: 800;">{now.strftime('%y.%m.%d %H:%M')}</div>
+            <div style="font-size: 0.7rem; color: #64748b;">DATA SOURCE: POONG.TODAY</div>
         </div>
         <div class="grid">"""
 
@@ -98,7 +105,7 @@ def generate_html():
         html += f"""<div class="crew-card"><div class="header"><div class="crew-title {c['color']}">{c['name']} <span style="font-size:0.7em;">({len(c['members'])})</span></div><div class="stats">T: {c['total']:,}<br>A: {c['avg']:,}</div></div>"""
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['v']['monthly'])
-            medal = ["🥇", "🥈", "🥉"][i] if i < 3 else "&nbsp;&nbsp;"
+            medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             today = f'<div class="count-today" style="color:{style["point"]}">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
             html += f"""<div class="member-row"><div class="nick">{medal}{m['nick']}</div><div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div><div class="count-container"><div class="count-main">{m['v']['monthly']:,}</div>{today}</div></div>"""
@@ -109,7 +116,7 @@ def generate_html():
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        context = browser.new_context(viewport={'width': 900, 'height': 3000}, device_scale_factor=2)
+        context = browser.new_context(viewport={'width': 850, 'height': 3000}, device_scale_factor=2)
         page = context.new_page()
         page.set_content(html_content)
         time.sleep(3)
