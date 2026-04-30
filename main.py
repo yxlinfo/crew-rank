@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 크루 설정 데이터 (기존 데이터 유지)
+# 1. 크루 설정 데이터
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -73,11 +73,13 @@ def generate_html():
     .nick {{ flex: 0 0 90px; font-size: 0.9rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; }}
     .bar-bg {{ flex: 1; background: #334155; height: 7px; border-radius: 4px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 4px; }}
-    .count-container {{ flex: 0 0 90px; text-align: right; position: relative; }}
-    .count-main {{ font-size: 1rem; font-weight: 900; color: #ffffff; }}
-    .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; bottom: -12px; right: 0; white-space: nowrap; }}
+    
+    /* 수치 영역 간섭 해결: line-height 및 bottom 값 조정 */
+    .count-container {{ flex: 0 0 90px; text-align: right; position: relative; display: flex; flex-direction: column; justify-content: center; height: 32px; }}
+    .count-main {{ font-size: 1rem; font-weight: 900; color: #ffffff; line-height: 1.1; }}
+    .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; bottom: -14px; right: 0; white-space: nowrap; }}
 
-    /* [모바일 최적화: 360px~375px 뷰포트 대응] */
+    /* [모바일 슬림화: 768px 이하] */
     @media (max-width: 768px) {{
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
         .crew-card {{ padding: 6px; }}
@@ -86,9 +88,9 @@ def generate_html():
         .member-row {{ gap: 3px; height: 24px; margin-bottom: 10px; }}
         .nick {{ flex: 0 0 55px; font-size: 0.7rem; }}
         .bar-bg {{ height: 4px; }}
-        .count-container {{ flex: 0 0 55px; }}
+        .count-container {{ flex: 0 0 55px; height: 24px; }}
         .count-main {{ font-size: 0.8rem; }}
-        .count-today {{ font-size: 0.6rem; bottom: -9px; }}
+        .count-today {{ font-size: 0.6rem; bottom: -11px; }}
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
