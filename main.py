@@ -63,37 +63,60 @@ def generate_html():
     
     .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; border-bottom: 2px solid #334155; padding-bottom: 8px; }}
     
-    /* [기본: PC] 3열 유지 */
+    /* PC 3열, 모바일 2열 그리드 */
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
-    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 10px; padding: 12px; }}
-    .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 14px; }}
-    .crew-title {{ font-size: 1.1rem; font-weight: 900; }}
-    .stats {{ text-align: right; font-size: 0.8rem; color: #cbd5e1; font-weight: 700; line-height: 1.4; }}
+    @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }} }}
+
+    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 10px; padding: 10px; }}
+    .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 18px; }}
+    .crew-title {{ font-size: 1rem; font-weight: 900; }}
+    .stats {{ text-align: right; font-size: 0.75rem; color: #cbd5e1; font-weight: 700; line-height: 1.4; }}
     
-    .member-row {{ position: relative; margin-bottom: 18px; }}
-    .member-info {{ display: flex; align-items: center; gap: 8px; height: 32px; margin-bottom: 4px; }}
-    .nick {{ flex: 0 0 95px; font-size: 0.9rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-    .bar-bg {{ flex: 1; background: #334155; height: 7px; border-radius: 4px; overflow: hidden; }}
+    .member-row {{ position: relative; margin-bottom: 24px; }}
+    
+    /* 이름은 왼쪽, 누적 숫자는 오른쪽 양 끝 정렬 (수평 배치) */
+    .member-info {{ 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        height: 22px; 
+        margin-bottom: 6px; 
+    }}
+    .nick {{ 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        color: #f1f5f9; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        padding-right: 5px;
+    }}
+    .count-main {{ 
+        font-size: 0.95rem; 
+        font-weight: 900; 
+        color: #ffffff; 
+        text-align: right; /* 우측 수직 정렬 유지 */
+        flex-shrink: 0;
+    }}
+
+    .bar-container {{ 
+        position: relative; 
+        width: 100%; 
+        height: 7px; 
+        background: #334155; 
+        border-radius: 4px; 
+    }}
     .bar-fill {{ height: 100%; border-radius: 4px; }}
     
-    .count-container {{ flex: 0 0 95px; text-align: right; position: relative; display: flex; flex-direction: column; justify-content: center; height: 32px; }}
-    .count-main {{ font-size: 1rem; font-weight: 900; color: #ffffff; line-height: 1.1; }}
-    .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; bottom: -14px; right: 0; white-space: nowrap; }}
-
-    /* [모바일 전용: 768px 이하] 2열 및 언더라인 게이지 */
-    @media (max-width: 768px) {{
-        .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
-        .crew-card {{ padding: 6px; }}
-        .header {{ margin-bottom: 10px; }}
-        .member-info {{ display: flex; justify-content: space-between; align-items: center; gap: 0; height: 26px; margin-bottom: 2px; }}
-        .nick {{ flex: 1; font-size: 0.8rem; flex-basis: auto; }}
-        .count-container {{ flex: 0 0 65px; height: 24px; }}
-        .count-main {{ font-size: 0.85rem; }}
-        .count-today {{ font-size: 0.65rem; bottom: -11px; }}
-        
-        /* 게이지 바를 이름 아래 경계선(언더라인)으로 변경 */
-        .bar-bg {{ position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: rgba(51, 65, 85, 0.5); }}
-        .member-row {{ margin-bottom: 16px; padding-bottom: 2px; }}
+    /* 당일 수치 게이지바 하단 중앙 배치 (간섭 방지) */
+    .count-today {{ 
+        font-size: 0.75rem; 
+        font-weight: 800; 
+        position: absolute; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        bottom: -16px; 
+        white-space: nowrap; 
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -102,7 +125,7 @@ def generate_html():
     <body>
         <div class="top-bar">
             <div style="font-size: 0.85rem; font-weight: 800;">{now.strftime('%y.%m.%d %H:%M')}</div>
-            <div style="font-size: 0.7rem; color: #64748b;">DATA SOURCE: POONG.TODAY</div>
+            <div style="font-size: 0.7rem; color: #64748b;">POONG.TODAY</div>
         </div>
         <div class="grid">"""
 
@@ -117,12 +140,12 @@ def generate_html():
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">{medal}{m['nick']}</div>
-                    <div class="count-container">
-                        <div class="count-main">{m['v']['monthly']:,}</div>
-                        {today}
-                    </div>
+                    <div class="count-main">{m['v']['monthly']:,}</div>
                 </div>
-                <div class="bar-bg"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div></div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div>
+                    {today}
+                </div>
             </div>"""
         html += "</div>"
     html += "</div></body></html>"
