@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 크루 설정 데이터
+# 1. 크루 설정 데이터 (기본 유지)
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -20,13 +20,19 @@ crews_config = {
 
 def fetch_data(uid, year, month, day):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month}"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Referer": "https://poong.today/"}
+    headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://poong.today/"}
     for _ in range(5):
         try:
             res = requests.get(api_url, headers=headers, timeout=15)
             if res.status_code == 200:
                 json_data = res.json()
-                return {"monthly": json_data.get('b', 0), "daily": next((i.get('b', 0) for i in json_data.get('d', []) if str(i.get('d')) == str(day)), 0)}
+                # 9시 이후 데이터 공백기 예외처리 보강
+                daily_list = json_data.get('d', [])
+                if not daily_list: # 리스트 자체가 비어있으면 0 반환
+                    daily_val = 0
+                else:
+                    daily_val = next((i.get('b', 0) for i in daily_list if str(i.get('d')) == str(day)), 0)
+                return {"monthly": json_data.get('b', 0), "daily": daily_val}
             time.sleep(1)
         except: time.sleep(1)
     return {"monthly": 0, "daily": 0}
@@ -42,7 +48,14 @@ def get_gauge_style(count):
 def generate_html():
     kst = timezone(timedelta(hours=9))
     now = datetime.now(kst)
-    y, m, d = now.year, now.month, now.day
+    
+    # 풍투데이 날짜 갱신 기준(9시)에 맞춰 요청 날짜 고정
+    if now.hour < 9:
+        target_date = now - timedelta(days=1)
+    else:
+        target_date = now
+        
+    y, m, d = target_date.year, target_date.month, target_date.day
     
     all_tasks = [{'crew': c, 'nick': n, 'uid': u} for c, info in crews_config.items() for n, u in info['members'].items()]
     with ThreadPoolExecutor(max_workers=5) as executor:
@@ -60,65 +73,20 @@ def generate_html():
     <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }}
-    
     .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; border-bottom: 2px solid #334155; padding-bottom: 8px; }}
-    
-    /* PC 3열, 모바일 2열 그리드 */
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
     @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }} }}
-
     .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 10px; padding: 10px; }}
     .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 18px; }}
     .crew-title {{ font-size: 1rem; font-weight: 900; }}
     .stats {{ text-align: right; font-size: 0.75rem; color: #cbd5e1; font-weight: 700; line-height: 1.4; }}
-    
     .member-row {{ position: relative; margin-bottom: 24px; }}
-    
-    /* 이름은 왼쪽, 누적 숫자는 오른쪽 양 끝 정렬 (수평 배치) */
-    .member-info {{ 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        height: 22px; 
-        margin-bottom: 6px; 
-    }}
-    .nick {{ 
-        font-size: 0.85rem; 
-        font-weight: 700; 
-        color: #f1f5f9; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        padding-right: 5px;
-    }}
-    .count-main {{ 
-        font-size: 0.95rem; 
-        font-weight: 900; 
-        color: #ffffff; 
-        text-align: right; /* 우측 수직 정렬 유지 */
-        flex-shrink: 0;
-    }}
-
-    .bar-container {{ 
-        position: relative; 
-        width: 100%; 
-        height: 7px; 
-        background: #334155; 
-        border-radius: 4px; 
-    }}
+    .member-info {{ display: flex; justify-content: space-between; align-items: center; height: 22px; margin-bottom: 6px; }}
+    .nick {{ font-size: 0.85rem; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 5px; }}
+    .count-main {{ font-size: 0.95rem; font-weight: 900; color: #ffffff; flex-shrink: 0; }}
+    .bar-container {{ position: relative; width: 100%; height: 7px; background: #334155; border-radius: 4px; }}
     .bar-fill {{ height: 100%; border-radius: 4px; }}
-    
-    /* 당일 수치 게이지바 하단 중앙 배치 (간섭 방지) */
-    .count-today {{ 
-        font-size: 0.75rem; 
-        font-weight: 800; 
-        position: absolute; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        bottom: -16px; 
-        white-space: nowrap; 
-    }}
-
+    .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -16px; white-space: nowrap; }}
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
     </style></head>
@@ -136,17 +104,7 @@ def generate_html():
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             today = f'<div class="count-today" style="color:{style["point"]}">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
-            html += f"""
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">{medal}{m['nick']}</div>
-                    <div class="count-main">{m['v']['monthly']:,}</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div>
-                    {today}
-                </div>
-            </div>"""
+            html += f"""<div class="member-row"><div class="member-info"><div class="nick">{medal}{m['nick']}</div><div class="count-main">{m['v']['monthly']:,}</div></div><div class="bar-container"><div class="bar-fill" style="width:{w}%; background:{style['grad']};"></div>{today}</div></div>"""
         html += "</div>"
     html += "</div></body></html>"
     return html
