@@ -82,67 +82,66 @@ def generate_html():
     
     .crew-card {{ 
         background: linear-gradient(145deg, #131c2d, #0d131f);
-        border: 1px solid #1e293b; 
-        border-top: 3px solid var(--theme-color);
-        border-radius: 14px; 
-        padding: 16px; 
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); 
-        position: relative;
-        overflow: hidden;
+        border: 1px solid #1e293b; border-top: 3px solid var(--theme-color); border-radius: 14px; 
+        padding: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden;
+        /* 자연스럽고 쫀득한 애니메이션을 위한 cubic-bezier 적용 */
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+        z-index: 1;
     }}
     .crew-card::before {{
         content: ''; position: absolute; top: -40%; left: -20%; width: 150%; height: 150%;
-        background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%);
-        opacity: 0.04; pointer-events: none; 
+        background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%); 
+        opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease;
+    }}
+    
+    /* 🔥 [핵심] 마우스 호버 시 강렬한 선택 효과 */
+    .crew-card:hover {{ 
+        transform: translateY(-8px) scale(1.02); /* 위로 더 많이 떠오르고, 2% 확대됨 */
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--theme-color); /* 그림자가 깊어지고 테두리에서 빛이 남 */
+        border-color: var(--theme-color); 
+        filter: brightness(1.15); /* 카드 전체가 15% 밝아짐 */
+        z-index: 10; /* 다른 표 위에 올라오도록 레이어 조정 */
+    }}
+    .crew-card:hover::before {{ 
+        opacity: 0.15; /* 카드 내부의 테마색 빛 번짐이 더 강해짐 */
     }}
     
     .header {{ display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 18px; z-index: 1; position: relative; }}
     .header-top {{ display: flex; justify-content: space-between; align-items: center; gap: 5px; }}
-    /* 긴 이름 줄바꿈 방지 */
     .crew-title {{ font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }}
     .crew-count {{ font-size: 0.85rem; color: #64748b; font-weight: 700; white-space: nowrap; flex-shrink: 0; }}
     
-    .header-stats {{ 
-        display: flex; flex-direction: column; gap: 8px; 
-        background: rgba(0, 0, 0, 0.3); 
-        padding: 12px 16px; 
-        border-radius: 8px; 
-        border: 1px solid rgba(255,255,255,0.03);
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-    }}
+    .header-stats {{ display: flex; flex-direction: column; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
     .stat-label {{ font-size: 0.75rem; color: var(--theme-color); opacity: 0.85; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }}
     .stat-value {{ font-size: 1.25rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4); white-space: nowrap; }}
 
-    .member-module {{ 
-        position: relative; margin-bottom: 12px; padding: 12px 14px 22px 14px; 
-        background: rgba(15, 23, 42, 0.4); border-radius: 10px; border: 1px solid rgba(255,255,255,0.02); z-index: 1;
-    }}
-    .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 5px; }}
-    /* 닉네임과 숫자 영역 비율 완벽 통제 */
-    .nick {{ font-size: 0.95rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }}
-    .count-main {{ font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; }}
+    .member-module {{ position: relative; margin-bottom: 12px; padding: 12px 14px 22px 14px; background: rgba(15, 23, 42, 0.4); border-radius: 10px; border: 1px solid rgba(255,255,255,0.02); z-index: 1; transition: transform 0.2s, background 0.2s; }}
+    .member-module:hover {{ transform: scale(1.02); background: rgba(255,255,255,0.05); }}
+    
+    .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 4px; }}
+    .nick {{ font-size: 0.95rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.5px; }}
+    .count-main {{ font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; letter-spacing: -0.5px; }}
 
     .bar-container {{ position: relative; width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }}
     .bar-fill {{ height: 100%; border-radius: 4px; box-shadow: 0 0 5px rgba(255,255,255,0.2); }}
     .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; white-space: nowrap; }}
 
-    /* 모바일 최적화 (768px 이하 해상도에서 폰트 및 여백 대폭 축소) */
     @media (max-width: 768px) {{ 
-        .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
-        body {{ padding: 8px; }}
-        .crew-card {{ padding: 10px; border-radius: 10px; }}
-        .header {{ padding-bottom: 10px; margin-bottom: 12px; gap: 6px; }}
-        .crew-title {{ font-size: 1.05rem; }}
+        .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
+        body {{ padding: 6px; }}
+        .crew-card {{ padding: 8px; border-radius: 10px; }}
+        .header {{ padding-bottom: 8px; margin-bottom: 10px; gap: 6px; }}
+        .crew-title {{ font-size: 1rem; }}
         .crew-count {{ font-size: 0.7rem; }}
-        .header-stats {{ padding: 8px 10px; gap: 5px; }}
+        .header-stats {{ padding: 8px 10px; gap: 4px; }}
         .stat-label {{ font-size: 0.65rem; }}
-        .stat-value {{ font-size: 0.95rem; }} /* 큰 숫자 짤림 방지 */
-        
-        .member-module {{ padding: 10px 10px 20px 10px; margin-bottom: 10px; }}
-        .nick {{ font-size: 0.8rem; }}
-        .count-main {{ font-size: 0.85rem; }}
-        .count-today {{ font-size: 0.7rem; bottom: -16px; }}
+        .stat-value {{ font-size: 0.9rem; letter-spacing: -0.5px; }}
+        .member-module {{ padding: 8px 6px 18px 6px; margin-bottom: 8px; border-radius: 8px; }}
+        .member-info {{ margin-bottom: 6px; gap: 2px; }}
+        .nick {{ font-size: 0.7rem; letter-spacing: -0.8px; padding-right: 2px; }}
+        .count-main {{ font-size: 0.75rem; letter-spacing: -0.8px; padding-left: 0; }}
+        .count-today {{ font-size: 0.65rem; bottom: -15px; letter-spacing: -0.5px; }}
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -184,7 +183,7 @@ def generate_html():
             html += f"""
             <div class="member-module">
                 <div class="member-info">
-                    <div class="nick">{medal} {m['nick']}</div>
+                    <div class="nick">{medal}{m['nick']}</div>
                     <div class="count-main">{m['v']['monthly']:,}</div>
                 </div>
                 <div class="bar-container">
