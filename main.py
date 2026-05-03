@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 크루 설정 데이터 (기존 유지)
+# 1. 크루 설정 데이터
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -19,8 +19,15 @@ crews_config = {
 }
 
 def fetch_data(uid, year, month, day):
-    api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month}"
-    headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://poong.today/"}
+    # [수정 1] 월(month)을 무조건 2자리 포맷(예: 05)으로 강제 변환
+    api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month:02d}"
+    
+    # [수정 2] 봇 차단 방지를 위해 일반 크롬 브라우저와 똑같은 User-Agent 사용
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Referer": "https://poong.today/"
+    }
+    
     for _ in range(5):
         try:
             res = requests.get(api_url, headers=headers, timeout=15)
@@ -28,10 +35,18 @@ def fetch_data(uid, year, month, day):
                 json_data = res.json()
                 m_val = json_data.get('b', 0)
                 d_list = json_data.get('d', [])
-                d_val = next((i.get('b', 0) for i in d_list if str(i.get('d')) == str(day)), 0) if d_list else 0
+                
+                # [수정 3] 서버의 일자 데이터("03")와 파이썬의 일자(3)를 정수(int)로 통일하여 매칭 오류 완전 방지
+                if not d_list:
+                    d_val = 0
+                else:
+                    d_val = next((i.get('b', 0) for i in d_list if int(i.get('d', -1)) == int(day)), 0)
+                
                 return {"monthly": m_val, "daily": d_val}
             time.sleep(1)
-        except: time.sleep(1)
+        except: 
+            time.sleep(1)
+            
     return {"monthly": 0, "daily": 0}
 
 def get_gauge_style(count):
@@ -68,7 +83,6 @@ def generate_html():
 
     .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }}
     
-    /* [리뉴얼 핵심] 헤더 영역 대폭 강화 */
     .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 18px; }}
     .header-top {{ display: flex; justify-content: space-between; align-items: center; }}
     .crew-title {{ font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; }}
