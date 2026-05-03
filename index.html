@@ -2,912 +2,384 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; color: #f8fafc; font-family: sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }
+    body { background: #0f172a; color: #f8fafc; font-family: 'Pretendard', sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }
     
-    .top-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; border-bottom: 2px solid #334155; padding-bottom: 8px; }
-    
-    /* PC 3열, 모바일 2열 그리드 */
-    .grid { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }
-    @media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 6px; } }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #1e293b; padding: 8px 15px; border-radius: 8px; border: 1px solid #334155; }
+    .grid { display: grid; gap: 15px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }
+    @media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 8px; } }
 
-    .crew-card { background: #1e293b; border: 1px solid #475569; border-radius: 10px; padding: 10px; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 18px; }
-    .crew-title { font-size: 1rem; font-weight: 900; }
-    .stats { text-align: right; font-size: 0.75rem; color: #cbd5e1; font-weight: 700; line-height: 1.4; }
+    .crew-card { background: #1e293b; border: 1px solid #475569; border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
     
+    /* [리뉴얼 핵심] 헤더 영역 대폭 강화 */
+    .header { display: flex; flex-direction: column; gap: 8px; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 18px; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .crew-title { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; }
+    .crew-count { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
+    
+    .header-stats { display: flex; gap: 12px; background: rgba(15, 23, 42, 0.5); padding: 8px 12px; border-radius: 6px; }
+    .stat-item { flex: 1; display: flex; flex-direction: column; }
+    .stat-label { font-size: 0.7rem; color: #94a3b8; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; }
+    .stat-value { font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Roboto Mono', monospace; }
+
     .member-row { position: relative; margin-bottom: 24px; }
-    
-    /* 이름은 왼쪽, 누적 숫자는 오른쪽 양 끝 정렬 (수평 배치) */
-    .member-info { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        height: 22px; 
-        margin-bottom: 6px; 
-    }
-    .nick { 
-        font-size: 0.85rem; 
-        font-weight: 700; 
-        color: #f1f5f9; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        padding-right: 5px;
-    }
-    .count-main { 
-        font-size: 0.95rem; 
-        font-weight: 900; 
-        color: #ffffff; 
-        text-align: right; /* 우측 수직 정렬 유지 */
-        flex-shrink: 0;
-    }
+    .member-info { display: flex; justify-content: space-between; align-items: center; height: 22px; margin-bottom: 6px; }
+    .nick { font-size: 0.9rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
+    .count-main { font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; }
 
-    .bar-container { 
-        position: relative; 
-        width: 100%; 
-        height: 7px; 
-        background: #334155; 
-        border-radius: 4px; 
-    }
+    .bar-container { position: relative; width: 100%; height: 8px; background: #334155; border-radius: 4px; }
     .bar-fill { height: 100%; border-radius: 4px; }
-    
-    /* 당일 수치 게이지바 하단 중앙 배치 (간섭 방지) */
-    .count-today { 
-        font-size: 0.75rem; 
-        font-weight: 800; 
-        position: absolute; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        bottom: -16px; 
-        white-space: nowrap; 
-    }
+    .count-today { font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; white-space: nowrap; }
 
     .c-red { color: #f87171; } .c-white { color: #fff; } .c-gold { color: #fbbf24; } .c-pink { color: #f472b6; }
     .c-cyan { color: #22d3ee; } .c-purple { color: #c084fc; } .c-orange { color: #fb923c; } .c-teal { color: #2dd4bf; } .c-lime { color: #a3e635; } .c-green { color: #4ade80; }
     </style></head>
     <body>
         <div class="top-bar">
-            <div style="font-size: 0.85rem; font-weight: 800;">26.05.03 23:54</div>
-            <div style="font-size: 0.7rem; color: #64748b;">POONG.TODAY</div>
+            <div style="font-size: 0.9rem; font-weight: 900; color: #38bdf8;">CREW STATUS BOARD</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">26.05.04 00:04</div>
         </div>
-        <div class="grid"><div class="crew-card"><div class="header"><div class="crew-title c-red">광우상사 <span style="font-size:0.7em;">(11)</span></div><div class="stats">T: 962,416<br>A: 87,492</div></div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥇미디♡.</div>
-                    <div class="count-main">270,697</div>
+        <div class="grid">
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-red">광우상사</div>
+                    <div class="crew-count">11 MEMBERS</div>
                 </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #166534, #22c55e);"></div>
-                    <div class="count-today" style="color:#22c55e">(+14,539)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥈이온♥</div>
-                    <div class="count-main">134,476</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:49.67768390488258%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div>
-                    <div class="count-today" style="color:#3b82f6">(+27,613)</div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥉임주연♥</div>
-                    <div class="count-main">117,772</div>
+                    <div class="nick">🥇파미</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:43.506946881568695%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div>
-                    <div class="count-today" style="color:#3b82f6">(+33,552)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥈아이빈</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥉이온♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">임주연♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">미디♡.</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">가을이♡</div>
-                    <div class="count-main">109,404</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:40.4156677022649%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">아이빈</div>
-                    <div class="count-main">99,627</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:36.803880353310156%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+86,148)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">서윤슬@</div>
-                    <div class="count-main">88,868</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:32.82932577752986%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+16,868)</div>
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">원영님♥</div>
-                    <div class="count-main">61,264</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:22.63194641979778%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">파미</div>
-                    <div class="count-main">37,409</div>
+                    <div class="nick">서윤슬@</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:13.819510375068802%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+5,663)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">안둥♥</div>
-                    <div class="count-main">27,860</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:10.291950040081716%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+25,886)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">맹이.zip</div>
-                    <div class="count-main">14,456</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:5.340288218931129%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+655)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">안둥♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">미숑.♥</div>
-                    <div class="count-main">583</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:0.21536995238218376%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-purple">이노레이블 <span style="font-size:0.7em;">(13)</span></div><div class="stats">T: 614,751<br>A: 47,288</div></div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥇꽃부기♥</div>
-                    <div class="count-main">164,272</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div>
-                    <div class="count-today" style="color:#3b82f6">(+4,343)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥈설탱♥</div>
-                    <div class="count-main">87,129</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:53.03947112106749%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+4,371)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥉애지니♡</div>
-                    <div class="count-main">69,113</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:42.072294730690565%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+538)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">#누리-</div>
-                    <div class="count-main">66,436</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:40.44268043245349%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+6,232)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">이월♥</div>
-                    <div class="count-main">65,169</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:39.6713986558878%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+5,835)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">히냥이♥</div>
-                    <div class="count-main">61,671</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:37.542003506379665%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+6,650)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">리에♡</div>
-                    <div class="count-main">33,835</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:20.59693678776663%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+6,251)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">이리원♥</div>
-                    <div class="count-main">27,150</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:16.527466640693483%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+10,000)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">설인_♥</div>
-                    <div class="count-main">22,483</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:13.686446868608163%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+7,288)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">연보민</div>
-                    <div class="count-main">13,075</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:7.959360085711503%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+3,229)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">[SO]박소연</div>
-                    <div class="count-main">4,418</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:2.689441901236973%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+3,548)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">밤비♥</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-white">씨나인</div>
+                    <div class="crew-count">14 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
                 </div>
             </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">유복이!</div>
-                    <div class="count-main">0</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-white">씨나인 <span style="font-size:0.7em;">(14)</span></div><div class="stats">T: 611,594<br>A: 43,685</div></div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">🥇체온_♡</div>
-                    <div class="count-main">90,772</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+1,366)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥈인지연JYEON</div>
-                    <div class="count-main">90,680</div>
+                    <div class="nick">🥈혜루찡</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:99.89864715991715%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+12,684)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥉혜루찡</div>
-                    <div class="count-main">74,669</div>
+                    <div class="nick">🥉쁠리vvely</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:82.2599480015864%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+11,951)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">쁠리vvely</div>
-                    <div class="count-main">69,590</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:76.6646102322302%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+13,287)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">BJ채리</div>
-                    <div class="count-main">52,086</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:57.38113074516371%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+2,920)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">#초린</div>
-                    <div class="count-main">51,146</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:56.34556911823029%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+8,752)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">초초</div>
-                    <div class="count-main">28,793</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:31.720133962014717%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+20,082)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">히나_♥</div>
-                    <div class="count-main">28,743</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:31.6650508967523%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">연두</div>
-                    <div class="count-main">28,743</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:31.6650508967523%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">애순이</div>
-                    <div class="count-main">28,186</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:31.05142554972899%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">하이희야♡</div>
-                    <div class="count-main">26,426</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:29.112501652491957%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">[윤이솔]</div>
-                    <div class="count-main">19,660</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:21.658661261181862%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">BJ채리</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">애순이</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">하이희야♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">인지연JYEON</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">아윤♡</div>
-                    <div class="count-main">15,095</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:16.629577402723307%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">리하♥</div>
-                    <div class="count-main">7,005</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:7.717137443264442%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-cyan">YXL <span style="font-size:0.7em;">(14)</span></div><div class="stats">T: 493,774<br>A: 35,269</div></div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥇후잉♥</div>
-                    <div class="count-main">70,610</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+19,610)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥈미로。</div>
-                    <div class="count-main">66,499</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:94.17787848746636%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+43,229)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥉리윤_♥</div>
-                    <div class="count-main">56,430</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:79.91785866024642%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">냥냥수주</div>
-                    <div class="count-main">51,923</div>
+                    <div class="nick">#초린</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:73.53491006939527%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+9,724)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">김유정S2</div>
-                    <div class="count-main">38,411</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:54.39881036680357%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+11,364)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">류서하♥</div>
-                    <div class="count-main">36,790</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:52.1031015436907%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+16,231)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">유나연º-º</div>
-                    <div class="count-main">36,490</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:51.6782325449653%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+6,976)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">너의˚멜로디</div>
-                    <div class="count-main">32,163</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:45.550205353349384%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+17,600)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">하랑짱♥</div>
-                    <div class="count-main">27,219</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:38.54836425435491%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+2,213)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">소다♥</div>
-                    <div class="count-main">18,221</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:25.805126752584616%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+28)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">ZO아름♡</div>
-                    <div class="count-main">15,315</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:21.689562384931314%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+2,067)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">백나현</div>
-                    <div class="count-main">15,213</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:21.545106925364678%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">#율무</div>
-                    <div class="count-main">14,513</div>
+                    <div class="nick">히나_♥</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:20.553745928338763%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+2,559)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">서니_♥</div>
-                    <div class="count-main">13,977</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:19.79464665061606%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+887)</div>
-                </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-orange">GD컴퍼니 <span style="font-size:0.7em;">(7)</span></div><div class="stats">T: 201,133<br>A: 28,733</div></div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥇♥유현♥</div>
-                    <div class="count-main">101,257</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #1e3a8a, #3b82f6);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥈쥬브리</div>
-                    <div class="count-main">31,830</div>
+                    <div class="nick">연두</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:31.434863762505312%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+11,669)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-gold">더케이</div>
+                    <div class="crew-count">13 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥉은아린!!</div>
-                    <div class="count-main">23,074</div>
+                    <div class="nick">🥇! 채채</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:22.787560366196903%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+1,978)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">설인아님♥</div>
-                    <div class="count-main">21,868</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:21.59653159781546%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">아링</div>
-                    <div class="count-main">12,793</div>
+                    <div class="nick">🥈퀸다미♧</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:12.6341882536516%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+12,793)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">해리님♥</div>
-                    <div class="count-main">6,448</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:6.3679548080626525%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">E윤아♡</div>
-                    <div class="count-main">3,863</div>
+                    <div class="nick">🥉[BJ]에디양</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:3.815044885785674%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+839)</div>
-                </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-pink">정선컴퍼니 <span style="font-size:0.7em;">(13)</span></div><div class="stats">T: 277,644<br>A: 21,357</div></div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥇♥백설♥</div>
-                    <div class="count-main">76,935</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+15,600)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥈아유님♥</div>
-                    <div class="count-main">30,481</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:39.619159030350296%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+7,024)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥉윤세빈♥</div>
-                    <div class="count-main">29,307</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:38.093195554689025%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+5,119)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">서이안</div>
-                    <div class="count-main">25,292</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:32.87450445180997%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+10,083)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">윤수♥</div>
-                    <div class="count-main">24,080</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:31.299148631962048%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">유서림♥</div>
-                    <div class="count-main">23,967</div>
+                    <div class="nick">차시월</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:31.15227139793332%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+8,682)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">율비♡</div>
-                    <div class="count-main">17,831</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:23.176707610320403%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+7,801)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">햇동이♥</div>
-                    <div class="count-main">14,415</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:18.736595827646717%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+826)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">김규리♥</div>
-                    <div class="count-main">12,344</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:16.04471306947423%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+271)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">당신의채안♥</div>
-                    <div class="count-main">7,942</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:10.322999935010072%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+957)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">나의유주♥</div>
-                    <div class="count-main">7,454</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:9.688698251770976%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+4,567)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">♡김베리♡</div>
-                    <div class="count-main">3,926</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:5.1030090335997915%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">채보미=3=</div>
-                    <div class="count-main">3,670</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:4.770260609605511%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+1,169)</div>
-                </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-gold">더케이 <span style="font-size:0.7em;">(13)</span></div><div class="stats">T: 241,859<br>A: 18,604</div></div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥇차시월</div>
-                    <div class="count-main">40,853</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥈푸린♡</div>
-                    <div class="count-main">36,606</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:89.60419063471471%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+4,032)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥉포카린</div>
-                    <div class="count-main">33,227</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:81.33307223459721%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+20,015)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">강한빛♡</div>
-                    <div class="count-main">29,628</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:72.52343769123442%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+561)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">! 채채</div>
-                    <div class="count-main">27,618</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:67.60335838249333%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+20,693)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">지아콩</div>
-                    <div class="count-main">22,414</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:54.865003794091%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+15,440)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">엘♥</div>
-                    <div class="count-main">18,164</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:44.46185102685237%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+17,524)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">한슬댕</div>
-                    <div class="count-main">14,065</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:34.4283161579321%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">퀸다미♧</div>
-                    <div class="count-main">5,833</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:14.278021197953638%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+4,478)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">채리나</div>
-                    <div class="count-main">5,281</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:12.926835238538173%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">[BJ]에디양</div>
-                    <div class="count-main">4,177</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:10.224463319707242%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">우아한♡우와</div>
-                    <div class="count-main">3,993</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:9.774067999902087%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
@@ -917,117 +389,677 @@
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-teal">쇼케이 <span style="font-size:0.7em;">(14)</span></div><div class="stats">T: 136,610<br>A: 9,757</div></div>
+            </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥇쏘피♥</div>
-                    <div class="count-main">31,165</div>
+                    <div class="nick">엘♥</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+2,402)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">한슬댕</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">푸린♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">채리나</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">강한빛♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">포카린</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">지아콩</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">우아한♡우와</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-pink">정선컴퍼니</div>
+                    <div class="crew-count">13 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥇♡김베리♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥈나의유주♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥉김규리♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">서이안</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">윤수♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">햇동이♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">윤세빈♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">율비♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">채보미=3=</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">♥백설♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">유서림♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">당신의채안♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">아유님♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-cyan">YXL</div>
+                    <div class="crew-count">14 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥇리윤_♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥈후잉♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥉냥냥수주</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">류서하♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">#율무</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">하랑짱♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">미로。</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">유나연º-º</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">김유정S2</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">소다♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">백나현</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">서니_♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">ZO아름♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">너의˚멜로디</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-purple">이노레이블</div>
+                    <div class="crew-count">13 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥇꽃부기♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥈#누리-</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥉이월♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">설탱♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">애지니♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">밤비♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">리에♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">이리원♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">히냥이♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">설인_♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">연보민</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">유복이!</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">[SO]박소연</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-orange">GD컴퍼니</div>
+                    <div class="crew-count">7 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥇설인아님♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥈♥유현♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥉E윤아♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">쥬브리</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">은아린!!</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">아링</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">해리님♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-teal">쇼케이</div>
+                    <div class="crew-count">14 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥇송화양</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">🥈＠서단</div>
-                    <div class="count-main">21,775</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:69.87004652655222%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥉새봄_♡</div>
-                    <div class="count-main">21,468</div>
+                    <div class="nick">🥉쏘피♥</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:68.88496711054067%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+5,141)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">도예빈♥</div>
-                    <div class="count-main">14,199</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:45.56072517246912%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+8,312)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">유이나.♡</div>
-                    <div class="count-main">11,825</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:37.94320551901171%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">송유이♥</div>
-                    <div class="count-main">10,899</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:34.9719236322798%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+7,549)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">♥제니♥</div>
-                    <div class="count-main">10,305</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:33.06593935504573%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+3,560)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">정인♥</div>
-                    <div class="count-main">5,783</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:18.55607251724691%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+5,783)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">이로♥</div>
-                    <div class="count-main">4,612</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:14.79865233434943%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+4,430)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">한유나♥</div>
-                    <div class="count-main">4,567</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:14.654259586074122%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">송화양</div>
-                    <div class="count-main">12</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:0.03850473287341569%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
@@ -1037,7 +1069,27 @@
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">♥제니♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">송유이♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
@@ -1047,7 +1099,47 @@
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">도예빈♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">정인♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">한유나♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">이로♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
@@ -1057,87 +1149,263 @@
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-green">771 <span style="font-size:0.7em;">(9)</span></div><div class="stats">T: 85,744<br>A: 9,527</div></div>
+            </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥇지숙♥_.</div>
-                    <div class="count-main">26,953</div>
+                    <div class="nick">유이나.♡</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+9,976)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">새봄_♡</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-lime">문에이</div>
+                    <div class="crew-count">15 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥇♥채화</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥈서언수</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥉박재열</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">하임*</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">#다인</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">뮤엘♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">천시아S2</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">미지수♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">현강림2</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">설현미</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">슈나♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">강형민이</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">E-;이은♥</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">.장지민</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">예니__</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
+                </div>
+            </div></div>
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title c-green">771</div>
+                    <div class="crew-count">9 MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="member-row">
+                <div class="member-info">
+                    <div class="nick">🥇예란</div>
+                    <div class="count-main">0</div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">🥈나래~~~</div>
-                    <div class="count-main">22,914</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:85.01465514042964%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+4,000)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥉이나율♥</div>
-                    <div class="count-main">20,278</div>
+                    <div class="nick">🥉박예솜:)</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:75.23466775498089%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+7,599)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">예란</div>
-                    <div class="count-main">11,482</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:42.60008162356695%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+3,099)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">한채아♥</div>
-                    <div class="count-main">3,407</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:12.64052239082848%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+963)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">김봄비</div>
-                    <div class="count-main">673</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:2.4969391162393797%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
                     <div class="nick">이밍+♥</div>
-                    <div class="count-main">37</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.1372759989611546%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+1)</div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">박예솜:)</div>
+                    <div class="nick">지숙♥_.</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
@@ -1147,157 +1415,37 @@
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:0.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div></div><div class="crew-card"><div class="header"><div class="crew-title c-lime">문에이 <span style="font-size:0.7em;">(15)</span></div><div class="stats">T: 136,137<br>A: 9,075</div></div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">🥇슈나♥</div>
-                    <div class="count-main">31,476</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:100.0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥈미지수♥</div>
-                    <div class="count-main">27,000</div>
+                    <div class="nick">이나율♥</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:85.7796416317194%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">🥉♥채화</div>
-                    <div class="count-main">22,459</div>
+                    <div class="nick">한채아♥</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:71.35277671876986%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div>
             <div class="member-row">
                 <div class="member-info">
-                    <div class="nick">강형민이</div>
-                    <div class="count-main">16,530</div>
+                    <div class="nick">김봄비</div>
+                    <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
-                    <div class="bar-fill" style="width:52.5162028211971%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">뮤엘♥</div>
-                    <div class="count-main">9,452</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:30.029228618630064%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">.장지민</div>
-                    <div class="count-main">7,673</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:24.377303342229002%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">서언수</div>
-                    <div class="count-main">6,803</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:21.61329266742915%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">하임*</div>
-                    <div class="count-main">4,424</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:14.055153132545431%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">설현미</div>
-                    <div class="count-main">2,556</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:8.120472741136103%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">E-;이은♥</div>
-                    <div class="count-main">1,948</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:6.188842292540349%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+614)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">#다인</div>
-                    <div class="count-main">1,905</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:6.052230270682425%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    <div class="count-today" style="color:#9ca3af">(+18)</div>
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">천시아S2</div>
-                    <div class="count-main">1,745</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:5.543906468420383%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">예니__</div>
-                    <div class="count-main">1,084</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:3.443893760325327%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">현강림2</div>
-                    <div class="count-main">1,000</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:3.1770237641377554%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
-                    
-                </div>
-            </div>
-            <div class="member-row">
-                <div class="member-info">
-                    <div class="nick">박재열</div>
-                    <div class="count-main">82</div>
-                </div>
-                <div class="bar-container">
-                    <div class="bar-fill" style="width:0.26051594865929595%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
+                    <div class="bar-fill" style="width:0%; background:linear-gradient(90deg, #4b5563, #9ca3af);"></div>
                     
                 </div>
             </div></div></div></body></html>
