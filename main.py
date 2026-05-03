@@ -18,16 +18,20 @@ crews_config = {
     "771": {"color": "c-green", "members": {"예란": "jyssing", "나래~~~": "narae282", "박예솜:)": "tgqnpji1xc", "이밍+♥": "aighty9", "지숙♥_.": "uyrt8888", "푸글리♡": "vnfmadl93", "이나율♥": "cmj20822", "한채아♥": "snfkddl1024", "김봄비": "bombbi"}}
 }
 
+# 크루별 테마 컬러 헥사코드 (마우스 호버 및 후광 효과용)
+COLOR_MAP = {
+    "c-red": "#f87171", "c-white": "#f8fafc", "c-gold": "#fbbf24", 
+    "c-pink": "#f472b6", "c-cyan": "#22d3ee", "c-purple": "#c084fc", 
+    "c-orange": "#fb923c", "c-teal": "#2dd4bf", "c-lime": "#a3e635", 
+    "c-green": "#4ade80"
+}
+
 def fetch_data(uid, year, month, day):
-    # [수정 1] 월(month)을 무조건 2자리 포맷(예: 05)으로 강제 변환
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month:02d}"
-    
-    # [수정 2] 봇 차단 방지를 위해 일반 크롬 브라우저와 똑같은 User-Agent 사용
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Referer": "https://poong.today/"
     }
-    
     for _ in range(5):
         try:
             res = requests.get(api_url, headers=headers, timeout=15)
@@ -35,18 +39,14 @@ def fetch_data(uid, year, month, day):
                 json_data = res.json()
                 m_val = json_data.get('b', 0)
                 d_list = json_data.get('d', [])
-                
-                # [수정 3] 서버의 일자 데이터("03")와 파이썬의 일자(3)를 정수(int)로 통일하여 매칭 오류 완전 방지
                 if not d_list:
                     d_val = 0
                 else:
                     d_val = next((i.get('b', 0) for i in d_list if int(i.get('d', -1)) == int(day)), 0)
-                
                 return {"monthly": m_val, "daily": d_val}
             time.sleep(1)
         except: 
             time.sleep(1)
-            
     return {"monthly": 0, "daily": 0}
 
 def get_gauge_style(count):
@@ -75,58 +75,111 @@ def generate_html():
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-    body {{ background: #0f172a; color: #f8fafc; font-family: 'Pretendard', sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }}
+    body {{ background: #0b1120; color: #f8fafc; font-family: 'Pretendard', -apple-system, sans-serif; padding: 15px; width: 100vw; overflow-x: hidden; }}
     
-    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #1e293b; padding: 8px 15px; border-radius: 8px; border: 1px solid #334155; }}
-    .grid {{ display: grid; gap: 15px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
-    @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }} }}
+    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(30, 41, 59, 0.7); padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }}
+    
+    .grid {{ display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
+    @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 10px; }} }}
 
-    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }}
+    /* [럭셔리 업데이트 1] 크루 카드 고유 테마 및 호버 이펙트 */
+    .crew-card {{ 
+        background: linear-gradient(145deg, #131c2d, #0d131f);
+        border: 1px solid #1e293b; 
+        border-top: 3px solid var(--theme-color);
+        border-radius: 14px; 
+        padding: 16px; 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+    }}
+    /* 카드 내부 은은한 방사형 빛 번짐 효과 */
+    .crew-card::before {{
+        content: ''; position: absolute;
+        top: -40%; left: -20%; width: 150%; height: 150%;
+        background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%);
+        opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease;
+    }}
     
-    .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 18px; }}
+    /* 마우스 오버 시 입체감 및 발광 효과 */
+    .crew-card:hover {{
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.6), 0 0 15px -3px var(--theme-color);
+        border-color: var(--theme-color);
+    }}
+    .crew-card:hover::before {{ opacity: 0.08; }}
+    
+    .header {{ display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 18px; z-index: 1; position: relative; }}
     .header-top {{ display: flex; justify-content: space-between; align-items: center; }}
-    .crew-title {{ font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; }}
-    .crew-count {{ font-size: 0.85rem; color: #94a3b8; font-weight: 600; }}
+    .crew-title {{ font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); }}
+    .crew-count {{ font-size: 0.85rem; color: #64748b; font-weight: 700; }}
     
-    .header-stats {{ display: flex; gap: 12px; background: rgba(15, 23, 42, 0.5); padding: 8px 12px; border-radius: 6px; }}
-    .stat-item {{ flex: 1; display: flex; flex-direction: column; }}
-    .stat-label {{ font-size: 0.7rem; color: #94a3b8; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; }}
-    .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Roboto Mono', monospace; }}
+    /* [럭셔리 업데이트 2] TOTAL & AVERAGE 유리 질감 대시보드 */
+    .header-stats {{ 
+        display: flex; gap: 12px; 
+        background: rgba(0, 0, 0, 0.3); 
+        padding: 12px 14px; 
+        border-radius: 8px; 
+        border: 1px solid rgba(255,255,255,0.03);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }}
+    .stat-item {{ flex: 1; display: flex; flex-direction: column; justify-content: center; }}
+    .stat-label {{ 
+        font-size: 0.75rem; 
+        color: var(--theme-color); 
+        opacity: 0.85; 
+        font-weight: 800; 
+        margin-bottom: 3px; 
+        letter-spacing: 1px; 
+        text-transform: uppercase;
+    }}
+    
+    /* 숫자에 네온 빛 번짐 및 전용 폰트 적용 */
+    .stat-value {{ 
+        font-size: 1.25rem; 
+        font-weight: 900; 
+        color: #ffffff; 
+        font-family: 'Consolas', 'Courier New', monospace; 
+        text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4);
+        letter-spacing: 0.5px;
+    }}
 
-    .member-row {{ position: relative; margin-bottom: 24px; }}
+    .member-row {{ position: relative; margin-bottom: 24px; z-index: 1; }}
     .member-info {{ display: flex; justify-content: space-between; align-items: center; height: 22px; margin-bottom: 6px; }}
-    .nick {{ font-size: 0.9rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }}
+    .nick {{ font-size: 0.9rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }}
     .count-main {{ font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; }}
 
-    .bar-container {{ position: relative; width: 100%; height: 8px; background: #334155; border-radius: 4px; }}
-    .bar-fill {{ height: 100%; border-radius: 4px; }}
+    .bar-container {{ position: relative; width: 100%; height: 6px; background: rgba(15, 23, 42, 0.8); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }}
+    .bar-fill {{ height: 100%; border-radius: 4px; box-shadow: 0 0 5px rgba(255,255,255,0.2); }}
     .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; white-space: nowrap; }}
 
-    .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
+    .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
     </style></head>
     <body>
         <div class="top-bar">
-            <div style="font-size: 0.9rem; font-weight: 900; color: #38bdf8;">CREW STATUS BOARD</div>
-            <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">{now.strftime('%y.%m.%d %H:%M')}</div>
+            <div style="font-size: 1rem; font-weight: 900; color: #e2e8f0; letter-spacing: 1px;">CREW<span style="color:#38bdf8;">DASHBOARD</span></div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 12px;">{now.strftime('%y.%m.%d %H:%M')}</div>
         </div>
         <div class="grid">"""
 
     for c in final_data:
+        theme_hex = COLOR_MAP.get(c['color'], '#ffffff')
         html += f"""
-        <div class="crew-card">
+        <div class="crew-card" style="--theme-color: {theme_hex};">
             <div class="header">
                 <div class="header-top">
                     <div class="crew-title {c['color']}">{c['name']}</div>
-                    <div class="crew-count">{len(c['members'])} MEMBERS</div>
+                    <div class="crew-count">{len(c['members'])} MEM</div>
                 </div>
                 <div class="header-stats">
                     <div class="stat-item">
                         <span class="stat-label">Total</span>
                         <span class="stat-value">{c['total']:,}</span>
                     </div>
-                    <div style="width: 1px; background: #334155;"></div>
-                    <div class="stat-item">
+                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
+                    <div class="stat-item" style="align-items: flex-end;">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">{c['avg']:,}</span>
                     </div>
