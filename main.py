@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
 
-# 1. 크루 설정 데이터
+# 1. 크루 설정 데이터 (기존 유지)
 crews_config = {
     "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
     "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
@@ -20,29 +20,30 @@ crews_config = {
 
 def fetch_data(uid, year, month, day):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month}"
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Referer": "https://poong.today/"}
+    headers = {"User-Agent": "Mozilla/5.0", "Referer": "https://poong.today/"}
     for _ in range(5):
         try:
             res = requests.get(api_url, headers=headers, timeout=15)
             if res.status_code == 200:
                 json_data = res.json()
-                return {"monthly": json_data.get('b', 0), "daily": next((i.get('b', 0) for i in json_data.get('d', []) if str(i.get('d')) == str(day)), 0)}
+                m_val = json_data.get('b', 0)
+                d_list = json_data.get('d', [])
+                d_val = next((i.get('b', 0) for i in d_list if str(i.get('d')) == str(day)), 0) if d_list else 0
+                return {"monthly": m_val, "daily": d_val}
             time.sleep(1)
         except: time.sleep(1)
     return {"monthly": 0, "daily": 0}
 
 def get_gauge_style(count):
     if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "point": "#ef4444"}
-    elif count >= 800000: return {"grad": "linear-gradient(90deg, #9a3412, #f97316)", "point": "#f97316"}
-    elif count >= 400000: return {"grad": "linear-gradient(90deg, #a16207, #eab308)", "point": "#eab308"}
-    elif count >= 200000: return {"grad": "linear-gradient(90deg, #166534, #22c55e)", "point": "#22c55e"}
-    elif count >= 100000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)", "point": "#3b82f6"}
+    elif count >= 200000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)", "point": "#3b82f6"}
     else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "point": "#9ca3af"}
 
 def generate_html():
     kst = timezone(timedelta(hours=9))
     now = datetime.now(kst)
-    y, m, d = now.year, now.month, now.day
+    target_date = now - timedelta(days=1) if now.hour < 10 else now
+    y, m, d = target_date.year, target_date.month, target_date.day
     
     all_tasks = [{'crew': c, 'nick': n, 'uid': u} for c, info in crews_config.items() for n, u in info['members'].items()]
     with ThreadPoolExecutor(max_workers=5) as executor:
@@ -59,78 +60,64 @@ def generate_html():
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-    body {{ background: #0f172a; color: #f8fafc; font-family: sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }}
+    body {{ background: #0f172a; color: #f8fafc; font-family: 'Pretendard', sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }}
     
-    .top-bar {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; border-bottom: 2px solid #334155; padding-bottom: 8px; }}
-    
-    /* PC 3열, 모바일 2열 그리드 */
-    .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
-    @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }} }}
+    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: #1e293b; padding: 8px 15px; border-radius: 8px; border: 1px solid #334155; }}
+    .grid {{ display: grid; gap: 15px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
+    @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }} }}
 
-    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 10px; padding: 10px; }}
-    .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #334155; padding-bottom: 6px; margin-bottom: 18px; }}
-    .crew-title {{ font-size: 1rem; font-weight: 900; }}
-    .stats {{ text-align: right; font-size: 0.75rem; color: #cbd5e1; font-weight: 700; line-height: 1.4; }}
+    .crew-card {{ background: #1e293b; border: 1px solid #475569; border-radius: 12px; padding: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }}
     
+    /* [리뉴얼 핵심] 헤더 영역 대폭 강화 */
+    .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 2px solid #334155; padding-bottom: 12px; margin-bottom: 18px; }}
+    .header-top {{ display: flex; justify-content: space-between; align-items: center; }}
+    .crew-title {{ font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; }}
+    .crew-count {{ font-size: 0.85rem; color: #94a3b8; font-weight: 600; }}
+    
+    .header-stats {{ display: flex; gap: 12px; background: rgba(15, 23, 42, 0.5); padding: 8px 12px; border-radius: 6px; }}
+    .stat-item {{ flex: 1; display: flex; flex-direction: column; }}
+    .stat-label {{ font-size: 0.7rem; color: #94a3b8; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; }}
+    .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Roboto Mono', monospace; }}
+
     .member-row {{ position: relative; margin-bottom: 24px; }}
-    
-    /* 이름은 왼쪽, 누적 숫자는 오른쪽 양 끝 정렬 (수평 배치) */
-    .member-info {{ 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        height: 22px; 
-        margin-bottom: 6px; 
-    }}
-    .nick {{ 
-        font-size: 0.85rem; 
-        font-weight: 700; 
-        color: #f1f5f9; 
-        white-space: nowrap; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        padding-right: 5px;
-    }}
-    .count-main {{ 
-        font-size: 0.95rem; 
-        font-weight: 900; 
-        color: #ffffff; 
-        text-align: right; /* 우측 수직 정렬 유지 */
-        flex-shrink: 0;
-    }}
+    .member-info {{ display: flex; justify-content: space-between; align-items: center; height: 22px; margin-bottom: 6px; }}
+    .nick {{ font-size: 0.9rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }}
+    .count-main {{ font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; }}
 
-    .bar-container {{ 
-        position: relative; 
-        width: 100%; 
-        height: 7px; 
-        background: #334155; 
-        border-radius: 4px; 
-    }}
+    .bar-container {{ position: relative; width: 100%; height: 8px; background: #334155; border-radius: 4px; }}
     .bar-fill {{ height: 100%; border-radius: 4px; }}
-    
-    /* 당일 수치 게이지바 하단 중앙 배치 (간섭 방지) */
-    .count-today {{ 
-        font-size: 0.75rem; 
-        font-weight: 800; 
-        position: absolute; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        bottom: -16px; 
-        white-space: nowrap; 
-    }}
+    .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; white-space: nowrap; }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #fff; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
     </style></head>
     <body>
         <div class="top-bar">
-            <div style="font-size: 0.85rem; font-weight: 800;">{now.strftime('%y.%m.%d %H:%M')}</div>
-            <div style="font-size: 0.7rem; color: #64748b;">POONG.TODAY</div>
+            <div style="font-size: 0.9rem; font-weight: 900; color: #38bdf8;">CREW STATUS BOARD</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8;">{now.strftime('%y.%m.%d %H:%M')}</div>
         </div>
         <div class="grid">"""
 
     for c in final_data:
-        html += f"""<div class="crew-card"><div class="header"><div class="crew-title {c['color']}">{c['name']} <span style="font-size:0.7em;">({len(c['members'])})</span></div><div class="stats">T: {c['total']:,}<br>A: {c['avg']:,}</div></div>"""
+        html += f"""
+        <div class="crew-card">
+            <div class="header">
+                <div class="header-top">
+                    <div class="crew-title {c['color']}">{c['name']}</div>
+                    <div class="crew-count">{len(c['members'])} MEMBERS</div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total</span>
+                        <span class="stat-value">{c['total']:,}</span>
+                    </div>
+                    <div style="width: 1px; background: #334155;"></div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg</span>
+                        <span class="stat-value">{c['avg']:,}</span>
+                    </div>
+                </div>
+            </div>"""
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['v']['monthly'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
@@ -154,7 +141,7 @@ def generate_html():
 def save_chart_image(html_content):
     with sync_playwright() as p:
         browser = p.chromium.launch()
-        context = browser.new_context(viewport={'width': 850, 'height': 3000}, device_scale_factor=2)
+        context = browser.new_context(viewport={'width': 950, 'height': 3500}, device_scale_factor=2)
         page = context.new_page()
         page.set_content(html_content)
         time.sleep(3)
