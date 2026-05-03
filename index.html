@@ -9,7 +9,6 @@
     .grid { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }
     @media (max-width: 768px) { .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 
-    /* [럭셔리 업데이트 1] 크루 카드 고유 테마 및 호버 이펙트 */
     .crew-card { 
         background: linear-gradient(145deg, #131c2d, #0d131f);
         border: 1px solid #1e293b; 
@@ -17,24 +16,17 @@
         border-radius: 14px; 
         padding: 16px; 
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); 
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
     }
-    /* 카드 내부 은은한 방사형 빛 번짐 효과 */
     .crew-card::before {
         content: ''; position: absolute;
         top: -40%; left: -20%; width: 150%; height: 150%;
         background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%);
         opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease;
     }
-    
-    /* 마우스 오버 시 입체감 및 발광 효과 */
-    .crew-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.6), 0 0 15px -3px var(--theme-color);
-        border-color: var(--theme-color);
-    }
+    .crew-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.6), 0 0 15px -3px var(--theme-color); border-color: var(--theme-color); }
     .crew-card:hover::before { opacity: 0.08; }
     
     .header { display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 18px; z-index: 1; position: relative; }
@@ -42,42 +34,59 @@
     .crew-title { font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); }
     .crew-count { font-size: 0.85rem; color: #64748b; font-weight: 700; }
     
-    /* [럭셔리 업데이트 2] TOTAL & AVERAGE 유리 질감 대시보드 */
+    /* [수정] TOTAL 영역 우측 정렬 */
     .header-stats { 
-        display: flex; gap: 12px; 
+        display: flex; gap: 18px; 
         background: rgba(0, 0, 0, 0.3); 
-        padding: 12px 14px; 
+        padding: 12px 16px; 
         border-radius: 8px; 
         border: 1px solid rgba(255,255,255,0.03);
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        justify-content: flex-end; /* 전체를 우측으로 밀착 */
     }
-    .stat-item { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .stat-label { 
-        font-size: 0.75rem; 
-        color: var(--theme-color); 
-        opacity: 0.85; 
-        font-weight: 800; 
-        margin-bottom: 3px; 
-        letter-spacing: 1px; 
-        text-transform: uppercase;
+    .stat-item { display: flex; flex-direction: column; align-items: flex-end; /* 텍스트 우측 정렬 */ }
+    .stat-label { font-size: 0.75rem; color: var(--theme-color); opacity: 0.85; font-weight: 800; margin-bottom: 3px; letter-spacing: 1px; text-transform: uppercase; }
+    .stat-value { font-size: 1.25rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', 'Courier New', monospace; text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4); letter-spacing: 0.5px; }
+
+    /* [수정] 개인 지표 모듈(카드형) 디자인 적용 */
+    .member-module { 
+        position: relative; 
+        margin-bottom: 12px; 
+        padding: 12px 14px 22px 14px; /* 하단 패딩을 넓혀 당일 숫자 공간 확보 */
+        background: rgba(15, 23, 42, 0.4); 
+        border-radius: 10px; 
+        border: 1px solid rgba(255,255,255,0.02);
+        z-index: 1;
+        transition: transform 0.2s, background 0.2s;
     }
+    .member-module:hover { transform: scale(1.02); background: rgba(255,255,255,0.05); }
+
+    /* [수정] 1, 2, 3위 특별 이펙트 클래스 */
+    .rank-1 {
+        background: linear-gradient(145deg, rgba(251, 191, 36, 0.1), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(251, 191, 36, 0.5);
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+        transform: scale(1.02);
+    }
+    .rank-1 .nick { color: #fbbf24; font-weight: 900; text-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }
     
-    /* 숫자에 네온 빛 번짐 및 전용 폰트 적용 */
-    .stat-value { 
-        font-size: 1.25rem; 
-        font-weight: 900; 
-        color: #ffffff; 
-        font-family: 'Consolas', 'Courier New', monospace; 
-        text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4);
-        letter-spacing: 0.5px;
+    .rank-2 {
+        background: linear-gradient(145deg, rgba(226, 232, 240, 0.08), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(226, 232, 240, 0.3);
     }
+    .rank-2 .nick { color: #f1f5f9; }
+    
+    .rank-3 {
+        background: linear-gradient(145deg, rgba(217, 119, 6, 0.08), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(217, 119, 6, 0.3);
+    }
+    .rank-3 .nick { color: #fcd34d; }
 
-    .member-row { position: relative; margin-bottom: 24px; z-index: 1; }
-    .member-info { display: flex; justify-content: space-between; align-items: center; height: 22px; margin-bottom: 6px; }
-    .nick { font-size: 0.9rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
-    .count-main { font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; }
+    .member-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .nick { font-size: 0.95rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
+    .count-main { font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; }
 
-    .bar-container { position: relative; width: 100%; height: 6px; background: rgba(15, 23, 42, 0.8); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }
+    .bar-container { position: relative; width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }
     .bar-fill { height: 100%; border-radius: 4px; box-shadow: 0 0 5px rgba(255,255,255,0.2); }
     .count-today { font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; white-space: nowrap; }
 
@@ -87,7 +96,7 @@
     <body>
         <div class="top-bar">
             <div style="font-size: 1rem; font-weight: 900; color: #e2e8f0; letter-spacing: 1px;">CREW<span style="color:#38bdf8;">DASHBOARD</span></div>
-            <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 12px;">26.05.04 00:22</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #94a3b8; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 12px;">26.05.04 00:35</div>
         </div>
         <div class="grid">
         <div class="crew-card" style="--theme-color: #f87171;">
@@ -101,16 +110,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">998,583</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">90,780</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇미디♡.</div>
+                    <div class="nick">🥇 미디♡.</div>
                     <div class="count-main">270,697</div>
                 </div>
                 <div class="bar-container">
@@ -118,9 +127,9 @@
                     <div class="count-today" style="color:#3b82f6">(+14,539)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈이온♥</div>
+                    <div class="nick">🥈 이온♥</div>
                     <div class="count-main">136,462</div>
                 </div>
                 <div class="bar-container">
@@ -128,9 +137,9 @@
                     <div class="count-today" style="color:#9ca3af">(+29,599)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉임주연♥</div>
+                    <div class="nick">🥉 임주연♥</div>
                     <div class="count-main">131,339</div>
                 </div>
                 <div class="bar-container">
@@ -138,9 +147,9 @@
                     <div class="count-today" style="color:#9ca3af">(+47,119)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">아이빈</div>
+                    <div class="nick"> 아이빈</div>
                     <div class="count-main">116,487</div>
                 </div>
                 <div class="bar-container">
@@ -148,9 +157,9 @@
                     <div class="count-today" style="color:#9ca3af">(+103,008)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">가을이♡</div>
+                    <div class="nick"> 가을이♡</div>
                     <div class="count-main">109,404</div>
                 </div>
                 <div class="bar-container">
@@ -158,9 +167,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">서윤슬@</div>
+                    <div class="nick"> 서윤슬@</div>
                     <div class="count-main">89,924</div>
                 </div>
                 <div class="bar-container">
@@ -168,9 +177,9 @@
                     <div class="count-today" style="color:#9ca3af">(+17,924)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">원영님♥</div>
+                    <div class="nick"> 원영님♥</div>
                     <div class="count-main">61,264</div>
                 </div>
                 <div class="bar-container">
@@ -178,9 +187,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">파미</div>
+                    <div class="nick"> 파미</div>
                     <div class="count-main">38,420</div>
                 </div>
                 <div class="bar-container">
@@ -188,9 +197,9 @@
                     <div class="count-today" style="color:#9ca3af">(+6,674)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">안둥♥</div>
+                    <div class="nick"> 안둥♥</div>
                     <div class="count-main">27,860</div>
                 </div>
                 <div class="bar-container">
@@ -198,9 +207,9 @@
                     <div class="count-today" style="color:#9ca3af">(+25,886)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">맹이.zip</div>
+                    <div class="nick"> 맹이.zip</div>
                     <div class="count-main">16,143</div>
                 </div>
                 <div class="bar-container">
@@ -208,9 +217,9 @@
                     <div class="count-today" style="color:#9ca3af">(+2,342)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">미숑.♥</div>
+                    <div class="nick"> 미숑.♥</div>
                     <div class="count-main">583</div>
                 </div>
                 <div class="bar-container">
@@ -229,16 +238,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">624,451</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">48,034</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇꽃부기♥</div>
+                    <div class="nick">🥇 꽃부기♥</div>
                     <div class="count-main">165,565</div>
                 </div>
                 <div class="bar-container">
@@ -246,9 +255,9 @@
                     <div class="count-today" style="color:#9ca3af">(+5,636)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈설탱♥</div>
+                    <div class="nick">🥈 설탱♥</div>
                     <div class="count-main">87,367</div>
                 </div>
                 <div class="bar-container">
@@ -256,9 +265,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,609)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉애지니♡</div>
+                    <div class="nick">🥉 애지니♡</div>
                     <div class="count-main">70,122</div>
                 </div>
                 <div class="bar-container">
@@ -266,9 +275,9 @@
                     <div class="count-today" style="color:#9ca3af">(+1,547)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">#누리-</div>
+                    <div class="nick"> #누리-</div>
                     <div class="count-main">67,509</div>
                 </div>
                 <div class="bar-container">
@@ -276,9 +285,9 @@
                     <div class="count-today" style="color:#9ca3af">(+7,305)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">이월♥</div>
+                    <div class="nick"> 이월♥</div>
                     <div class="count-main">67,295</div>
                 </div>
                 <div class="bar-container">
@@ -286,9 +295,9 @@
                     <div class="count-today" style="color:#9ca3af">(+7,961)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">히냥이♥</div>
+                    <div class="nick"> 히냥이♥</div>
                     <div class="count-main">61,671</div>
                 </div>
                 <div class="bar-container">
@@ -296,9 +305,9 @@
                     <div class="count-today" style="color:#9ca3af">(+6,650)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">리에♡</div>
+                    <div class="nick"> 리에♡</div>
                     <div class="count-main">34,851</div>
                 </div>
                 <div class="bar-container">
@@ -306,9 +315,9 @@
                     <div class="count-today" style="color:#9ca3af">(+7,267)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">이리원♥</div>
+                    <div class="nick"> 이리원♥</div>
                     <div class="count-main">27,150</div>
                 </div>
                 <div class="bar-container">
@@ -316,9 +325,9 @@
                     <div class="count-today" style="color:#9ca3af">(+10,000)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">설인_♥</div>
+                    <div class="nick"> 설인_♥</div>
                     <div class="count-main">23,953</div>
                 </div>
                 <div class="bar-container">
@@ -326,9 +335,9 @@
                     <div class="count-today" style="color:#9ca3af">(+8,758)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">연보민</div>
+                    <div class="nick"> 연보민</div>
                     <div class="count-main">14,550</div>
                 </div>
                 <div class="bar-container">
@@ -336,9 +345,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,704)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">[SO]박소연</div>
+                    <div class="nick"> [SO]박소연</div>
                     <div class="count-main">4,418</div>
                 </div>
                 <div class="bar-container">
@@ -346,9 +355,9 @@
                     <div class="count-today" style="color:#9ca3af">(+3,548)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">밤비♥</div>
+                    <div class="nick"> 밤비♥</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -356,9 +365,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">유복이!</div>
+                    <div class="nick"> 유복이!</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -377,16 +386,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">667,878</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">47,705</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇인지연JYEON</div>
+                    <div class="nick">🥇 인지연JYEON</div>
                     <div class="count-main">113,341</div>
                 </div>
                 <div class="bar-container">
@@ -394,9 +403,9 @@
                     <div class="count-today" style="color:#9ca3af">(+35,345)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈체온_♡</div>
+                    <div class="nick">🥈 체온_♡</div>
                     <div class="count-main">93,476</div>
                 </div>
                 <div class="bar-container">
@@ -404,9 +413,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,070)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉쁠리vvely</div>
+                    <div class="nick">🥉 쁠리vvely</div>
                     <div class="count-main">86,072</div>
                 </div>
                 <div class="bar-container">
@@ -414,9 +423,9 @@
                     <div class="count-today" style="color:#9ca3af">(+29,769)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">혜루찡</div>
+                    <div class="nick"> 혜루찡</div>
                     <div class="count-main">74,669</div>
                 </div>
                 <div class="bar-container">
@@ -424,9 +433,9 @@
                     <div class="count-today" style="color:#9ca3af">(+11,951)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">BJ채리</div>
+                    <div class="nick"> BJ채리</div>
                     <div class="count-main">52,086</div>
                 </div>
                 <div class="bar-container">
@@ -434,9 +443,9 @@
                     <div class="count-today" style="color:#9ca3af">(+2,920)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">#초린</div>
+                    <div class="nick"> #초린</div>
                     <div class="count-main">51,757</div>
                 </div>
                 <div class="bar-container">
@@ -444,9 +453,9 @@
                     <div class="count-today" style="color:#9ca3af">(+9,363)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">히나_♥</div>
+                    <div class="nick"> 히나_♥</div>
                     <div class="count-main">35,058</div>
                 </div>
                 <div class="bar-container">
@@ -454,9 +463,9 @@
                     <div class="count-today" style="color:#9ca3af">(+6,315)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">연두</div>
+                    <div class="nick"> 연두</div>
                     <div class="count-main">35,058</div>
                 </div>
                 <div class="bar-container">
@@ -464,9 +473,9 @@
                     <div class="count-today" style="color:#9ca3af">(+6,315)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">초초</div>
+                    <div class="nick"> 초초</div>
                     <div class="count-main">29,989</div>
                 </div>
                 <div class="bar-container">
@@ -474,9 +483,9 @@
                     <div class="count-today" style="color:#9ca3af">(+21,278)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">애순이</div>
+                    <div class="nick"> 애순이</div>
                     <div class="count-main">28,186</div>
                 </div>
                 <div class="bar-container">
@@ -484,9 +493,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">하이희야♡</div>
+                    <div class="nick"> 하이희야♡</div>
                     <div class="count-main">26,426</div>
                 </div>
                 <div class="bar-container">
@@ -494,9 +503,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">[윤이솔]</div>
+                    <div class="nick"> [윤이솔]</div>
                     <div class="count-main">19,660</div>
                 </div>
                 <div class="bar-container">
@@ -504,9 +513,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">아윤♡</div>
+                    <div class="nick"> 아윤♡</div>
                     <div class="count-main">15,095</div>
                 </div>
                 <div class="bar-container">
@@ -514,9 +523,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">리하♥</div>
+                    <div class="nick"> 리하♥</div>
                     <div class="count-main">7,005</div>
                 </div>
                 <div class="bar-container">
@@ -535,16 +544,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">498,763</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">35,625</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇후잉♥</div>
+                    <div class="nick">🥇 후잉♥</div>
                     <div class="count-main">72,571</div>
                 </div>
                 <div class="bar-container">
@@ -552,9 +561,9 @@
                     <div class="count-today" style="color:#9ca3af">(+21,571)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈미로。</div>
+                    <div class="nick">🥈 미로。</div>
                     <div class="count-main">66,499</div>
                 </div>
                 <div class="bar-container">
@@ -562,9 +571,9 @@
                     <div class="count-today" style="color:#9ca3af">(+43,229)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉리윤_♥</div>
+                    <div class="nick">🥉 리윤_♥</div>
                     <div class="count-main">56,430</div>
                 </div>
                 <div class="bar-container">
@@ -572,9 +581,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">냥냥수주</div>
+                    <div class="nick"> 냥냥수주</div>
                     <div class="count-main">52,161</div>
                 </div>
                 <div class="bar-container">
@@ -582,9 +591,9 @@
                     <div class="count-today" style="color:#9ca3af">(+9,962)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">김유정S2</div>
+                    <div class="nick"> 김유정S2</div>
                     <div class="count-main">38,441</div>
                 </div>
                 <div class="bar-container">
@@ -592,9 +601,9 @@
                     <div class="count-today" style="color:#9ca3af">(+11,394)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">류서하♥</div>
+                    <div class="nick"> 류서하♥</div>
                     <div class="count-main">36,790</div>
                 </div>
                 <div class="bar-container">
@@ -602,9 +611,9 @@
                     <div class="count-today" style="color:#9ca3af">(+16,231)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">유나연º-º</div>
+                    <div class="nick"> 유나연º-º</div>
                     <div class="count-main">36,613</div>
                 </div>
                 <div class="bar-container">
@@ -612,9 +621,9 @@
                     <div class="count-today" style="color:#9ca3af">(+7,099)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">너의˚멜로디</div>
+                    <div class="nick"> 너의˚멜로디</div>
                     <div class="count-main">32,163</div>
                 </div>
                 <div class="bar-container">
@@ -622,9 +631,9 @@
                     <div class="count-today" style="color:#9ca3af">(+17,600)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">하랑짱♥</div>
+                    <div class="nick"> 하랑짱♥</div>
                     <div class="count-main">27,552</div>
                 </div>
                 <div class="bar-container">
@@ -632,9 +641,9 @@
                     <div class="count-today" style="color:#9ca3af">(+2,546)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">소다♥</div>
+                    <div class="nick"> 소다♥</div>
                     <div class="count-main">18,227</div>
                 </div>
                 <div class="bar-container">
@@ -642,9 +651,9 @@
                     <div class="count-today" style="color:#9ca3af">(+34)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">ZO아름♡</div>
+                    <div class="nick"> ZO아름♡</div>
                     <div class="count-main">17,613</div>
                 </div>
                 <div class="bar-container">
@@ -652,9 +661,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,365)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">백나현</div>
+                    <div class="nick"> 백나현</div>
                     <div class="count-main">15,213</div>
                 </div>
                 <div class="bar-container">
@@ -662,9 +671,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">#율무</div>
+                    <div class="nick"> #율무</div>
                     <div class="count-main">14,513</div>
                 </div>
                 <div class="bar-container">
@@ -672,9 +681,9 @@
                     <div class="count-today" style="color:#9ca3af">(+2,559)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">서니_♥</div>
+                    <div class="nick"> 서니_♥</div>
                     <div class="count-main">13,977</div>
                 </div>
                 <div class="bar-container">
@@ -693,16 +702,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">204,784</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">29,254</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇♥유현♥</div>
+                    <div class="nick">🥇 ♥유현♥</div>
                     <div class="count-main">101,257</div>
                 </div>
                 <div class="bar-container">
@@ -710,9 +719,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈쥬브리</div>
+                    <div class="nick">🥈 쥬브리</div>
                     <div class="count-main">31,830</div>
                 </div>
                 <div class="bar-container">
@@ -720,9 +729,9 @@
                     <div class="count-today" style="color:#9ca3af">(+11,669)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉은아린!!</div>
+                    <div class="nick">🥉 은아린!!</div>
                     <div class="count-main">23,074</div>
                 </div>
                 <div class="bar-container">
@@ -730,9 +739,9 @@
                     <div class="count-today" style="color:#9ca3af">(+1,978)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">설인아님♥</div>
+                    <div class="nick"> 설인아님♥</div>
                     <div class="count-main">21,868</div>
                 </div>
                 <div class="bar-container">
@@ -740,9 +749,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">아링</div>
+                    <div class="nick"> 아링</div>
                     <div class="count-main">12,893</div>
                 </div>
                 <div class="bar-container">
@@ -750,9 +759,9 @@
                     <div class="count-today" style="color:#9ca3af">(+12,893)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">E윤아♡</div>
+                    <div class="nick"> E윤아♡</div>
                     <div class="count-main">7,414</div>
                 </div>
                 <div class="bar-container">
@@ -760,9 +769,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,390)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">해리님♥</div>
+                    <div class="nick"> 해리님♥</div>
                     <div class="count-main">6,448</div>
                 </div>
                 <div class="bar-container">
@@ -781,16 +790,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">300,686</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">23,129</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇♥백설♥</div>
+                    <div class="nick">🥇 ♥백설♥</div>
                     <div class="count-main">76,935</div>
                 </div>
                 <div class="bar-container">
@@ -798,9 +807,9 @@
                     <div class="count-today" style="color:#9ca3af">(+15,600)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈서이안</div>
+                    <div class="nick">🥈 서이안</div>
                     <div class="count-main">36,747</div>
                 </div>
                 <div class="bar-container">
@@ -808,9 +817,9 @@
                     <div class="count-today" style="color:#9ca3af">(+21,538)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉아유님♥</div>
+                    <div class="nick">🥉 아유님♥</div>
                     <div class="count-main">31,996</div>
                 </div>
                 <div class="bar-container">
@@ -818,9 +827,9 @@
                     <div class="count-today" style="color:#9ca3af">(+8,539)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">윤세빈♥</div>
+                    <div class="nick"> 윤세빈♥</div>
                     <div class="count-main">29,307</div>
                 </div>
                 <div class="bar-container">
@@ -828,9 +837,9 @@
                     <div class="count-today" style="color:#9ca3af">(+5,119)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">유서림♥</div>
+                    <div class="nick"> 유서림♥</div>
                     <div class="count-main">25,988</div>
                 </div>
                 <div class="bar-container">
@@ -838,9 +847,9 @@
                     <div class="count-today" style="color:#9ca3af">(+10,703)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">윤수♥</div>
+                    <div class="nick"> 윤수♥</div>
                     <div class="count-main">24,245</div>
                 </div>
                 <div class="bar-container">
@@ -848,9 +857,9 @@
                     <div class="count-today" style="color:#9ca3af">(+165)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">율비♡</div>
+                    <div class="nick"> 율비♡</div>
                     <div class="count-main">18,447</div>
                 </div>
                 <div class="bar-container">
@@ -858,9 +867,9 @@
                     <div class="count-today" style="color:#9ca3af">(+8,417)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">햇동이♥</div>
+                    <div class="nick"> 햇동이♥</div>
                     <div class="count-main">15,567</div>
                 </div>
                 <div class="bar-container">
@@ -868,9 +877,9 @@
                     <div class="count-today" style="color:#9ca3af">(+1,978)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">김규리♥</div>
+                    <div class="nick"> 김규리♥</div>
                     <div class="count-main">15,356</div>
                 </div>
                 <div class="bar-container">
@@ -878,9 +887,9 @@
                     <div class="count-today" style="color:#9ca3af">(+3,283)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">당신의채안♥</div>
+                    <div class="nick"> 당신의채안♥</div>
                     <div class="count-main">7,985</div>
                 </div>
                 <div class="bar-container">
@@ -888,9 +897,9 @@
                     <div class="count-today" style="color:#9ca3af">(+1,000)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">나의유주♥</div>
+                    <div class="nick"> 나의유주♥</div>
                     <div class="count-main">7,454</div>
                 </div>
                 <div class="bar-container">
@@ -898,9 +907,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,567)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">채보미=3=</div>
+                    <div class="nick"> 채보미=3=</div>
                     <div class="count-main">6,733</div>
                 </div>
                 <div class="bar-container">
@@ -908,9 +917,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,232)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">♡김베리♡</div>
+                    <div class="nick"> ♡김베리♡</div>
                     <div class="count-main">3,926</div>
                 </div>
                 <div class="bar-container">
@@ -929,16 +938,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">261,211</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">20,093</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇차시월</div>
+                    <div class="nick">🥇 차시월</div>
                     <div class="count-main">40,853</div>
                 </div>
                 <div class="bar-container">
@@ -946,9 +955,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈푸린♡</div>
+                    <div class="nick">🥈 푸린♡</div>
                     <div class="count-main">38,942</div>
                 </div>
                 <div class="bar-container">
@@ -956,9 +965,9 @@
                     <div class="count-today" style="color:#9ca3af">(+6,368)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉강한빛♡</div>
+                    <div class="nick">🥉 강한빛♡</div>
                     <div class="count-main">33,717</div>
                 </div>
                 <div class="bar-container">
@@ -966,9 +975,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,650)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">포카린</div>
+                    <div class="nick"> 포카린</div>
                     <div class="count-main">33,227</div>
                 </div>
                 <div class="bar-container">
@@ -976,9 +985,9 @@
                     <div class="count-today" style="color:#9ca3af">(+20,015)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">! 채채</div>
+                    <div class="nick"> ! 채채</div>
                     <div class="count-main">31,980</div>
                 </div>
                 <div class="bar-container">
@@ -986,9 +995,9 @@
                     <div class="count-today" style="color:#9ca3af">(+25,055)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">지아콩</div>
+                    <div class="nick"> 지아콩</div>
                     <div class="count-main">30,974</div>
                 </div>
                 <div class="bar-container">
@@ -996,9 +1005,9 @@
                     <div class="count-today" style="color:#9ca3af">(+24,000)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">엘♥</div>
+                    <div class="nick"> 엘♥</div>
                     <div class="count-main">18,169</div>
                 </div>
                 <div class="bar-container">
@@ -1006,9 +1015,9 @@
                     <div class="count-today" style="color:#9ca3af">(+17,529)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">한슬댕</div>
+                    <div class="nick"> 한슬댕</div>
                     <div class="count-main">14,065</div>
                 </div>
                 <div class="bar-container">
@@ -1016,9 +1025,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">퀸다미♧</div>
+                    <div class="nick"> 퀸다미♧</div>
                     <div class="count-main">5,833</div>
                 </div>
                 <div class="bar-container">
@@ -1026,9 +1035,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,478)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">채리나</div>
+                    <div class="nick"> 채리나</div>
                     <div class="count-main">5,281</div>
                 </div>
                 <div class="bar-container">
@@ -1036,9 +1045,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">[BJ]에디양</div>
+                    <div class="nick"> [BJ]에디양</div>
                     <div class="count-main">4,177</div>
                 </div>
                 <div class="bar-container">
@@ -1046,9 +1055,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">우아한♡우와</div>
+                    <div class="nick"> 우아한♡우와</div>
                     <div class="count-main">3,993</div>
                 </div>
                 <div class="bar-container">
@@ -1056,9 +1065,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">소냥이에요</div>
+                    <div class="nick"> 소냥이에요</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -1077,16 +1086,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">99,838</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">11,093</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇지숙♥_.</div>
+                    <div class="nick">🥇 지숙♥_.</div>
                     <div class="count-main">32,212</div>
                 </div>
                 <div class="bar-container">
@@ -1094,9 +1103,9 @@
                     <div class="count-today" style="color:#9ca3af">(+15,235)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈이나율♥</div>
+                    <div class="nick">🥈 이나율♥</div>
                     <div class="count-main">26,771</div>
                 </div>
                 <div class="bar-container">
@@ -1104,9 +1113,9 @@
                     <div class="count-today" style="color:#9ca3af">(+14,092)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉나래~~~</div>
+                    <div class="nick">🥉 나래~~~</div>
                     <div class="count-main">22,914</div>
                 </div>
                 <div class="bar-container">
@@ -1114,9 +1123,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,000)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">예란</div>
+                    <div class="nick"> 예란</div>
                     <div class="count-main">12,191</div>
                 </div>
                 <div class="bar-container">
@@ -1124,9 +1133,9 @@
                     <div class="count-today" style="color:#9ca3af">(+3,808)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">한채아♥</div>
+                    <div class="nick"> 한채아♥</div>
                     <div class="count-main">3,407</div>
                 </div>
                 <div class="bar-container">
@@ -1134,9 +1143,9 @@
                     <div class="count-today" style="color:#9ca3af">(+963)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">이밍+♥</div>
+                    <div class="nick"> 이밍+♥</div>
                     <div class="count-main">1,670</div>
                 </div>
                 <div class="bar-container">
@@ -1144,9 +1153,9 @@
                     <div class="count-today" style="color:#9ca3af">(+1,634)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">김봄비</div>
+                    <div class="nick"> 김봄비</div>
                     <div class="count-main">673</div>
                 </div>
                 <div class="bar-container">
@@ -1154,9 +1163,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">박예솜:)</div>
+                    <div class="nick"> 박예솜:)</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -1164,9 +1173,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">푸글리♡</div>
+                    <div class="nick"> 푸글리♡</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -1185,16 +1194,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">136,615</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">9,758</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇쏘피♥</div>
+                    <div class="nick">🥇 쏘피♥</div>
                     <div class="count-main">31,165</div>
                 </div>
                 <div class="bar-container">
@@ -1202,9 +1211,9 @@
                     <div class="count-today" style="color:#9ca3af">(+2,402)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈＠서단</div>
+                    <div class="nick">🥈 ＠서단</div>
                     <div class="count-main">21,775</div>
                 </div>
                 <div class="bar-container">
@@ -1212,9 +1221,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉새봄_♡</div>
+                    <div class="nick">🥉 새봄_♡</div>
                     <div class="count-main">21,468</div>
                 </div>
                 <div class="bar-container">
@@ -1222,9 +1231,9 @@
                     <div class="count-today" style="color:#9ca3af">(+5,141)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">도예빈♥</div>
+                    <div class="nick"> 도예빈♥</div>
                     <div class="count-main">14,204</div>
                 </div>
                 <div class="bar-container">
@@ -1232,9 +1241,9 @@
                     <div class="count-today" style="color:#9ca3af">(+8,317)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">유이나.♡</div>
+                    <div class="nick"> 유이나.♡</div>
                     <div class="count-main">11,825</div>
                 </div>
                 <div class="bar-container">
@@ -1242,9 +1251,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">송유이♥</div>
+                    <div class="nick"> 송유이♥</div>
                     <div class="count-main">10,899</div>
                 </div>
                 <div class="bar-container">
@@ -1252,9 +1261,9 @@
                     <div class="count-today" style="color:#9ca3af">(+7,549)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">♥제니♥</div>
+                    <div class="nick"> ♥제니♥</div>
                     <div class="count-main">10,305</div>
                 </div>
                 <div class="bar-container">
@@ -1262,9 +1271,9 @@
                     <div class="count-today" style="color:#9ca3af">(+3,560)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">정인♥</div>
+                    <div class="nick"> 정인♥</div>
                     <div class="count-main">5,783</div>
                 </div>
                 <div class="bar-container">
@@ -1272,9 +1281,9 @@
                     <div class="count-today" style="color:#9ca3af">(+5,783)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">이로♥</div>
+                    <div class="nick"> 이로♥</div>
                     <div class="count-main">4,612</div>
                 </div>
                 <div class="bar-container">
@@ -1282,9 +1291,9 @@
                     <div class="count-today" style="color:#9ca3af">(+4,430)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">한유나♥</div>
+                    <div class="nick"> 한유나♥</div>
                     <div class="count-main">4,567</div>
                 </div>
                 <div class="bar-container">
@@ -1292,9 +1301,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">송화양</div>
+                    <div class="nick"> 송화양</div>
                     <div class="count-main">12</div>
                 </div>
                 <div class="bar-container">
@@ -1302,9 +1311,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">도하정♥</div>
+                    <div class="nick"> 도하정♥</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -1312,9 +1321,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">재온ly</div>
+                    <div class="nick"> 재온ly</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -1322,9 +1331,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">@유톨</div>
+                    <div class="nick"> @유톨</div>
                     <div class="count-main">0</div>
                 </div>
                 <div class="bar-container">
@@ -1343,16 +1352,16 @@
                         <span class="stat-label">Total</span>
                         <span class="stat-value">136,137</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">9,075</span>
                     </div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-1">
                 <div class="member-info">
-                    <div class="nick">🥇슈나♥</div>
+                    <div class="nick">🥇 슈나♥</div>
                     <div class="count-main">31,476</div>
                 </div>
                 <div class="bar-container">
@@ -1360,9 +1369,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-2">
                 <div class="member-info">
-                    <div class="nick">🥈미지수♥</div>
+                    <div class="nick">🥈 미지수♥</div>
                     <div class="count-main">27,000</div>
                 </div>
                 <div class="bar-container">
@@ -1370,9 +1379,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module rank-3">
                 <div class="member-info">
-                    <div class="nick">🥉♥채화</div>
+                    <div class="nick">🥉 ♥채화</div>
                     <div class="count-main">22,459</div>
                 </div>
                 <div class="bar-container">
@@ -1380,9 +1389,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">강형민이</div>
+                    <div class="nick"> 강형민이</div>
                     <div class="count-main">16,530</div>
                 </div>
                 <div class="bar-container">
@@ -1390,9 +1399,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">뮤엘♥</div>
+                    <div class="nick"> 뮤엘♥</div>
                     <div class="count-main">9,452</div>
                 </div>
                 <div class="bar-container">
@@ -1400,9 +1409,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">.장지민</div>
+                    <div class="nick"> .장지민</div>
                     <div class="count-main">7,673</div>
                 </div>
                 <div class="bar-container">
@@ -1410,9 +1419,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">서언수</div>
+                    <div class="nick"> 서언수</div>
                     <div class="count-main">6,803</div>
                 </div>
                 <div class="bar-container">
@@ -1420,9 +1429,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">하임*</div>
+                    <div class="nick"> 하임*</div>
                     <div class="count-main">4,424</div>
                 </div>
                 <div class="bar-container">
@@ -1430,9 +1439,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">설현미</div>
+                    <div class="nick"> 설현미</div>
                     <div class="count-main">2,556</div>
                 </div>
                 <div class="bar-container">
@@ -1440,9 +1449,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">E-;이은♥</div>
+                    <div class="nick"> E-;이은♥</div>
                     <div class="count-main">1,948</div>
                 </div>
                 <div class="bar-container">
@@ -1450,9 +1459,9 @@
                     <div class="count-today" style="color:#9ca3af">(+614)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">#다인</div>
+                    <div class="nick"> #다인</div>
                     <div class="count-main">1,905</div>
                 </div>
                 <div class="bar-container">
@@ -1460,9 +1469,9 @@
                     <div class="count-today" style="color:#9ca3af">(+18)</div>
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">천시아S2</div>
+                    <div class="nick"> 천시아S2</div>
                     <div class="count-main">1,745</div>
                 </div>
                 <div class="bar-container">
@@ -1470,9 +1479,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">예니__</div>
+                    <div class="nick"> 예니__</div>
                     <div class="count-main">1,084</div>
                 </div>
                 <div class="bar-container">
@@ -1480,9 +1489,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">현강림2</div>
+                    <div class="nick"> 현강림2</div>
                     <div class="count-main">1,000</div>
                 </div>
                 <div class="bar-container">
@@ -1490,9 +1499,9 @@
                     
                 </div>
             </div>
-            <div class="member-row">
+            <div class="member-module ">
                 <div class="member-info">
-                    <div class="nick">박재열</div>
+                    <div class="nick"> 박재열</div>
                     <div class="count-main">82</div>
                 </div>
                 <div class="bar-container">

@@ -18,7 +18,6 @@ crews_config = {
     "771": {"color": "c-green", "members": {"예란": "jyssing", "나래~~~": "narae282", "박예솜:)": "tgqnpji1xc", "이밍+♥": "aighty9", "지숙♥_.": "uyrt8888", "푸글리♡": "vnfmadl93", "이나율♥": "cmj20822", "한채아♥": "snfkddl1024", "김봄비": "bombbi"}}
 }
 
-# 크루별 테마 컬러 헥사코드 (마우스 호버 및 후광 효과용)
 COLOR_MAP = {
     "c-red": "#f87171", "c-white": "#f8fafc", "c-gold": "#fbbf24", 
     "c-pink": "#f472b6", "c-cyan": "#22d3ee", "c-purple": "#c084fc", 
@@ -82,7 +81,6 @@ def generate_html():
     .grid {{ display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
     @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 10px; }} }}
 
-    /* [럭셔리 업데이트 1] 크루 카드 고유 테마 및 호버 이펙트 */
     .crew-card {{ 
         background: linear-gradient(145deg, #131c2d, #0d131f);
         border: 1px solid #1e293b; 
@@ -90,24 +88,17 @@ def generate_html():
         border-radius: 14px; 
         padding: 16px; 
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); 
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
     }}
-    /* 카드 내부 은은한 방사형 빛 번짐 효과 */
     .crew-card::before {{
         content: ''; position: absolute;
         top: -40%; left: -20%; width: 150%; height: 150%;
         background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%);
         opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease;
     }}
-    
-    /* 마우스 오버 시 입체감 및 발광 효과 */
-    .crew-card:hover {{
-        transform: translateY(-6px);
-        box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.6), 0 0 15px -3px var(--theme-color);
-        border-color: var(--theme-color);
-    }}
+    .crew-card:hover {{ transform: translateY(-6px); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.6), 0 0 15px -3px var(--theme-color); border-color: var(--theme-color); }}
     .crew-card:hover::before {{ opacity: 0.08; }}
     
     .header {{ display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 18px; z-index: 1; position: relative; }}
@@ -115,42 +106,59 @@ def generate_html():
     .crew-title {{ font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); }}
     .crew-count {{ font-size: 0.85rem; color: #64748b; font-weight: 700; }}
     
-    /* [럭셔리 업데이트 2] TOTAL & AVERAGE 유리 질감 대시보드 */
+    /* [수정] TOTAL 영역 우측 정렬 */
     .header-stats {{ 
-        display: flex; gap: 12px; 
+        display: flex; gap: 18px; 
         background: rgba(0, 0, 0, 0.3); 
-        padding: 12px 14px; 
+        padding: 12px 16px; 
         border-radius: 8px; 
         border: 1px solid rgba(255,255,255,0.03);
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        justify-content: flex-end; /* 전체를 우측으로 밀착 */
     }}
-    .stat-item {{ flex: 1; display: flex; flex-direction: column; justify-content: center; }}
-    .stat-label {{ 
-        font-size: 0.75rem; 
-        color: var(--theme-color); 
-        opacity: 0.85; 
-        font-weight: 800; 
-        margin-bottom: 3px; 
-        letter-spacing: 1px; 
-        text-transform: uppercase;
+    .stat-item {{ display: flex; flex-direction: column; align-items: flex-end; /* 텍스트 우측 정렬 */ }}
+    .stat-label {{ font-size: 0.75rem; color: var(--theme-color); opacity: 0.85; font-weight: 800; margin-bottom: 3px; letter-spacing: 1px; text-transform: uppercase; }}
+    .stat-value {{ font-size: 1.25rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', 'Courier New', monospace; text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4); letter-spacing: 0.5px; }}
+
+    /* [수정] 개인 지표 모듈(카드형) 디자인 적용 */
+    .member-module {{ 
+        position: relative; 
+        margin-bottom: 12px; 
+        padding: 12px 14px 22px 14px; /* 하단 패딩을 넓혀 당일 숫자 공간 확보 */
+        background: rgba(15, 23, 42, 0.4); 
+        border-radius: 10px; 
+        border: 1px solid rgba(255,255,255,0.02);
+        z-index: 1;
+        transition: transform 0.2s, background 0.2s;
     }}
+    .member-module:hover {{ transform: scale(1.02); background: rgba(255,255,255,0.05); }}
+
+    /* [수정] 1, 2, 3위 특별 이펙트 클래스 */
+    .rank-1 {{
+        background: linear-gradient(145deg, rgba(251, 191, 36, 0.1), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(251, 191, 36, 0.5);
+        box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+        transform: scale(1.02);
+    }}
+    .rank-1 .nick {{ color: #fbbf24; font-weight: 900; text-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }}
     
-    /* 숫자에 네온 빛 번짐 및 전용 폰트 적용 */
-    .stat-value {{ 
-        font-size: 1.25rem; 
-        font-weight: 900; 
-        color: #ffffff; 
-        font-family: 'Consolas', 'Courier New', monospace; 
-        text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4);
-        letter-spacing: 0.5px;
+    .rank-2 {{
+        background: linear-gradient(145deg, rgba(226, 232, 240, 0.08), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(226, 232, 240, 0.3);
     }}
+    .rank-2 .nick {{ color: #f1f5f9; }}
+    
+    .rank-3 {{
+        background: linear-gradient(145deg, rgba(217, 119, 6, 0.08), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(217, 119, 6, 0.3);
+    }}
+    .rank-3 .nick {{ color: #fcd34d; }}
 
-    .member-row {{ position: relative; margin-bottom: 24px; z-index: 1; }}
-    .member-info {{ display: flex; justify-content: space-between; align-items: center; height: 22px; margin-bottom: 6px; }}
-    .nick {{ font-size: 0.9rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }}
-    .count-main {{ font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; }}
+    .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }}
+    .nick {{ font-size: 0.95rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }}
+    .count-main {{ font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; }}
 
-    .bar-container {{ position: relative; width: 100%; height: 6px; background: rgba(15, 23, 42, 0.8); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }}
+    .bar-container {{ position: relative; width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }}
     .bar-fill {{ height: 100%; border-radius: 4px; box-shadow: 0 0 5px rgba(255,255,255,0.2); }}
     .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; white-space: nowrap; }}
 
@@ -178,8 +186,8 @@ def generate_html():
                         <span class="stat-label">Total</span>
                         <span class="stat-value">{c['total']:,}</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.05);"></div>
-                    <div class="stat-item" style="align-items: flex-end;">
+                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+                    <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">{c['avg']:,}</span>
                     </div>
@@ -188,12 +196,17 @@ def generate_html():
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['v']['monthly'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
+            
+            # [핵심] 순위에 따른 클래스 부여
+            rank_class = f"rank-{i+1}" if i < 3 else ""
+            
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             today = f'<div class="count-today" style="color:{style["point"]}">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
+            
             html += f"""
-            <div class="member-row">
+            <div class="member-module {rank_class}">
                 <div class="member-info">
-                    <div class="nick">{medal}{m['nick']}</div>
+                    <div class="nick">{medal} {m['nick']}</div>
                     <div class="count-main">{m['v']['monthly']:,}</div>
                 </div>
                 <div class="bar-container">
