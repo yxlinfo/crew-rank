@@ -106,25 +106,27 @@ def generate_html():
     .crew-title {{ font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); }}
     .crew-count {{ font-size: 0.85rem; color: #64748b; font-weight: 700; }}
     
-    /* [수정] TOTAL 영역 우측 정렬 */
+    /* [수정] 수치 간섭 완벽 차단을 위한 상하 리스트 배치 */
     .header-stats {{ 
-        display: flex; gap: 18px; 
+        display: flex; flex-direction: column; gap: 8px; /* 가로가 아닌 세로로 스택 */
         background: rgba(0, 0, 0, 0.3); 
         padding: 12px 16px; 
         border-radius: 8px; 
         border: 1px solid rgba(255,255,255,0.03);
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-        justify-content: flex-end; /* 전체를 우측으로 밀착 */
     }}
-    .stat-item {{ display: flex; flex-direction: column; align-items: flex-end; /* 텍스트 우측 정렬 */ }}
-    .stat-label {{ font-size: 0.75rem; color: var(--theme-color); opacity: 0.85; font-weight: 800; margin-bottom: 3px; letter-spacing: 1px; text-transform: uppercase; }}
+    .stat-item {{ 
+        display: flex; justify-content: space-between; align-items: center; /* 라벨 왼쪽, 숫자 오른쪽 완벽 분리 */
+        width: 100%;
+    }}
+    .stat-label {{ font-size: 0.75rem; color: var(--theme-color); opacity: 0.85; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.25rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', 'Courier New', monospace; text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4); letter-spacing: 0.5px; }}
 
-    /* [수정] 개인 지표 모듈(카드형) 디자인 적용 */
+    /* 명예의 전당 효과 제거, 단일 테마 유지 */
     .member-module {{ 
         position: relative; 
         margin-bottom: 12px; 
-        padding: 12px 14px 22px 14px; /* 하단 패딩을 넓혀 당일 숫자 공간 확보 */
+        padding: 12px 14px 22px 14px; 
         background: rgba(15, 23, 42, 0.4); 
         border-radius: 10px; 
         border: 1px solid rgba(255,255,255,0.02);
@@ -132,27 +134,6 @@ def generate_html():
         transition: transform 0.2s, background 0.2s;
     }}
     .member-module:hover {{ transform: scale(1.02); background: rgba(255,255,255,0.05); }}
-
-    /* [수정] 1, 2, 3위 특별 이펙트 클래스 */
-    .rank-1 {{
-        background: linear-gradient(145deg, rgba(251, 191, 36, 0.1), rgba(15, 23, 42, 0.8));
-        border: 1px solid rgba(251, 191, 36, 0.5);
-        box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
-        transform: scale(1.02);
-    }}
-    .rank-1 .nick {{ color: #fbbf24; font-weight: 900; text-shadow: 0 0 5px rgba(251, 191, 36, 0.5); }}
-    
-    .rank-2 {{
-        background: linear-gradient(145deg, rgba(226, 232, 240, 0.08), rgba(15, 23, 42, 0.8));
-        border: 1px solid rgba(226, 232, 240, 0.3);
-    }}
-    .rank-2 .nick {{ color: #f1f5f9; }}
-    
-    .rank-3 {{
-        background: linear-gradient(145deg, rgba(217, 119, 6, 0.08), rgba(15, 23, 42, 0.8));
-        border: 1px solid rgba(217, 119, 6, 0.3);
-    }}
-    .rank-3 .nick {{ color: #fcd34d; }}
 
     .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }}
     .nick {{ font-size: 0.95rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }}
@@ -186,7 +167,6 @@ def generate_html():
                         <span class="stat-label">Total</span>
                         <span class="stat-value">{c['total']:,}</span>
                     </div>
-                    <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
                     <div class="stat-item">
                         <span class="stat-label">Avg</span>
                         <span class="stat-value">{c['avg']:,}</span>
@@ -196,15 +176,11 @@ def generate_html():
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['v']['monthly'])
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
-            
-            # [핵심] 순위에 따른 클래스 부여
-            rank_class = f"rank-{i+1}" if i < 3 else ""
-            
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             today = f'<div class="count-today" style="color:{style["point"]}">(+{m["v"]["daily"]:,})</div>' if m['v']['daily'] > 0 else ''
             
             html += f"""
-            <div class="member-module {rank_class}">
+            <div class="member-module">
                 <div class="member-info">
                     <div class="nick">{medal} {m['nick']}</div>
                     <div class="count-main">{m['v']['monthly']:,}</div>
