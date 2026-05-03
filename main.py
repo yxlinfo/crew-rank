@@ -1,22 +1,9 @@
+import sqlite3
 import requests
 import time
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 from playwright.sync_api import sync_playwright
-
-# 1. 크루 설정 데이터
-crews_config = {
-    "광우상사": {"color": "c-red", "members": {"파미": "hhyounooo", "아이빈": "iluvbin", "이온♥": "qor0919", "임주연♥": "ektnrnrgml", "미디♡.": "kkok7816", "가을이♡": "fall1128", "원영님♥": "yui0902", "서윤슬@": "dbstmf3497", "맹이.zip": "hellparty1", "안둥♥": "andoong0227", "미숑.♥": "pms999"}},
-    "씨나인": {"color": "c-white", "members": {"체온_♡": "leeso0403", "혜루찡": "epsthddus", "쁠리vvely": "alwl1047", "초초": "chocho12", "[윤이솔]": "oosuoey", "BJ채리": "lcy011027", "애순이": "yunyeson3015", "하이희야♡": "jkmjkm1236", "인지연JYEON": "dlswldus107", "아윤♡": "ayoona", "리하♥": "ksdd7856", "#초린": "dhtnqls1238", "히나_♥": "luaa0803", "연두": "luaa0803"}},
-    "더케이": {"color": "c-gold", "members": {"! 채채": "dreamch77", "퀸다미♧": "damikim", "[BJ]에디양": "yhm777", "차시월": "kcktksal12", "소냥이에요": "ssoi0911", "엘♥": "elleeayo", "한슬댕": "eeseuu", "푸린♡": "pu1030", "채리나": "sso123", "강한빛♡": "vvkk80", "포카린": "kerin0308", "지아콩": "mxxjiaa2358", "우아한♡우와": "onevley77"}},
-    "정선컴퍼니": {"color": "c-pink", "members": {"♡김베리♡": "hhy789", "나의유주♥": "youxzu", "김규리♥": "xgyuri2", "서이안": "lllloq", "윤수♥": "whdbstn7", "햇동이♥": "kariveal", "윤세빈♥": "yuyu0929", "율비♡": "yulbee", "채보미=3=": "coqhal1992", "♥백설♥": "yin3745", "유서림♥": "elixxir", "당신의채안♥": "your75", "아유님♥": "seola1420"}},
-    "YXL": {"color": "c-cyan", "members": {"리윤_♥": "sladk51", "후잉♥": "jaeha010", "냥냥수주": "star49", "류서하♥": "smkim82372", "#율무": "offside629", "하랑짱♥": "asy1218", "미로。": "fhwm0602", "유나연º-º": "jeewon1202", "김유정S2": "tkek55", "소다♥": "zbxlzzz", "백나현": "wk3220", "서니_♥": "iluvpp", "ZO아름♡": "ahrum0912", "너의˚멜로디": "meldoy777"}},
-    "이노레이블": {"color": "c-purple", "members": {"꽃부기♥": "flowerboogie", "#누리-": "nooree", "이월♥": "bc3yu2fl", "설탱♥": "baek224983", "애지니♡": "yeeeee00", "밤비♥": "sonhj2244", "리에♡": "lia0322", "이리원♥": "nrini1213", "히냥이♥": "qkrrkgml1231", "설인_♥": "sul0509", "연보민": "duzzangg", "유복이!": "ekffl1031", "[SO]박소연": "ss2312"}},
-    "GD컴퍼니": {"color": "c-orange", "members": {"설인아님♥": "inaa04", "♥유현♥": "kyhkyh825", "E윤아♡": "jssisabel", "쥬브리": "dbswn2312", "은아린!!": "pinepine0", "아링": "jungym0116", "해리님♥": "haeri0324"}},
-    "쇼케이": {"color": "c-teal", "members": {"송화양": "sejin453", "＠서단": "banghyo9724", "쏘피♥": "1frogmonkey1", "도하정♥": "pig24680", "♥제니♥": "dooly44", "송유이♥": "dm0229", "재온ly": "awdrgy45", "도예빈♥": "doyebean", "정인♥": "wjddls10", "한유나♥": "xodrnaka95", "이로♥": "akikxxo", "@유톨": "imyutol", "유이나.♡": "todayjm", "새봄_♡": "fm0307"}},
-    "문에이": {"color": "c-lime", "members": {"♥채화": "tnwls8137", "서언수": "talmud98", "박재열": "woduf1365", "하임*": "y0urxixi", "#다인": "mrk9178", "뮤엘♥": "qordjrxhfl", "천시아S2": "kakaak2457", "미지수♥": "zxll6721", "현강림2": "hkl1102", "설현미": "wkdalgusrla", "슈나♥": "dbstldbs", "강형민이": "hhmmnn", "E-;이은♥": "salgu1004", ".장지민": "lillillll", "예니__": "songlime1126"}},
-    "771": {"color": "c-green", "members": {"예란": "jyssing", "나래~~~": "narae282", "박예솜:)": "tgqnpji1xc", "이밍+♥": "aighty9", "지숙♥_.": "uyrt8888", "푸글리♡": "vnfmadl93", "이나율♥": "cmj20822", "한채아♥": "snfkddl1024", "김봄비": "bombbi"}}
-}
 
 COLOR_MAP = {
     "c-red": "#f87171", "c-white": "#f8fafc", "c-gold": "#fbbf24", 
@@ -24,6 +11,23 @@ COLOR_MAP = {
     "c-orange": "#fb923c", "c-teal": "#2dd4bf", "c-lime": "#a3e635", 
     "c-green": "#4ade80"
 }
+
+def load_config_from_db():
+    """SQLite DB에서 크루 및 멤버 데이터를 읽어옵니다."""
+    conn = sqlite3.connect('crew_data.db')
+    cursor = conn.cursor()
+    
+    crews_config = {}
+    cursor.execute("SELECT id, name, color FROM crews")
+    crews = cursor.fetchall()
+    
+    for crew_id, name, color in crews:
+        cursor.execute("SELECT nick, uid FROM members WHERE crew_id = ?", (crew_id,))
+        members = {row[0]: row[1] for row in cursor.fetchall()}
+        crews_config[name] = {"color": color, "members": members}
+        
+    conn.close()
+    return crews_config
 
 def fetch_data(uid, year, month, day):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month:02d}"
@@ -54,6 +58,9 @@ def get_gauge_style(count):
     else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "point": "#9ca3af"}
 
 def generate_html():
+    # 1. DB에서 설정 로드
+    crews_config = load_config_from_db()
+    
     kst = timezone(timedelta(hours=9))
     now = datetime.now(kst)
     target_date = now - timedelta(days=1) if now.hour < 10 else now
@@ -84,27 +91,17 @@ def generate_html():
         background: linear-gradient(145deg, #131c2d, #0d131f);
         border: 1px solid #1e293b; border-top: 3px solid var(--theme-color); border-radius: 14px; 
         padding: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden;
-        /* 자연스럽고 쫀득한 애니메이션을 위한 cubic-bezier 적용 */
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
-        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1;
     }}
     .crew-card::before {{
         content: ''; position: absolute; top: -40%; left: -20%; width: 150%; height: 150%;
-        background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%); 
-        opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease;
+        background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%); opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease;
     }}
-    
-    /* 🔥 [핵심] 마우스 호버 시 강렬한 선택 효과 */
     .crew-card:hover {{ 
-        transform: translateY(-8px) scale(1.02); /* 위로 더 많이 떠오르고, 2% 확대됨 */
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--theme-color); /* 그림자가 깊어지고 테두리에서 빛이 남 */
-        border-color: var(--theme-color); 
-        filter: brightness(1.15); /* 카드 전체가 15% 밝아짐 */
-        z-index: 10; /* 다른 표 위에 올라오도록 레이어 조정 */
+        transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--theme-color); 
+        border-color: var(--theme-color); filter: brightness(1.15); z-index: 10; 
     }}
-    .crew-card:hover::before {{ 
-        opacity: 0.15; /* 카드 내부의 테마색 빛 번짐이 더 강해짐 */
-    }}
+    .crew-card:hover::before {{ opacity: 0.15; }}
     
     .header {{ display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 18px; z-index: 1; position: relative; }}
     .header-top {{ display: flex; justify-content: space-between; align-items: center; gap: 5px; }}
