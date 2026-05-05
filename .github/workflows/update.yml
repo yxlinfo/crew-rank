@@ -19,11 +19,10 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+- name: Install dependencies
         run: |
           pip install requests playwright
-          # Playwright 실행에 필요한 브라우저 및 시스템 라이브러리 설치
-          python -m playwright install chromium --with-deps
+          playwright install --with-deps chromium
 
       - name: Run script
         run: python main.py
