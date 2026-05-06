@@ -1,11 +1,11 @@
 name: Update Crew Dashboard
 
 on:
+  push: # 🚀 치트키: 이 파일이 저장(Commit)되는 즉시 봇 강제 실행!
   schedule:
-    - cron: '*/60 * * * *'
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
-# 자동 배포를 위해 봇에게 부여하는 특별 권한들
 permissions:
   contents: write
   pages: write
@@ -29,7 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-- name: Run script
+      - name: Run script
         run: |
           python init_db.py
           python main.py
@@ -42,7 +42,6 @@ jobs:
           git commit -m "Update Data and HTML" || echo "No changes to commit"
           git push
 
-      # 여기서부터가 웹사이트 강제 새로고침을 위한 핵심 코드입니다!
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
