@@ -1,7 +1,7 @@
 name: Update Crew Dashboard
 
 on:
-  push: # 🚀 치트키: 이 파일이 저장(Commit)되는 즉시 봇 강제 실행!
+  push:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch:
@@ -34,13 +34,13 @@ jobs:
           python init_db.py
           python main.py
 
-- name: Commit and Push DB
+      - name: Commit and Push DB
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add crew_data.db index.html
           git commit -m "Update Data and HTML" || echo "No changes to commit"
-          git pull --rebase origin main  # 🚀 추가된 마법의 코드 (새로고침 먼저 하기!)
+          git pull --rebase origin main
           git push
 
       - name: Setup Pages
