@@ -3,7 +3,6 @@ import requests
 import time
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
-from playwright.sync_api import sync_playwright
 
 COLOR_MAP = {
     "c-red": "#f87171", "c-white": "#f8fafc", "c-gold": "#fbbf24", 
@@ -13,10 +12,8 @@ COLOR_MAP = {
 }
 
 def load_config_from_db():
-    """SQLite DB에서 크루 및 멤버 데이터를 읽어옵니다."""
     conn = sqlite3.connect('crew_data.db')
     cursor = conn.cursor()
-    
     crews_config = {}
     cursor.execute("SELECT id, name, color FROM crews")
     crews = cursor.fetchall()
@@ -58,9 +55,7 @@ def get_gauge_style(count):
     else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "point": "#9ca3af"}
 
 def generate_html():
-    # 1. DB에서 설정 로드
     crews_config = load_config_from_db()
-    
     kst = timezone(timedelta(hours=9))
     now = datetime.now(kst)
     target_date = now - timedelta(days=1) if now.hour < 10 else now
@@ -87,20 +82,9 @@ def generate_html():
     
     .grid {{ display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
     
-    .crew-card {{ 
-        background: linear-gradient(145deg, #131c2d, #0d131f);
-        border: 1px solid #1e293b; border-top: 3px solid var(--theme-color); border-radius: 14px; 
-        padding: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1;
-    }}
-    .crew-card::before {{
-        content: ''; position: absolute; top: -40%; left: -20%; width: 150%; height: 150%;
-        background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%); opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease;
-    }}
-    .crew-card:hover {{ 
-        transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--theme-color); 
-        border-color: var(--theme-color); filter: brightness(1.15); z-index: 10; 
-    }}
+    .crew-card {{ background: linear-gradient(145deg, #131c2d, #0d131f); border: 1px solid #1e293b; border-top: 3px solid var(--theme-color); border-radius: 14px; padding: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }}
+    .crew-card::before {{ content: ''; position: absolute; top: -40%; left: -20%; width: 150%; height: 150%; background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%); opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease; }}
+    .crew-card:hover {{ transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--theme-color); border-color: var(--theme-color); filter: brightness(1.15); z-index: 10; }}
     .crew-card:hover::before {{ opacity: 0.15; }}
     
     .header {{ display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 18px; z-index: 1; position: relative; }}
@@ -192,20 +176,8 @@ def generate_html():
     html += "</div></body></html>"
     return html
 
-def save_chart_image(html_content):
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        context = browser.new_context(viewport={'width': 950, 'height': 3500}, device_scale_factor=2)
-        page = context.new_page()
-        page.set_content(html_content)
-        time.sleep(3)
-        page.screenshot(path="chart.png", full_page=True, animations="disabled")
-        browser.close()
-
 if __name__ == "__main__":
     generated_html = generate_html()
-    with open("index.html", "w", encoding="utf-8") as f: f.write(generated_html)
-    try:
-        save_chart_image(generated_html)
-        print("Success")
-    except Exception as e: print(f"Error: {e}")
+    with open("index.html", "w", encoding="utf-8") as f: 
+        f.write(generated_html)
+    print("Success: index.html 갱신 완료!")
