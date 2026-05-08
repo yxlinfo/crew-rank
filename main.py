@@ -26,15 +26,16 @@ def load_config_from_db():
     conn.close()
     return crews_config
 
-def fetch_data(uid, year, month, day):
+# 세션(Session)을 매개변수로 받아 연결을 재사용하도록 최적화
+def fetch_data(uid, year, month, day, session):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month:02d}"
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         "Referer": "https://poong.today/"
     }
-    for _ in range(5):
+    for _ in range(3): # 재시도 횟수 축소로 랙 감소
         try:
-            res = requests.get(api_url, headers=headers, timeout=15)
+            res = session.get(api_url, headers=headers, timeout=10)
             if res.status_code == 200:
                 json_data = res.json()
                 m_val = json_data.get('b', 0)
@@ -44,9 +45,9 @@ def fetch_data(uid, year, month, day):
                 else:
                     d_val = next((i.get('b', 0) for i in d_list if int(i.get('d', -1)) == int(day)), 0)
                 return {"monthly": m_val, "daily": d_val}
-            time.sleep(1)
+            time.sleep(0.5)
         except: 
-            time.sleep(1)
+            time.sleep(0.5)
     return {"monthly": 0, "daily": 0}
 
 def get_gauge_style(count):
@@ -61,9 +62,16 @@ def generate_html():
     target_date = now - timedelta(days=1) if now.hour < 10 else now
     y, m, d = target_date.year, target_date.month, target_date.day
     
+    # 🚀 통신 속도 최적화: 커넥션 풀링(Connection Pooling) 설정
+    session = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(pool_connections=20, pool_maxsize=20)
+    session.mount('https://', adapter)
+    
     all_tasks = [{'crew': c, 'nick': n, 'uid': u} for c, info in crews_config.items() for n, u in info['members'].items()]
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        results = list(executor.map(lambda t: {**t, 'v': fetch_data(t['uid'], y, m, d)}, all_tasks))
+    
+    # 🚀 작업자 수(max_workers)를 5명에서 20명으로 늘려 광속 수집
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        results = list(executor.map(lambda t: {**t, 'v': fetch_data(t['uid'], y, m, d, session)}, all_tasks))
 
     final_data = []
     for c_name, info in crews_config.items():
@@ -77,55 +85,54 @@ def generate_html():
     <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     
-    /* 🌌 배경: 요청하신 대로 순수 블랙(#000)으로 설정 */
     body {{ 
         background: #000000;
         color: #f8fafc; font-family: 'Pretendard', -apple-system, sans-serif; 
         padding: 10px; width: 100vw; overflow-x: hidden; min-height: 100vh;
     }}
     
-    /* 우주 별빛 효과 유지 */
+    /* 별빛 가루 효과 렌더링 최적화 */
     body::before {{
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background-image: 
             radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-            radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-        background-size: 550px 550px, 350px 350px, 250px 250px;
-        background-position: 0 0, 40px 60px, 130px 270px;
+            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
+        background-size: 550px 550px, 350px 350px;
+        background-position: 0 0, 40px 60px;
         opacity: 0.15; pointer-events: none; z-index: 0;
+        will-change: transform; /* 하드웨어 가속 */
     }}
     
-    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(15, 23, 42, 0.8); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); position: relative; z-index: 1; }}
+    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(15, 23, 42, 0.8); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); position: relative; z-index: 1; transform: translateZ(0); }}
     
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
+    /* 🚀 GPU 하드웨어 가속 추가 (transform: translateZ(0), will-change) */
     .crew-card {{ 
         background: rgba(13, 19, 33, 0.85); 
         border: 1px solid rgba(255,255,255,0.1); 
         border-top: 3px solid var(--theme-color); 
         border-radius: 12px; padding: 10px; 
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.9);
-        backdrop-filter: blur(4px);
+        box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.8); /* 그림자 부하 다이어트 */
         position: relative; overflow: hidden; 
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        transition: transform 0.3s ease, border-color 0.3s ease;
+        transform: translateZ(0); 
+        will-change: transform; 
     }}
     
     .crew-card:hover {{ 
-        transform: translateY(-8px) scale(1.03); 
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 1), 0 0 20px var(--theme-color); 
+        transform: translateY(-4px) translateZ(0); 
         border-color: var(--theme-color); 
         background: rgba(20, 30, 48, 0.95);
-        filter: brightness(1.2); z-index: 10; 
+        z-index: 10; 
     }}
     
     .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px; }}
     
-    /* 크루 이름 중앙 배치 */
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
     .crew-title {{ 
         font-size: 1.15rem; font-weight: 900; letter-spacing: -0.5px; 
-        text-shadow: 0 0 10px var(--theme-color);
+        text-shadow: 0 0 8px var(--theme-color);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
     }}
     .crew-count {{ font-size: 0.7rem; color: #94a3b8; font-weight: 700; opacity: 0.8; }}
@@ -133,17 +140,17 @@ def generate_html():
     .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: rgba(0, 0, 0, 0.5); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 0.9; text-transform: uppercase; }}
-    .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; text-shadow: 0 0 10px var(--theme-color); white-space: nowrap; letter-spacing: -0.5px; }}
+    .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; text-shadow: 0 0 8px var(--theme-color); white-space: nowrap; letter-spacing: -0.5px; }}
 
-    .member-module {{ position: relative; margin-bottom: 8px; padding: 8px 8px 18px 8px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; }}
+    .member-module {{ position: relative; margin-bottom: 8px; padding: 8px 8px 18px 8px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); transition: background 0.2s ease; }}
     .member-module:hover {{ background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }}
     
     .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 2px; }}
     .nick {{ font-size: 0.75rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.8px; padding-right: 2px; }}
     .count-main {{ font-size: 0.85rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; letter-spacing: -0.8px; }}
 
-    .bar-container {{ position: relative; width: 100%; height: 5px; background: rgba(0, 0, 0, 0.6); border-radius: 4px; overflow: hidden; }}
-    .bar-fill {{ height: 100%; border-radius: 4px; box-shadow: 0 0 10px rgba(255,255,255,0.3); }}
+    .bar-container {{ position: relative; width: 100%; height: 5px; background: rgba(0, 0, 0, 0.6); border-radius: 4px; overflow: hidden; transform: translateZ(0); }}
+    .bar-fill {{ height: 100%; border-radius: 4px; box-shadow: 0 0 8px rgba(255,255,255,0.2); }}
     .count-today {{ font-size: 0.65rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -16px; white-space: nowrap; letter-spacing: -0.5px; text-shadow: 0 0 5px rgba(0,0,0,1); }}
 
     @media (max-width: 768px) {{ 
@@ -211,4 +218,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 블랙 테마 대시보드 갱신 완료!")
+    print("Success: 랙 없는 초고속 대시보드 갱신 완료!")
