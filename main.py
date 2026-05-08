@@ -106,31 +106,14 @@ def generate_html():
         opacity: 0.1; pointer-events: none; z-index: 0;
         will-change: transform; 
     }}
-    
-    /* 🚀 첨단 데이터 스캔라인 (Cyberpunk Scanline) */
-    .cyber-scanner {{
-        position: fixed; top: 0; left: 0; width: 100%; height: 15vh;
-        background: linear-gradient(to bottom, transparent, rgba(56, 189, 248, 0.03) 70%, rgba(56, 189, 248, 0.2) 100%);
-        border-bottom: 1px solid rgba(56, 189, 248, 0.5);
-        box-shadow: 0 5px 20px rgba(56, 189, 248, 0.2);
-        pointer-events: none; z-index: 9999;
-        animation: cyberScan 4s linear infinite;
-    }}
-    
-    @keyframes cyberScan {{
-        0% {{ transform: translateY(-15vh); opacity: 0; }}
-        10% {{ opacity: 1; }}
-        90% {{ opacity: 1; }}
-        100% {{ transform: translateY(100vh); opacity: 0; }}
-    }}
 
-    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0, 0, 0, 0.9); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);backdrop-filter: blur(5px); position: relative; z-index: 1; transform: translateZ(0); }}
+    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0, 0, 0, 0.9); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);backdrop-filter: blur(5px); position: relative; z-index: 1; }}
     
-    .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; perspective: 1200px; }}
+    .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
     @keyframes fadeInUp {{
-        0% {{ opacity: 0; transform: translateY(30px) translateZ(0); }}
-        100% {{ opacity: 1; transform: translateY(0) translateZ(0); }}
+        0% {{ opacity: 0; transform: translateY(30px); }}
+        100% {{ opacity: 1; transform: translateY(0); }}
     }}
     
     @keyframes firstPlacePulse {{
@@ -157,21 +140,10 @@ def generate_html():
         position: relative; overflow: hidden; 
         will-change: transform, opacity, box-shadow; 
         
-        transform-style: preserve-3d;
-        
         opacity: 0; 
         animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         animation-delay: var(--anim-delay);
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
-    }}
-    
-    .crew-card::after {{
-        content: ""; position: absolute; top: -100%; left: -100%;
-        width: 300%; height: 300%;
-        background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.03) 55%, transparent 60%);
-        transform: translate3d(0, 0, 0);
-        transition: transform 0.6s cubic-bezier(0.1, 0.7, 1.0, 0.1);
-        pointer-events: none; z-index: 10;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }}
     
     .crew-card.rank-1 {{
@@ -180,18 +152,15 @@ def generate_html():
         animation-delay: var(--anim-delay), calc(var(--anim-delay) + 0.7s);
     }}
     
+    /* 🚀 3D 효과 제거 후 깔끔한 상하 이동 호버만 남김 */
     .crew-card:hover {{
-        transform: translateY(-8px) scale(1.02) rotateX(4deg) rotateY(-4deg) translateZ(15px) !important; 
-        border-color: var(--theme-color) !important;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(255,255,255,0.05) !important;
-        z-index: 20; 
+        transform: translateY(-2px); 
+        border-color: var(--theme-color);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.8), 0 0 15px rgba(255,255,255,0.05);
+        z-index: 10; 
     }}
     
-    .crew-card:hover::after {{
-        transform: translate3d(50%, 50%, 0);
-    }}
-    
-    .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 14px; transform: translateZ(20px); }}
+    .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 14px; }}
     
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
     
@@ -206,9 +175,9 @@ def generate_html():
     .stat-label {{ font-size: 0.65rem; color: #ffffff; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 4px var(--theme-color); }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; text-shadow: 0 0 5px var(--theme-color); }}
 
-    .member-module {{ position: relative; margin-bottom: 6px; background: #111111; border: 1px solid #1e1e1e; border-radius: 4px; overflow: hidden; transform: translateZ(10px); cursor: pointer; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; }}
+    .member-module {{ position: relative; margin-bottom: 6px; background: #111111; border: 1px solid #1e1e1e; border-radius: 4px; overflow: hidden; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; }}
     
-    .member-module:hover {{ transform: translateX(2px) translateZ(15px); background: #181818; border-color: rgba(255,255,255,0.1); z-index: 2; }}
+    .member-module:hover {{ transform: translateX(2px); background: #181818; border-color: rgba(255,255,255,0.1); z-index: 2; }}
     
     .member-bg-bar {{ position: absolute; left: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--bar-color)); z-index: 1; width: 0; animation: fillGauge 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; animation-delay: calc(var(--anim-delay) + 0.3s); }}
     .member-bg-bar::after {{ content: ''; position: absolute; right: 0; top: -2px; width: 6px; height: 6px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px 1px var(--bar-color), 0 0 12px 3px var(--bar-color); }}
@@ -228,22 +197,14 @@ def generate_html():
         .nick {{ font-size: 0.75rem; letter-spacing: -0.8px; padding-right: 4px; }}
         .count-main {{ font-size: 0.85rem; letter-spacing: -0.8px; }}
         
-        .member-module:hover {{ transform: translateX(1px) translateZ(0); }}
-        
-        .crew-card:hover {{ 
-            transform: translateY(-2px) translateZ(0) !important; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8), 0 0 15px rgba(255,255,255,0.05) !important; 
-        }}
-        .crew-card::after {{ display: none; }} 
+        .member-module:hover {{ transform: translateX(1px); }}
+        .crew-card:hover {{ transform: translateY(-2px); }}
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
     .c-cyan {{ color: #22d3ee; }} .c-purple {{ color: #c084fc; }} .c-orange {{ color: #fb923c; }} .c-teal {{ color: #2dd4bf; }} .c-lime {{ color: #a3e635; }} .c-green {{ color: #4ade80; }}
     </style></head>
     <body>
-        <!-- 🚀 사이버펑크 데이터 스캐너 레이어 -->
-        <div class="cyber-scanner"></div>
-        
         <div class="top-bar">
             <div style="font-size: 1rem; font-weight: 900; color: #e2e8f0; letter-spacing: 2px;">CREW <span style="color:var(--theme-color, #38bdf8);">RANKING</span></div>
             <div style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">{now.strftime('%y.%m.%d %H:%M')}</div>
@@ -302,4 +263,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 사이버펑크 스캔라인 추가 완료!")
+    print("Success: 스캔라인 및 3D 홀로그램 제거 완료!")
