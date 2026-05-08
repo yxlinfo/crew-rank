@@ -4,7 +4,6 @@ import time
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 
-# (이전 데이터 및 DB 로드 함수는 동일하게 유지 - COLOR_MAP 등)
 COLOR_MAP = {
     "c-red": "#f87171", "c-white": "#f8fafc", "c-gold": "#fbbf24", 
     "c-pink": "#f472b6", "c-cyan": "#22d3ee", "c-purple": "#c084fc", 
@@ -51,9 +50,9 @@ def fetch_data(uid, year, month, day, session):
     return {"monthly": 0, "daily": 0}
 
 def get_gauge_style(count):
-    if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)", "point": "#ef4444"}
-    elif count >= 200000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)", "point": "#3b82f6"}
-    else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)", "point": "#9ca3af"}
+    if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)"}
+    elif count >= 200000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)"}
+    else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)"}
 
 def generate_html():
     crews_config = load_config_from_db()
@@ -88,7 +87,6 @@ def generate_html():
         padding: 10px; width: 100vw; overflow-x: hidden; min-height: 100vh;
     }}
     
-    /* 🚀 별빛 가루 효과 렌더링 최적화 및 레퍼런스 스타일을 위해 투명도 조절 */
     body::before {{
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background-image: 
@@ -104,7 +102,6 @@ def generate_html():
     
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
-    /* 🚀 카드 스타일 대공사: 반투명/블러 제거, 자로 잰 듯한 깔끔한 표 테두리 */
     .crew-card {{ 
         background: #0d0d0d;
         border: 1px solid #1a1a1a;
@@ -112,20 +109,12 @@ def generate_html():
         border-radius: 12px; padding: 10px; 
         box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.8);
         position: relative; overflow: hidden; 
-        transition: transform 0.3s ease, border-color 0.3s ease;
         transform: translateZ(0); 
         will-change: transform; 
     }}
     
-    .crew-card:hover {{ 
-        transform: translateY(-4px) translateZ(0); 
-        border-color: var(--theme-color); 
-        z-index: 10; 
-    }}
-    
     .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #262626; padding-bottom: 10px; margin-bottom: 12px; }}
     
-    /* 🎯 크루 이름 중앙 배치 및 네온 효과 제거, 깔끔한 폰트 */
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
     .crew-title {{ 
         font-size: 1.15rem; font-weight: 900; letter-spacing: -0.5px; 
@@ -134,62 +123,67 @@ def generate_html():
     }}
     .crew-count {{ font-size: 0.7rem; color: #64748b; font-weight: 700; opacity: 1; }}
     
-    /* 🚀 통계 표 스타일: 자로 잰 듯한 깔끔한 행 */
     .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: #080808; padding: 8px 10px; border-radius: 6px; border: 1px solid #1a1a1a; }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
 
-    /* 🚀 레퍼런스 표 스타일로 대공사: 1위 일본 5699 완벽 구현 */
+    /* 🚀 수정된 멤버 행 (배경 게이지 꽉 차게) */
     .member-module {{ 
-        display: flex; /* 가로 배열: 순위, 내용 */
-        align-items: center;
-        position: relative; margin-bottom: 0; padding: 8px 10px; 
+        display: flex; align-items: center;
+        position: relative; margin-bottom: 4px; padding: 0; 
         background: transparent;
-        border-radius: 0; border: none; border-bottom: 1px solid #1a1a1a; /* 표의 행 같은 느낌 */
-        transition: background 0.2s ease; 
+        border-radius: 4px;
         transform: translateZ(0);
     }}
-    .member-module:hover {{ background: #1a1a1a; }} /* 행 전체 호버 */
     
-    /* 레퍼런스 스타일: 순위 열 (1위) */
     .member-rank-col {{
-        width: 25px; text-align: left;
-        font-size: 0.75rem; font-weight: 700; color: #64748b; /* '1위' 색상 */
-        flex-shrink: 0;
+        width: 22px; text-align: center;
+        font-size: 0.75rem; font-weight: 700; color: #64748b; 
+        flex-shrink: 0; margin-right: 4px;
     }}
     
-    /* 레퍼런스 스타일: 그래프 및 내용 열 (일본 5699) */
-    .member-bar-container {{ 
-        flex-grow: 1; position: relative; height: 18px; /* 바의 높이를 높여 글씨가 들어가도록 설정 */
-        background: #1a1a1a; border-radius: 3px; overflow: hidden;
+    .member-info-col {{ 
+        flex-grow: 1; position: relative; height: 26px; 
+        background: #111111; border-radius: 4px; overflow: hidden;
     }}
-    .member-bar-fill {{ 
-        height: 100%; border-radius: 3px; 
+    
+    .member-bg-bar {{ 
+        height: 100%; border-radius: 4px; 
         position: absolute; left: 0; top: 0;
-        will-change: transform;
+        opacity: 0.85;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* 게이지 입체감 */
     }}
     
-    /* 레퍼런스 스타일: 바 위에 올라가는 텍스트 (완벽한 타이포그래피) */
-    .member-bar-content {{
+    .member-content {{
         display: flex; justify-content: space-between; align-items: center;
         position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-        padding: 0 6px; z-index: 2; /* 바 위에 올라가야 함 */
+        padding: 0 8px; z-index: 2; 
     }}
     
-    /* 레퍼런스 스타일: 이름 (일본) */
+    /* 그림자 추가로 게이지 위에서도 글씨가 선명하게 */
     .nick {{ 
-        font-size: 0.75rem; font-weight: 700; color: white; /* 어두운 바에서도 잘 보이도록 흰색 */
+        font-size: 0.75rem; font-weight: 700; color: #ffffff; 
+        text-shadow: 1px 1px 3px rgba(0,0,0,1);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.8px; padding-right: 2px;
     }}
     
-    /* 레퍼런스 스타일: 점수 (5699) */
+    .score-area {{ display: flex; align-items: center; flex-shrink: 0; }}
+    
     .count-main {{ 
-        font-size: 0.85rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; letter-spacing: -0.8px;
+        font-size: 0.85rem; font-weight: 900; color: #ffffff; 
+        font-family: 'Consolas', monospace; letter-spacing: -0.8px;
+        text-shadow: 1px 1px 3px rgba(0,0,0,1);
     }}
     
-    /* 레퍼런스 스타일: 오늘 풍은 깔끔하게 점수 옆에 작게 (+123) */
-    .count-today {{ font-size: 0.65rem; font-weight: 800; white-space: nowrap; margin-left: 3px; }}
+    /* 🚀 당일 풍 뱃지 (캡슐 형태) */
+    .count-today {{ 
+        font-size: 0.65rem; font-weight: 800; color: #fbbf24; 
+        background: rgba(0, 0, 0, 0.6); 
+        padding: 2px 5px; border-radius: 6px; 
+        margin-left: 6px; box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        backdrop-filter: blur(2px);
+    }}
 
     @media (max-width: 768px) {{ 
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
@@ -199,6 +193,7 @@ def generate_html():
         .stat-value {{ font-size: 0.95rem; }}
         .nick {{ font-size: 0.7rem; }}
         .count-main {{ font-size: 0.75rem; }}
+        .count-today {{ font-size: 0.6rem; padding: 2px 4px; margin-left: 4px; }}
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -231,22 +226,25 @@ def generate_html():
                     </div>
                 </div>
             </div>"""
-        # 🚀 멤버 목록: 레퍼런스 스타일 완벽 구현
+        
         for i, m in enumerate(c['members']):
             style = get_gauge_style(m['v']['monthly'])
-            # 너비 계산
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
-            # 오늘 풍 깔끔하게 점수 옆에 붙임
-            today = f'<span class="count-today" style="color:{style["point"]}">(+{m["v"]["daily"]:,})</span>' if m['v']['daily'] > 0 else ''
+            
+            # 당일 풍선: 노란색 캡슐 뱃지 형태
+            today = f'<span class="count-today">▲ {m["v"]["daily"]:,}</span>' if m['v']['daily'] > 0 else ''
             
             html += f"""
             <div class="member-module">
                 <div class="member-rank-col">{i + 1}</div>
-                <div class="member-bar-container">
-                    <div class="member-bar-fill" style="width:{w}%; background:${style['grad']};"></div>
-                    <div class="member-bar-content">
-                        <div class="nick">${m['nick']}</div>
-                        <div class="count-main">${m['v']['monthly']:,}${today}</div>
+                <div class="member-info-col">
+                    <div class="member-bg-bar" style="width:{w}%; background:{style['grad']};"></div>
+                    <div class="member-content">
+                        <div class="nick">{m['nick']}</div>
+                        <div class="score-area">
+                            <span class="count-main">{m['v']['monthly']:,}</span>
+                            {today}
+                        </div>
                     </div>
                 </div>
             </div>"""
@@ -258,4 +256,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 레퍼런스 완벽 구현 대시보드 갱신 완료!")
+    print("Success: 가독성 최적화 대시보드 갱신 완료!")
