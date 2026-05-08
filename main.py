@@ -128,7 +128,6 @@ def generate_html():
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
 
-    /* 🚀 멤버 리스트 뼈대 */
     .member-module {{ 
         display: flex; align-items: center;
         position: relative; margin-bottom: 5px; padding: 0; 
@@ -142,56 +141,60 @@ def generate_html():
         flex-shrink: 0; margin-right: 4px;
     }}
     
-    /* 🚀 게이지 시인성 개선: 빈 트랙(배경)을 명확하게 분리 */
     .member-info-col {{ 
         flex-grow: 1; position: relative; height: 26px; 
-        background: #1a1a1a; /* 검은색과 구분되는 짙은 회색 */
+        background: #1a1a1a;
         border-radius: 4px; overflow: hidden;
-        border: 1px solid #262626; /* 트랙 윤곽선 */
+        border: 1px solid #262626;
         box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
     }}
     
-    /* 🚀 게이지 100% 진하게 채우기 */
     .member-bg-bar {{ 
         height: 100%; border-radius: 3px; 
         position: absolute; left: 0; top: 0;
-        opacity: 1; /* 투명도 제거, 완전 선명하게 */
-        border-right: 1px solid rgba(255,255,255,0.4); /* 게이지 끝부분 빛 반사 효과 */
+        opacity: 1; 
+        border-right: 1px solid rgba(255,255,255,0.4);
         box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
     }}
     
     .member-content {{
         display: flex; justify-content: space-between; align-items: center;
         position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-        padding: 0 6px; z-index: 2; 
+        padding: 0 8px; z-index: 2; 
     }}
     
-    /* 🚀 게이지 위에서도 글씨가 잘 보이도록 강력한 그림자 추가 */
+    /* 🚀 왼쪽 그룹 (닉네임 + 증가분)을 묶어서 침범 방지 */
+    .left-group {{
+        display: flex; align-items: center; gap: 6px;
+        flex: 1; min-width: 0; /* 모바일에서 글씨가 넘치면 말줄임표(...)를 만들기 위한 필수 요소 */
+        margin-right: 8px; /* 우측 누적별풍선과의 여백 */
+    }}
+    
     .nick {{ 
         font-size: 0.75rem; font-weight: 700; color: #ffffff; 
         text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.5px; padding-right: 4px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        flex-shrink: 1; /* 자리가 부족하면 닉네임이 우선적으로 줄어듦 */
+        letter-spacing: -0.5px;
     }}
     
-    /* 🚀 공간 절약을 위해 가로 정렬(Flex) 간격 최소화 */
-    .score-area {{ 
-        display: flex; align-items: center; gap: 4px; flex-shrink: 0; 
+    /* 🚀 새 위치로 이사 온 당일 증가분 */
+    .count-today {{ 
+        font-size: 0.65rem; font-weight: 800; color: #4ade80; 
+        font-family: 'Consolas', monospace; letter-spacing: -0.5px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
+        flex-shrink: 0; /* 증가분 숫자는 절대 찌그러지지 않음 */
     }}
     
+    /* 🚀 완벽한 오와 열을 맞추게 된 누적 별풍선 */
     .count-main {{ 
         font-size: 0.85rem; font-weight: 900; color: #ffffff; 
         font-family: 'Consolas', monospace; letter-spacing: -0.5px;
         text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
-    }}
-    
-    /* 🚀 +증가분: 캡슐 배경 없애고 글씨만 예쁘게 (+ 기호 추가) */
-    .count-today {{ 
-        font-size: 0.7rem; font-weight: 800; color: #4ade80; /* 눈에 띄는 밝은 네온 그린 */
-        font-family: 'Consolas', monospace; letter-spacing: -0.5px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
+        flex-shrink: 0; text-align: right; /* 항상 우측 끝에 고정 */
     }}
 
-    /* 📱 모바일 환경 극강 다이어트 (넘침 방지) */
+    /* 📱 모바일 환경 최적화 (2열 및 겹침 방지) */
     @media (max-width: 768px) {{ 
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
         body {{ padding: 6px; }}
@@ -199,11 +202,12 @@ def generate_html():
         .crew-title {{ font-size: 1rem; }}
         .stat-value {{ font-size: 0.95rem; }}
         
-        .score-area {{ gap: 3px; }} /* 간격 더 줄임 */
         .member-rank-col {{ width: 16px; font-size: 0.65rem; margin-right: 2px; }}
-        .nick {{ font-size: 0.7rem; letter-spacing: -0.8px; padding-right: 2px; }}
+        .left-group {{ gap: 3px; margin-right: 4px; }}
+        
+        .nick {{ font-size: 0.7rem; letter-spacing: -0.8px; }}
+        .count-today {{ font-size: 0.6rem; letter-spacing: -0.8px; }}
         .count-main {{ font-size: 0.75rem; letter-spacing: -0.8px; }}
-        .count-today {{ font-size: 0.65rem; letter-spacing: -0.8px; }}
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -241,8 +245,12 @@ def generate_html():
             style = get_gauge_style(m['v']['monthly'])
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
-            # 🚀 당일 풍선: 군더더기 없이 깔끔하게 '+숫자' 형태의 텍스트로만 출력
-            today = f'<span class="count-today">+{m["v"]["daily"]:,}</span>' if m['v']['daily'] > 0 else ''
+            # 메달 문자열 깔끔하게 처리
+            medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
+            medal_str = f"{medal} " if medal else ""
+            
+            # 당일 증가분 텍스트
+            today = f'<div class="count-today">+{m["v"]["daily"]:,}</div>' if m['v']['daily'] > 0 else ''
             
             html += f"""
             <div class="member-module">
@@ -250,11 +258,11 @@ def generate_html():
                 <div class="member-info-col">
                     <div class="member-bg-bar" style="width:{w}%; background:{style['grad']};"></div>
                     <div class="member-content">
-                        <div class="nick">{m['nick']}</div>
-                        <div class="score-area">
-                            <span class="count-main">{m['v']['monthly']:,}</span>
+                        <div class="left-group">
+                            <div class="nick">{medal_str}{m['nick']}</div>
                             {today}
                         </div>
+                        <div class="count-main">{m['v']['monthly']:,}</div>
                     </div>
                 </div>
             </div>"""
@@ -266,4 +274,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 공간 최적화 및 시인성 개선 완료!")
+    print("Success: 정렬 문제 및 모바일 간섭 해결 완료!")
