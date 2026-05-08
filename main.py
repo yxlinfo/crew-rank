@@ -44,10 +44,11 @@ def fetch_data(uid, year, month, session):
             time.sleep(0.5)
     return {"monthly": 0}
 
+# 🚀 투박한 막대 색상 대신, 은은한 배경 틴트(bg)와 끝선(edge) 색상으로 변경
 def get_gauge_style(count):
-    if count >= 1000000: return {"grad": "linear-gradient(90deg, #7f1d1d, #ef4444)"}
-    elif count >= 200000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)"}
-    else: return {"grad": "linear-gradient(90deg, #374151, #9ca3af)"}
+    if count >= 1000000: return {"edge": "#fbbf24", "bg": "rgba(251, 191, 36, 0.2)"} # Gold
+    elif count >= 200000: return {"edge": "#38bdf8", "bg": "rgba(56, 189, 248, 0.2)"} # Sky Blue
+    else: return {"edge": "#94a3b8", "bg": "rgba(148, 163, 184, 0.15)"} # Slate
 
 def generate_html():
     crews_config = load_config_from_db()
@@ -97,27 +98,24 @@ def generate_html():
     
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
-    /* 🚀 표 전체(카드)에 트랜지션 애니메이션 추가 */
+    /* 🚀 1. 톤 다운된 표(카드) 호버: 네온과 과도한 움직임 제거, 묵직하고 은은하게 */
     .crew-card {{ 
         background: #0d0d0d;
         border: 1px solid #1a1a1a;
         border-top: 3px solid var(--theme-color); 
         border-radius: 12px; padding: 12px; 
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
         position: relative; overflow: hidden; 
         transform: translateZ(0); 
         will-change: transform; 
-        
-        /* 부드럽고 탄력 있는 팝업 애니메이션 설정 */
-        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }}
     
-    /* 🚀 표 전체 호버 효과 (선택 느낌) */
     .crew-card:hover {{
-        transform: translateY(-5px) scale(1.01) translateZ(0); /* 살짝 위로 뜨면서 미세하게 커짐 */
-        border-color: var(--theme-color); /* 테두리 전체가 테마색으로 변함 */
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 1), 0 0 15px var(--theme-color); /* 테마색 네온 그림자 추가 */
-        z-index: 10; /* 다른 카드 위로 올라오게 설정 */
+        transform: translateY(-2px) translateZ(0); /* 살짝만 뜸 */
+        border-color: #2a2a2a; /* 테두리도 무채색으로 은은하게만 밝아짐 */
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 1); /* 깊은 그림자만 추가 */
+        z-index: 10; 
     }}
     
     .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 14px; }}
@@ -135,52 +133,42 @@ def generate_html():
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
 
-    /* 멤버 단위 호버 효과 (기존 유지) */
+    /* 🚀 2. 표와 완벽하게 어울리는 앰비언트 게이지 (Ambient Gauge) 구현 */
     .member-module {{ 
-        position: relative; margin-bottom: 8px; 
+        position: relative; margin-bottom: 6px; 
+        background: #111111; /* 행 자체의 짙은 배경 */
+        border: 1px solid #1e1e1e;
+        border-radius: 6px; overflow: hidden;
         transform: translateZ(0);
         cursor: pointer; 
-        transition: transform 0.2s ease, box-shadow 0.2s ease; 
-        border-radius: 6px;
+        transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; 
     }}
     
+    /* 개별 행 마우스 오버 시 (미세한 밀림 효과) */
     .member-module:hover {{
-        transform: translateX(4px) translateZ(0); 
+        transform: translateX(2px) translateZ(0); /* 기존 4px에서 절반으로 줄임 */
+        background: #181818; 
+        border-color: rgba(255,255,255,0.1);
         z-index: 2; 
     }}
     
-    .member-info-col {{ 
-        width: 100%; position: relative; height: 28px; 
-        background: #111111;
-        border-radius: 6px; overflow: hidden;
-        border: 1px solid #222;
-        box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
-        transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }}
-    
-    .member-module:hover .member-info-col {{
-        background: rgba(255,255,255,0.06); 
-        border-color: rgba(255,255,255,0.15); 
-        box-shadow: inset 3px 0 0 0 var(--theme-color), 
-                    inset 0 2px 5px rgba(0,0,0,0.8); 
-    }}
-    
+    /* 🚀 두꺼운 배터리 막대 대신, 부드럽게 차오르는 배경 글로우(Glow) 효과 */
     .member-bg-bar {{ 
-        height: 100%; border-radius: 5px; 
-        position: absolute; left: 0; top: 0;
-        border-right: 1px solid rgba(255,255,255,0.2);
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+        position: absolute; left: 0; top: 0; height: 100%;
+        border-right: 2px solid transparent; /* 엣지 라인 */
+        transition: width 0.5s ease;
     }}
     
     .member-content {{
         display: flex; justify-content: space-between; align-items: center;
-        position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+        position: relative; /* 배경 바보다 위로 올라오도록 */
+        width: 100%; height: 30px; 
         padding: 0 10px; z-index: 2; 
     }}
     
     .nick {{ 
-        font-size: 0.8rem; font-weight: 800; color: #ffffff; 
-        text-shadow: 1px 1px 4px rgba(0,0,0,1);
+        font-size: 0.8rem; font-weight: 800; color: #e2e8f0; 
+        text-shadow: 1px 1px 2px rgba(0,0,0,1);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         flex: 1; padding-right: 8px; letter-spacing: -0.5px;
         transition: color 0.2s ease, text-shadow 0.2s ease;
@@ -188,13 +176,13 @@ def generate_html():
     
     .member-module:hover .nick {{
         color: #ffffff;
-        text-shadow: 0 0 8px #ffffff, 1px 1px 4px rgba(0,0,0,1); 
+        text-shadow: 0 0 5px rgba(255,255,255,0.4); /* 네온 줄이고 은은하게 */
     }}
     
     .count-main {{ 
         font-size: 0.9rem; font-weight: 900; color: #ffffff; 
         font-family: 'Consolas', monospace; letter-spacing: -0.5px;
-        text-shadow: 1px 1px 4px rgba(0,0,0,1);
+        text-shadow: 1px 1px 2px rgba(0,0,0,1);
         flex-shrink: 0;
     }}
 
@@ -204,19 +192,12 @@ def generate_html():
         .crew-card {{ padding: 10px; border-radius: 10px; }}
         .crew-title {{ font-size: 1.05rem; }}
         
-        .member-info-col {{ height: 26px; }}
-        .member-content {{ padding: 0 8px; }}
+        .member-content {{ height: 28px; padding: 0 8px; }}
         .nick {{ font-size: 0.75rem; letter-spacing: -0.8px; padding-right: 4px; }}
         .count-main {{ font-size: 0.85rem; letter-spacing: -0.8px; }}
         
-        .member-module:hover {{
-            transform: translateX(3px) translateZ(0);
-        }}
-        
-        /* 모바일에서는 표 전체 호버 애니메이션을 줄여서 부하 최소화 */
-        .crew-card:hover {{
-            transform: translateY(-2px) scale(1.01) translateZ(0);
-        }}
+        .member-module:hover {{ transform: translateX(1px) translateZ(0); }}
+        .crew-card:hover {{ transform: none; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }} /* 모바일에선 카드 애니메이션 끔 */
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -251,7 +232,7 @@ def generate_html():
             </div>"""
         
         for i, m in enumerate(c['members']):
-            style = get_gauge_style(m['v']['monthly'])
+            g_style = get_gauge_style(m['v']['monthly'])
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
@@ -259,12 +240,10 @@ def generate_html():
             
             html += f"""
             <div class="member-module">
-                <div class="member-info-col">
-                    <div class="member-bg-bar" style="width:{w}%; background:{style['grad']};"></div>
-                    <div class="member-content">
-                        <div class="nick">{medal_str}{m['nick']}</div>
-                        <div class="count-main">{m['v']['monthly']:,}</div>
-                    </div>
+                <div class="member-bg-bar" style="width:{w}%; background: linear-gradient(90deg, transparent, {g_style['bg']}); border-right-color: {g_style['edge']};"></div>
+                <div class="member-content">
+                    <div class="nick">{medal_str}{m['nick']}</div>
+                    <div class="count-main">{m['v']['monthly']:,}</div>
                 </div>
             </div>"""
         html += "</div>"
@@ -275,4 +254,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 카드 전체 선택 느낌 추가 완료!")
+    print("Success: 톤 다운 & 앰비언트 게이지 갱신 완료!")
