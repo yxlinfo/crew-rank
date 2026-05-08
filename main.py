@@ -26,7 +26,8 @@ def load_config_from_db():
     conn.close()
     return crews_config
 
-def fetch_data(uid, year, month, day, session):
+# 🚀 증가분 수집이 필요 없어졌으므로 통신 속도를 더욱 가볍게 최적화
+def fetch_data(uid, year, month, session):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month:02d}"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -38,28 +39,23 @@ def fetch_data(uid, year, month, day, session):
             if res.status_code == 200:
                 json_data = res.json()
                 m_val = json_data.get('b', 0)
-                d_list = json_data.get('d', [])
-                if not d_list:
-                    d_val = 0
-                else:
-                    d_val = next((i.get('b', 0) for i in d_list if int(i.get('d', -1)) == int(day)), 0)
-                return {"monthly": m_val, "daily": d_val}
+                return {"monthly": m_val}
             time.sleep(0.5)
         except: 
             time.sleep(0.5)
-    return {"monthly": 0, "daily": 0}
+    return {"monthly": 0}
 
 def get_gauge_style(count):
-    if count >= 1000000: return {"grad": "linear-gradient(90deg, #991b1b, #ef4444)"}
+    if count >= 1000000: return {"grad": "linear-gradient(90deg, #7f1d1d, #ef4444)"}
     elif count >= 200000: return {"grad": "linear-gradient(90deg, #1e3a8a, #3b82f6)"}
-    else: return {"grad": "linear-gradient(90deg, #4b5563, #9ca3af)"}
+    else: return {"grad": "linear-gradient(90deg, #374151, #9ca3af)"}
 
 def generate_html():
     crews_config = load_config_from_db()
     kst = timezone(timedelta(hours=9))
     now = datetime.now(kst)
     target_date = now - timedelta(days=1) if now.hour < 10 else now
-    y, m, d = target_date.year, target_date.month, target_date.day
+    y, m = target_date.year, target_date.month
     
     session = requests.Session()
     adapter = requests.adapters.HTTPAdapter(pool_connections=20, pool_maxsize=20)
@@ -67,7 +63,7 @@ def generate_html():
     
     all_tasks = [{'crew': c, 'nick': n, 'uid': u} for c, info in crews_config.items() for n, u in info['members'].items()]
     with ThreadPoolExecutor(max_workers=20) as executor:
-        results = list(executor.map(lambda t: {**t, 'v': fetch_data(t['uid'], y, m, d, session)}, all_tasks))
+        results = list(executor.map(lambda t: {**t, 'v': fetch_data(t['uid'], y, m, session)}, all_tasks))
 
     final_data = []
     for c_name, info in crews_config.items():
@@ -106,108 +102,83 @@ def generate_html():
         background: #0d0d0d;
         border: 1px solid #1a1a1a;
         border-top: 3px solid var(--theme-color); 
-        border-radius: 12px; padding: 10px; 
-        box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.8);
+        border-radius: 12px; padding: 12px; 
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
         position: relative; overflow: hidden; 
         transform: translateZ(0); 
         will-change: transform; 
     }}
     
-    .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #262626; padding-bottom: 10px; margin-bottom: 12px; }}
+    .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 14px; }}
     
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
     .crew-title {{ 
-        font-size: 1.15rem; font-weight: 900; letter-spacing: -0.5px; 
+        font-size: 1.2rem; font-weight: 900; letter-spacing: -0.5px; 
         color: var(--theme-color);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
     }}
     .crew-count {{ font-size: 0.7rem; color: #64748b; font-weight: 700; opacity: 1; }}
     
-    .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: #080808; padding: 8px 10px; border-radius: 6px; border: 1px solid #1a1a1a; }}
+    .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: #080808; padding: 8px 10px; border-radius: 8px; border: 1px solid #1a1a1a; }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
 
+    /* 🚀 고급스러운 바 차트 (Bar Chart) 뼈대 구축 */
     .member-module {{ 
-        display: flex; align-items: center;
-        position: relative; margin-bottom: 5px; padding: 0; 
-        background: transparent;
+        position: relative; margin-bottom: 8px; 
         transform: translateZ(0);
     }}
     
-    .member-rank-col {{
-        width: 20px; text-align: center;
-        font-size: 0.75rem; font-weight: 800; color: #94a3b8; 
-        flex-shrink: 0; margin-right: 4px;
-    }}
-    
+    /* 🚀 트랙(배경)을 살짝 둥글고 입체감 있게 처리 */
     .member-info-col {{ 
-        flex-grow: 1; position: relative; height: 26px; 
-        background: #1a1a1a;
-        border-radius: 4px; overflow: hidden;
-        border: 1px solid #262626;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        width: 100%; position: relative; height: 28px; 
+        background: #111111;
+        border-radius: 6px; overflow: hidden;
+        border: 1px solid #222;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
     }}
     
+    /* 🚀 게이지의 그라데이션과 질감 강화 */
     .member-bg-bar {{ 
-        height: 100%; border-radius: 3px; 
+        height: 100%; border-radius: 5px; 
         position: absolute; left: 0; top: 0;
-        opacity: 1; 
-        border-right: 1px solid rgba(255,255,255,0.4);
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        border-right: 1px solid rgba(255,255,255,0.2);
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
     }}
     
     .member-content {{
         display: flex; justify-content: space-between; align-items: center;
         position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-        padding: 0 8px; z-index: 2; 
+        padding: 0 10px; z-index: 2; 
     }}
     
-    /* 🚀 왼쪽 그룹 (닉네임 + 증가분)을 묶어서 침범 방지 */
-    .left-group {{
-        display: flex; align-items: center; gap: 6px;
-        flex: 1; min-width: 0; /* 모바일에서 글씨가 넘치면 말줄임표(...)를 만들기 위한 필수 요소 */
-        margin-right: 8px; /* 우측 누적별풍선과의 여백 */
-    }}
-    
+    /* 🚀 닉네임과 점수 폰트를 키우고 묵직하게 변경 */
     .nick {{ 
-        font-size: 0.75rem; font-weight: 700; color: #ffffff; 
-        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
+        font-size: 0.8rem; font-weight: 800; color: #ffffff; 
+        text-shadow: 1px 1px 4px rgba(0,0,0,1);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        flex-shrink: 1; /* 자리가 부족하면 닉네임이 우선적으로 줄어듦 */
-        letter-spacing: -0.5px;
+        flex: 1; padding-right: 8px; letter-spacing: -0.5px;
     }}
     
-    /* 🚀 새 위치로 이사 온 당일 증가분 */
-    .count-today {{ 
-        font-size: 0.65rem; font-weight: 800; color: #4ade80; 
-        font-family: 'Consolas', monospace; letter-spacing: -0.5px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
-        flex-shrink: 0; /* 증가분 숫자는 절대 찌그러지지 않음 */
-    }}
-    
-    /* 🚀 완벽한 오와 열을 맞추게 된 누적 별풍선 */
     .count-main {{ 
-        font-size: 0.85rem; font-weight: 900; color: #ffffff; 
+        font-size: 0.9rem; font-weight: 900; color: #ffffff; 
         font-family: 'Consolas', monospace; letter-spacing: -0.5px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
-        flex-shrink: 0; text-align: right; /* 항상 우측 끝에 고정 */
+        text-shadow: 1px 1px 4px rgba(0,0,0,1);
+        flex-shrink: 0;
     }}
 
-    /* 📱 모바일 환경 최적화 (2열 및 겹침 방지) */
+    /* 📱 모바일 환경 최적화 */
     @media (max-width: 768px) {{ 
-        .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
+        .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
         body {{ padding: 6px; }}
-        .crew-card {{ padding: 8px; border-radius: 10px; }}
-        .crew-title {{ font-size: 1rem; }}
-        .stat-value {{ font-size: 0.95rem; }}
+        .crew-card {{ padding: 10px; border-radius: 10px; }}
+        .crew-title {{ font-size: 1.05rem; }}
         
-        .member-rank-col {{ width: 16px; font-size: 0.65rem; margin-right: 2px; }}
-        .left-group {{ gap: 3px; margin-right: 4px; }}
-        
-        .nick {{ font-size: 0.7rem; letter-spacing: -0.8px; }}
-        .count-today {{ font-size: 0.6rem; letter-spacing: -0.8px; }}
-        .count-main {{ font-size: 0.75rem; letter-spacing: -0.8px; }}
+        .member-info-col {{ height: 26px; }}
+        .member-content {{ padding: 0 8px; }}
+        .nick {{ font-size: 0.75rem; letter-spacing: -0.8px; padding-right: 4px; }}
+        .count-main {{ font-size: 0.85rem; letter-spacing: -0.8px; }}
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -245,23 +216,16 @@ def generate_html():
             style = get_gauge_style(m['v']['monthly'])
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
-            # 메달 문자열 깔끔하게 처리
+            # 상위 3명에게만 메달 표시 (순위 숫자 대체)
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
             medal_str = f"{medal} " if medal else ""
             
-            # 당일 증가분 텍스트
-            today = f'<div class="count-today">+{m["v"]["daily"]:,}</div>' if m['v']['daily'] > 0 else ''
-            
             html += f"""
             <div class="member-module">
-                <div class="member-rank-col">{i + 1}</div>
                 <div class="member-info-col">
                     <div class="member-bg-bar" style="width:{w}%; background:{style['grad']};"></div>
                     <div class="member-content">
-                        <div class="left-group">
-                            <div class="nick">{medal_str}{m['nick']}</div>
-                            {today}
-                        </div>
+                        <div class="nick">{medal_str}{m['nick']}</div>
                         <div class="count-main">{m['v']['monthly']:,}</div>
                     </div>
                 </div>
@@ -274,4 +238,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 정렬 문제 및 모바일 간섭 해결 완료!")
+    print("Success: 고급 바 차트 디자인 갱신 완료!")
