@@ -11,6 +11,20 @@ COLOR_MAP = {
     "c-green": "#4ade80"
 }
 
+# 🚀 크루 이름 영문 변환 맵핑
+CREW_NAME_MAP = {
+    "광우상사": "GW",
+    "씨나인": "C9",
+    "이노레이블": "INOLABLE",
+    "YXL": "YXL",
+    "정선컴퍼니": "JS",
+    "771": "771",
+    "더케이": "The K",
+    "GD컴퍼니": "GD",
+    "문에이": "Moon A",
+    "쇼케이": "Show K"
+}
+
 def load_config_from_db():
     conn = sqlite3.connect('crew_data.db')
     cursor = conn.cursor()
@@ -121,33 +135,33 @@ def generate_html():
     
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
     
-    /* 🚀 크루 이름: 순백색 코어 + 테마 컬러 네온 후광 */
+    /* 🚀 크루 이름: 빛 퍼짐(Glow) 효과를 절반으로 줄여 차분하게 변경 */
     .crew-title {{ 
         font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; 
-        color: #ffffff; /* 하얀색 코어 */
-        text-shadow: 0 0 8px var(--theme-color), 0 0 16px var(--theme-color); /* 빛 퍼짐 효과 */
+        color: #ffffff; 
+        text-shadow: 0 0 6px var(--theme-color); 
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
     }}
     
-    /* 🚀 멤버 수: 은은한 하얀색 글로우 */
+    /* 🚀 멤버 수: 은은한 깊이감만 남김 */
     .crew-count {{ 
         font-size: 0.75rem; color: #e2e8f0; font-weight: 800; 
-        text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+        text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
     }}
     
     .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: #080808; padding: 8px 10px; border-radius: 8px; border: 1px solid #1a1a1a; }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
     
-    /* 🚀 라벨 (Total, Average): 테마 컬러 네온 후광 */
+    /* 🚀 라벨 (Total, Average): 과한 번쩍임을 제거하고 선명도만 유지 */
     .stat-label {{ 
         font-size: 0.65rem; color: #ffffff; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; 
-        text-shadow: 0 0 6px var(--theme-color), 0 0 10px var(--theme-color);
+        text-shadow: 0 0 4px var(--theme-color);
     }}
     
-    /* 🚀 수치 (숫자): 순백색 코어 + 넓게 퍼지는 테마 후광 */
+    /* 🚀 수치 (숫자): 눈이 부시지 않게 얇은 테마색 그림자만 적용 */
     .stat-value {{ 
         font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; 
-        text-shadow: 0 0 8px var(--theme-color), 0 0 15px rgba(255, 255, 255, 0.3);
+        text-shadow: 0 0 5px var(--theme-color);
     }}
 
     .member-module {{ 
@@ -237,11 +251,16 @@ def generate_html():
 
     for c in final_data:
         theme_hex = COLOR_MAP.get(c['color'], '#ffffff')
+        
+        # 🚀 DB 이름 -> 영문 약칭 이름으로 변환
+        display_name = CREW_NAME_MAP.get(c['name'], c['name'])
+        
         html += f"""
         <div class="crew-card" style="--theme-color: {theme_hex};">
             <div class="header">
                 <div class="header-top">
-                    <div class="crew-title {c['color']}">{c['name']}</div>
+                    <!-- 🚀 변환된 영문 이름 적용 -->
+                    <div class="crew-title {c['color']}">{display_name}</div>
                     <div class="crew-count">{len(c['members'])} MEMBERS</div>
                 </div>
                 <div class="header-stats">
@@ -279,4 +298,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 네온 텍스트 글로우 갱신 완료!")
+    print("Success: 크루명 영문 변환 및 네온 톤 다운 갱신 완료!")
