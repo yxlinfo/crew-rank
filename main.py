@@ -4,7 +4,6 @@ import time
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
 
-# 크루별 테마 색상 맵핑
 COLOR_MAP = {
     "c-red": "#f87171", "c-white": "#f8fafc", "c-gold": "#fbbf24", 
     "c-pink": "#f472b6", "c-cyan": "#22d3ee", "c-purple": "#c084fc", 
@@ -27,7 +26,6 @@ def load_config_from_db():
     conn.close()
     return crews_config
 
-# 🚀 최적화된 데이터 수집 (일일 증가분 제거, 월간 총합만 광속 수집)
 def fetch_data(uid, year, month, session):
     api_url = f"https://static.poong.today/bj/detail/get?id={uid}&year={year}&month={month:02d}"
     headers = {
@@ -58,14 +56,11 @@ def generate_html():
     target_date = now - timedelta(days=1) if now.hour < 10 else now
     y, m = target_date.year, target_date.month
     
-    # 🚀 커넥션 풀링으로 통신 랙 제거
     session = requests.Session()
     adapter = requests.adapters.HTTPAdapter(pool_connections=20, pool_maxsize=20)
     session.mount('https://', adapter)
     
     all_tasks = [{'crew': c, 'nick': n, 'uid': u} for c, info in crews_config.items() for n, u in info['members'].items()]
-    
-    # 🚀 20명 동시 수집으로 속도 극대화
     with ThreadPoolExecutor(max_workers=20) as executor:
         results = list(executor.map(lambda t: {**t, 'v': fetch_data(t['uid'], y, m, session)}, all_tasks))
 
@@ -87,7 +82,6 @@ def generate_html():
         padding: 10px; width: 100vw; overflow-x: hidden; min-height: 100vh;
     }}
     
-    /* 🌌 배경 별빛 효과 (GPU 가속) */
     body::before {{
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background-image: 
@@ -101,9 +95,9 @@ def generate_html():
     
     .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(0, 0, 0, 0.9); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);backdrop-filter: blur(5px); position: relative; z-index: 1; transform: translateZ(0); }}
     
-    /* 💻 PC 4열 레이아웃 */
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
+    /* 🚀 표 전체(카드)에 트랜지션 애니메이션 추가 */
     .crew-card {{ 
         background: #0d0d0d;
         border: 1px solid #1a1a1a;
@@ -113,6 +107,17 @@ def generate_html():
         position: relative; overflow: hidden; 
         transform: translateZ(0); 
         will-change: transform; 
+        
+        /* 부드럽고 탄력 있는 팝업 애니메이션 설정 */
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, border-color 0.3s ease;
+    }}
+    
+    /* 🚀 표 전체 호버 효과 (선택 느낌) */
+    .crew-card:hover {{
+        transform: translateY(-5px) scale(1.01) translateZ(0); /* 살짝 위로 뜨면서 미세하게 커짐 */
+        border-color: var(--theme-color); /* 테두리 전체가 테마색으로 변함 */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 1), 0 0 15px var(--theme-color); /* 테마색 네온 그림자 추가 */
+        z-index: 10; /* 다른 카드 위로 올라오게 설정 */
     }}
     
     .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 14px; }}
@@ -130,7 +135,7 @@ def generate_html():
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
 
-    /* 💎 럭셔리 바 차트 (선택 느낌 호버 효과 포함) */
+    /* 멤버 단위 호버 효과 (기존 유지) */
     .member-module {{ 
         position: relative; margin-bottom: 8px; 
         transform: translateZ(0);
@@ -153,7 +158,6 @@ def generate_html():
         transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }}
     
-    /* 호버 시 왼쪽 테마 컬러 포인트 생성 및 미세 하이라이트 */
     .member-module:hover .member-info-col {{
         background: rgba(255,255,255,0.06); 
         border-color: rgba(255,255,255,0.15); 
@@ -182,7 +186,6 @@ def generate_html():
         transition: color 0.2s ease, text-shadow 0.2s ease;
     }}
     
-    /* 호버 시 이름 텍스트 화이트 글로우 효과 (막대 자체는 변하지 않음) */
     .member-module:hover .nick {{
         color: #ffffff;
         text-shadow: 0 0 8px #ffffff, 1px 1px 4px rgba(0,0,0,1); 
@@ -195,7 +198,6 @@ def generate_html():
         flex-shrink: 0;
     }}
 
-    /* 📱 모바일 2열 레이아웃 최적화 */
     @media (max-width: 768px) {{ 
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
         body {{ padding: 6px; }}
@@ -209,6 +211,11 @@ def generate_html():
         
         .member-module:hover {{
             transform: translateX(3px) translateZ(0);
+        }}
+        
+        /* 모바일에서는 표 전체 호버 애니메이션을 줄여서 부하 최소화 */
+        .crew-card:hover {{
+            transform: translateY(-2px) scale(1.01) translateZ(0);
         }}
     }}
 
@@ -247,7 +254,6 @@ def generate_html():
             style = get_gauge_style(m['v']['monthly'])
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
-            # 상위 3명 메달 표시 (순위 숫자 대체)
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
             medal_str = f"{medal} " if medal else ""
             
@@ -269,4 +275,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 최종 럭셔리 대시보드 갱신 완료!")
+    print("Success: 카드 전체 선택 느낌 추가 완료!")
