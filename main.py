@@ -128,72 +128,82 @@ def generate_html():
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
 
-    /* 🚀 수정된 멤버 행 (배경 게이지 꽉 차게) */
+    /* 🚀 멤버 리스트 뼈대 */
     .member-module {{ 
         display: flex; align-items: center;
-        position: relative; margin-bottom: 4px; padding: 0; 
+        position: relative; margin-bottom: 5px; padding: 0; 
         background: transparent;
-        border-radius: 4px;
         transform: translateZ(0);
     }}
     
     .member-rank-col {{
-        width: 22px; text-align: center;
-        font-size: 0.75rem; font-weight: 700; color: #64748b; 
+        width: 20px; text-align: center;
+        font-size: 0.75rem; font-weight: 800; color: #94a3b8; 
         flex-shrink: 0; margin-right: 4px;
     }}
     
+    /* 🚀 게이지 시인성 개선: 빈 트랙(배경)을 명확하게 분리 */
     .member-info-col {{ 
         flex-grow: 1; position: relative; height: 26px; 
-        background: #111111; border-radius: 4px; overflow: hidden;
+        background: #1a1a1a; /* 검은색과 구분되는 짙은 회색 */
+        border-radius: 4px; overflow: hidden;
+        border: 1px solid #262626; /* 트랙 윤곽선 */
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
     }}
     
+    /* 🚀 게이지 100% 진하게 채우기 */
     .member-bg-bar {{ 
-        height: 100%; border-radius: 4px; 
+        height: 100%; border-radius: 3px; 
         position: absolute; left: 0; top: 0;
-        opacity: 0.85;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* 게이지 입체감 */
+        opacity: 1; /* 투명도 제거, 완전 선명하게 */
+        border-right: 1px solid rgba(255,255,255,0.4); /* 게이지 끝부분 빛 반사 효과 */
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
     }}
     
     .member-content {{
         display: flex; justify-content: space-between; align-items: center;
         position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-        padding: 0 8px; z-index: 2; 
+        padding: 0 6px; z-index: 2; 
     }}
     
-    /* 그림자 추가로 게이지 위에서도 글씨가 선명하게 */
+    /* 🚀 게이지 위에서도 글씨가 잘 보이도록 강력한 그림자 추가 */
     .nick {{ 
         font-size: 0.75rem; font-weight: 700; color: #ffffff; 
-        text-shadow: 1px 1px 3px rgba(0,0,0,1);
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.8px; padding-right: 2px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.5px; padding-right: 4px;
     }}
     
-    .score-area {{ display: flex; align-items: center; flex-shrink: 0; }}
+    /* 🚀 공간 절약을 위해 가로 정렬(Flex) 간격 최소화 */
+    .score-area {{ 
+        display: flex; align-items: center; gap: 4px; flex-shrink: 0; 
+    }}
     
     .count-main {{ 
         font-size: 0.85rem; font-weight: 900; color: #ffffff; 
-        font-family: 'Consolas', monospace; letter-spacing: -0.8px;
-        text-shadow: 1px 1px 3px rgba(0,0,0,1);
+        font-family: 'Consolas', monospace; letter-spacing: -0.5px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
     }}
     
-    /* 🚀 당일 풍 뱃지 (캡슐 형태) */
+    /* 🚀 +증가분: 캡슐 배경 없애고 글씨만 예쁘게 (+ 기호 추가) */
     .count-today {{ 
-        font-size: 0.65rem; font-weight: 800; color: #fbbf24; 
-        background: rgba(0, 0, 0, 0.6); 
-        padding: 2px 5px; border-radius: 6px; 
-        margin-left: 6px; box-shadow: 0 0 4px rgba(0,0,0,0.5);
-        backdrop-filter: blur(2px);
+        font-size: 0.7rem; font-weight: 800; color: #4ade80; /* 눈에 띄는 밝은 네온 그린 */
+        font-family: 'Consolas', monospace; letter-spacing: -0.5px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8);
     }}
 
+    /* 📱 모바일 환경 극강 다이어트 (넘침 방지) */
     @media (max-width: 768px) {{ 
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
         body {{ padding: 6px; }}
         .crew-card {{ padding: 8px; border-radius: 10px; }}
         .crew-title {{ font-size: 1rem; }}
         .stat-value {{ font-size: 0.95rem; }}
-        .nick {{ font-size: 0.7rem; }}
-        .count-main {{ font-size: 0.75rem; }}
-        .count-today {{ font-size: 0.6rem; padding: 2px 4px; margin-left: 4px; }}
+        
+        .score-area {{ gap: 3px; }} /* 간격 더 줄임 */
+        .member-rank-col {{ width: 16px; font-size: 0.65rem; margin-right: 2px; }}
+        .nick {{ font-size: 0.7rem; letter-spacing: -0.8px; padding-right: 2px; }}
+        .count-main {{ font-size: 0.75rem; letter-spacing: -0.8px; }}
+        .count-today {{ font-size: 0.65rem; letter-spacing: -0.8px; }}
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -231,8 +241,8 @@ def generate_html():
             style = get_gauge_style(m['v']['monthly'])
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
-            # 당일 풍선: 노란색 캡슐 뱃지 형태
-            today = f'<span class="count-today">▲ {m["v"]["daily"]:,}</span>' if m['v']['daily'] > 0 else ''
+            # 🚀 당일 풍선: 군더더기 없이 깔끔하게 '+숫자' 형태의 텍스트로만 출력
+            today = f'<span class="count-today">+{m["v"]["daily"]:,}</span>' if m['v']['daily'] > 0 else ''
             
             html += f"""
             <div class="member-module">
@@ -256,4 +266,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 가독성 최적화 대시보드 갱신 완료!")
+    print("Success: 공간 최적화 및 시인성 개선 완료!")
