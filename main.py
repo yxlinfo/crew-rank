@@ -77,14 +77,14 @@ def generate_html():
     <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     
-    /* 🌌 우주 배경: 딥 네이비 그라데이션 및 가상 별빛 효과 */
+    /* 🌌 배경: 요청하신 대로 순수 블랙(#000)으로 설정 */
     body {{ 
-        background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        background: #000000;
         color: #f8fafc; font-family: 'Pretendard', -apple-system, sans-serif; 
         padding: 10px; width: 100vw; overflow-x: hidden; min-height: 100vh;
     }}
     
-    /* 별빛 가루 효과 (CSS) */
+    /* 우주 별빛 효과 유지 */
     body::before {{
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background-image: 
@@ -93,60 +93,58 @@ def generate_html():
             radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
         background-size: 550px 550px, 350px 350px, 250px 250px;
         background-position: 0 0, 40px 60px, 130px 270px;
-        opacity: 0.2; pointer-events: none; z-index: 0;
+        opacity: 0.15; pointer-events: none; z-index: 0;
     }}
     
-    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(15, 23, 42, 0.6); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); position: relative; z-index: 1; }}
+    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(15, 23, 42, 0.8); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); position: relative; z-index: 1; }}
     
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
-    /* 🛸 우주선/행성 느낌의 반투명 카드 디자인 */
     .crew-card {{ 
-        background: rgba(13, 19, 33, 0.7); 
+        background: rgba(13, 19, 33, 0.85); 
         border: 1px solid rgba(255,255,255,0.1); 
         border-top: 3px solid var(--theme-color); 
         border-radius: 12px; padding: 10px; 
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.9);
         backdrop-filter: blur(4px);
         position: relative; overflow: hidden; 
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        z-index: 1; 
     }}
     
     .crew-card:hover {{ 
         transform: translateY(-8px) scale(1.03); 
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 15px var(--theme-color); 
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 1), 0 0 20px var(--theme-color); 
         border-color: var(--theme-color); 
-        background: rgba(20, 30, 48, 0.9);
+        background: rgba(20, 30, 48, 0.95);
         filter: brightness(1.2); z-index: 10; 
     }}
     
     .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px; }}
     
-    /* 🎯 크루 이름 중앙 배치 */
+    /* 크루 이름 중앙 배치 */
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
     .crew-title {{ 
         font-size: 1.15rem; font-weight: 900; letter-spacing: -0.5px; 
-        text-shadow: 0 0 10px var(--theme-color); /* 테마색 네온 효과 */
+        text-shadow: 0 0 10px var(--theme-color);
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
     }}
     .crew-count {{ font-size: 0.7rem; color: #94a3b8; font-weight: 700; opacity: 0.8; }}
     
-    .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: rgba(0, 0, 0, 0.4); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }}
+    .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: rgba(0, 0, 0, 0.5); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
-    .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 0.9; }}
+    .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 0.9; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; text-shadow: 0 0 10px var(--theme-color); white-space: nowrap; letter-spacing: -0.5px; }}
 
-    .member-module {{ position: relative; margin-bottom: 8px; padding: 8px 8px 18px 8px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); z-index: 1; transition: all 0.2s; }}
-    .member-module:hover {{ background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }}
+    .member-module {{ position: relative; margin-bottom: 8px; padding: 8px 8px 18px 8px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; }}
+    .member-module:hover {{ background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }}
     
     .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 2px; }}
     .nick {{ font-size: 0.75rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.8px; padding-right: 2px; }}
     .count-main {{ font-size: 0.85rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; letter-spacing: -0.8px; }}
 
-    .bar-container {{ position: relative; width: 100%; height: 5px; background: rgba(0, 0, 0, 0.5); border-radius: 4px; overflow: hidden; }}
+    .bar-container {{ position: relative; width: 100%; height: 5px; background: rgba(0, 0, 0, 0.6); border-radius: 4px; overflow: hidden; }}
     .bar-fill {{ height: 100%; border-radius: 4px; box-shadow: 0 0 10px rgba(255,255,255,0.3); }}
-    .count-today {{ font-size: 0.65rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -16px; white-space: nowrap; letter-spacing: -0.5px; text-shadow: 0 0 5px rgba(0,0,0,0.8); }}
+    .count-today {{ font-size: 0.65rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -16px; white-space: nowrap; letter-spacing: -0.5px; text-shadow: 0 0 5px rgba(0,0,0,1); }}
 
     @media (max-width: 768px) {{ 
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
@@ -163,7 +161,7 @@ def generate_html():
     </style></head>
     <body>
         <div class="top-bar">
-            <div style="font-size: 1rem; font-weight: 900; color: #e2e8f0; letter-spacing: 2px;">COSMOS <span style="color:var(--theme-color, #38bdf8);">RANKING</span></div>
+            <div style="font-size: 1rem; font-weight: 900; color: #e2e8f0; letter-spacing: 2px;">CREW <span style="color:var(--theme-color, #38bdf8);">RANKING</span></div>
             <div style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">{now.strftime('%y.%m.%d %H:%M')}</div>
         </div>
         <div class="grid">"""
@@ -179,7 +177,7 @@ def generate_html():
                 </div>
                 <div class="header-stats">
                     <div class="stat-item">
-                        <span class="stat-label">Monthly</span>
+                        <span class="stat-label">Total</span>
                         <span class="stat-value">{c['total']:,}</span>
                     </div>
                     <div class="stat-item">
@@ -213,4 +211,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 우주 테마 대시보드 갱신 완료!")
+    print("Success: 블랙 테마 대시보드 갱신 완료!")
