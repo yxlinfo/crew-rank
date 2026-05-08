@@ -44,11 +44,12 @@ def fetch_data(uid, year, month, session):
             time.sleep(0.5)
     return {"monthly": 0}
 
-# 🚀 투박한 막대 색상 대신, 은은한 배경 틴트(bg)와 끝선(edge) 색상으로 변경
+# 🚀 혜성 꼬리의 '코어 색상'만 심플하게 반환하도록 수정 (백만, 50만, 20만 단위로 세분화)
 def get_gauge_style(count):
-    if count >= 1000000: return {"edge": "#fbbf24", "bg": "rgba(251, 191, 36, 0.2)"} # Gold
-    elif count >= 200000: return {"edge": "#38bdf8", "bg": "rgba(56, 189, 248, 0.2)"} # Sky Blue
-    else: return {"edge": "#94a3b8", "bg": "rgba(148, 163, 184, 0.15)"} # Slate
+    if count >= 1000000: return "#ef4444" # Red
+    elif count >= 500000: return "#fbbf24"  # Gold
+    elif count >= 200000: return "#38bdf8"  # Sky Blue
+    else: return "#94a3b8" # Slate
 
 def generate_html():
     crews_config = load_config_from_db()
@@ -98,7 +99,6 @@ def generate_html():
     
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
-    /* 🚀 1. 톤 다운된 표(카드) 호버: 네온과 과도한 움직임 제거, 묵직하고 은은하게 */
     .crew-card {{ 
         background: #0d0d0d;
         border: 1px solid #1a1a1a;
@@ -112,9 +112,9 @@ def generate_html():
     }}
     
     .crew-card:hover {{
-        transform: translateY(-2px) translateZ(0); /* 살짝만 뜸 */
-        border-color: #2a2a2a; /* 테두리도 무채색으로 은은하게만 밝아짐 */
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 1); /* 깊은 그림자만 추가 */
+        transform: translateY(-2px) translateZ(0); 
+        border-color: #2a2a2a; 
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 1); 
         z-index: 10; 
     }}
     
@@ -133,35 +133,45 @@ def generate_html():
     .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
     .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
 
-    /* 🚀 2. 표와 완벽하게 어울리는 앰비언트 게이지 (Ambient Gauge) 구현 */
     .member-module {{ 
         position: relative; margin-bottom: 6px; 
-        background: #111111; /* 행 자체의 짙은 배경 */
+        background: #111111; 
         border: 1px solid #1e1e1e;
-        border-radius: 6px; overflow: hidden;
+        border-radius: 4px; overflow: hidden;
         transform: translateZ(0);
         cursor: pointer; 
         transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease; 
     }}
     
-    /* 개별 행 마우스 오버 시 (미세한 밀림 효과) */
     .member-module:hover {{
-        transform: translateX(2px) translateZ(0); /* 기존 4px에서 절반으로 줄임 */
+        transform: translateX(2px) translateZ(0); 
         background: #181818; 
         border-color: rgba(255,255,255,0.1);
         z-index: 2; 
     }}
     
-    /* 🚀 두꺼운 배터리 막대 대신, 부드럽게 차오르는 배경 글로우(Glow) 효과 */
+    /* 🚀 새로운 혜성(Comet) 게이지 라인 */
     .member-bg-bar {{ 
-        position: absolute; left: 0; top: 0; height: 100%;
-        border-right: 2px solid transparent; /* 엣지 라인 */
+        position: absolute; left: 0; bottom: 0;
+        height: 2px; /* 아주 얇고 날렵한 선 */
+        background: linear-gradient(90deg, transparent, var(--bar-color));
         transition: width 0.5s ease;
+        z-index: 1;
+    }}
+    
+    /* 🚀 혜성의 빛나는 코어(머리 부분) */
+    .member-bg-bar::after {{
+        content: '';
+        position: absolute; right: 0; top: -2px; /* 선의 중앙에 오도록 위로 당김 */
+        width: 6px; height: 6px;
+        background: #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 0 6px 1px var(--bar-color), 0 0 12px 3px var(--bar-color); /* 코어 주변의 네온 글로우 */
     }}
     
     .member-content {{
         display: flex; justify-content: space-between; align-items: center;
-        position: relative; /* 배경 바보다 위로 올라오도록 */
+        position: relative; 
         width: 100%; height: 30px; 
         padding: 0 10px; z-index: 2; 
     }}
@@ -176,7 +186,7 @@ def generate_html():
     
     .member-module:hover .nick {{
         color: #ffffff;
-        text-shadow: 0 0 5px rgba(255,255,255,0.4); /* 네온 줄이고 은은하게 */
+        text-shadow: 0 0 5px rgba(255,255,255,0.4); 
     }}
     
     .count-main {{ 
@@ -197,7 +207,7 @@ def generate_html():
         .count-main {{ font-size: 0.85rem; letter-spacing: -0.8px; }}
         
         .member-module:hover {{ transform: translateX(1px) translateZ(0); }}
-        .crew-card:hover {{ transform: none; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }} /* 모바일에선 카드 애니메이션 끔 */
+        .crew-card:hover {{ transform: none; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }} 
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -232,7 +242,8 @@ def generate_html():
             </div>"""
         
         for i, m in enumerate(c['members']):
-            g_style = get_gauge_style(m['v']['monthly'])
+            # 게이지의 테마 컬러 가져오기
+            bar_color = get_gauge_style(m['v']['monthly'])
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
             medal = ["🥇", "🥈", "🥉"][i] if i < 3 else ""
@@ -240,7 +251,7 @@ def generate_html():
             
             html += f"""
             <div class="member-module">
-                <div class="member-bg-bar" style="width:{w}%; background: linear-gradient(90deg, transparent, {g_style['bg']}); border-right-color: {g_style['edge']};"></div>
+                <div class="member-bg-bar" style="width:{w}%; --bar-color: {bar_color};"></div>
                 <div class="member-content">
                     <div class="nick">{medal_str}{m['nick']}</div>
                     <div class="count-main">{m['v']['monthly']:,}</div>
@@ -254,4 +265,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 톤 다운 & 앰비언트 게이지 갱신 완료!")
+    print("Success: 혜성(Comet) 게이지 갱신 완료!")
