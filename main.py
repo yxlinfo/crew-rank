@@ -76,38 +76,44 @@ def generate_html():
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-    body {{ background: #0b1120; color: #f8fafc; font-family: 'Pretendard', -apple-system, sans-serif; padding: 15px; width: 100vw; overflow-x: hidden; }}
+    body {{ background: #0b1120; color: #f8fafc; font-family: 'Pretendard', -apple-system, sans-serif; padding: 10px; width: 100vw; overflow-x: hidden; }}
     
-    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(30, 41, 59, 0.7); padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }}
+    .top-bar {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; background: rgba(30, 41, 59, 0.7); padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }}
     
-    .grid {{ display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); padding-bottom: 60px; }}
+    /* PC 환경 기본 세팅 (4열) */
+    .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; }}
     
-    .crew-card {{ background: linear-gradient(145deg, #131c2d, #0d131f); border: 1px solid #1e293b; border-top: 3px solid var(--theme-color); border-radius: 14px; padding: 16px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }}
+    /* 카드 내부 여백 다이어트 (타이트한 느낌) */
+    .crew-card {{ background: linear-gradient(145deg, #131c2d, #0d131f); border: 1px solid #1e293b; border-top: 3px solid var(--theme-color); border-radius: 12px; padding: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); position: relative; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1; }}
     .crew-card::before {{ content: ''; position: absolute; top: -40%; left: -20%; width: 150%; height: 150%; background: radial-gradient(circle at 50% 0%, var(--theme-color), transparent 50%); opacity: 0.04; pointer-events: none; transition: opacity 0.3s ease; }}
-    .crew-card:hover {{ transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px var(--theme-color); border-color: var(--theme-color); filter: brightness(1.15); z-index: 10; }}
+    .crew-card:hover {{ transform: translateY(-6px) scale(1.02); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--theme-color); border-color: var(--theme-color); filter: brightness(1.15); z-index: 10; }}
     .crew-card:hover::before {{ opacity: 0.15; }}
     
-    .header {{ display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 14px; margin-bottom: 18px; z-index: 1; position: relative; }}
-    .header-top {{ display: flex; justify-content: space-between; align-items: center; gap: 5px; }}
-    .crew-title {{ font-size: 1.3rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }}
-    .crew-count {{ font-size: 0.85rem; color: #64748b; font-weight: 700; white-space: nowrap; flex-shrink: 0; }}
+    .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 12px; z-index: 1; position: relative; }}
+    .header-top {{ display: flex; justify-content: space-between; align-items: center; gap: 4px; }}
+    .crew-title {{ font-size: 1.1rem; font-weight: 900; letter-spacing: -0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }}
+    .crew-count {{ font-size: 0.75rem; color: #64748b; font-weight: 700; white-space: nowrap; flex-shrink: 0; }}
     
-    .header-stats {{ display: flex; flex-direction: column; gap: 8px; background: rgba(0, 0, 0, 0.3); padding: 12px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }}
+    .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: rgba(0, 0, 0, 0.3); padding: 8px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
-    .stat-label {{ font-size: 0.75rem; color: var(--theme-color); opacity: 0.85; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }}
-    .stat-value {{ font-size: 1.25rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; text-shadow: 0 0 10px var(--theme-color), 0 0 20px rgba(0,0,0,0.4); white-space: nowrap; }}
+    .stat-label {{ font-size: 0.7rem; color: var(--theme-color); opacity: 0.85; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }}
+    .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; text-shadow: 0 0 10px var(--theme-color), 0 0 15px rgba(0,0,0,0.4); white-space: nowrap; letter-spacing: -0.5px; }}
 
-    .member-module {{ position: relative; margin-bottom: 12px; padding: 12px 14px 22px 14px; background: rgba(15, 23, 42, 0.4); border-radius: 10px; border: 1px solid rgba(255,255,255,0.02); z-index: 1; transition: transform 0.2s, background 0.2s; }}
+    /* 멤버 리스트 모듈 다이어트 */
+    .member-module {{ position: relative; margin-bottom: 8px; padding: 8px 8px 18px 8px; background: rgba(15, 23, 42, 0.4); border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); z-index: 1; transition: transform 0.2s, background 0.2s; }}
     .member-module:hover {{ transform: scale(1.02); background: rgba(255,255,255,0.05); }}
     
-    .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 4px; }}
-    .nick {{ font-size: 0.95rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.5px; }}
-    .count-main {{ font-size: 1.05rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; letter-spacing: -0.5px; }}
+    .member-info {{ display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; gap: 2px; }}
+    
+    /* 4열 기준 침범 방지 핵심 요소 (PC) */
+    .nick {{ font-size: 0.75rem; font-weight: 700; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; letter-spacing: -0.8px; padding-right: 2px; }}
+    .count-main {{ font-size: 0.85rem; font-weight: 900; color: #ffffff; flex-shrink: 0; font-family: 'Consolas', monospace; letter-spacing: -0.8px; }}
 
-    .bar-container {{ position: relative; width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }}
+    .bar-container {{ position: relative; width: 100%; height: 5px; background: rgba(0, 0, 0, 0.4); border-radius: 4px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5); }}
     .bar-fill {{ height: 100%; border-radius: 4px; box-shadow: 0 0 5px rgba(255,255,255,0.2); }}
-    .count-today {{ font-size: 0.75rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -18px; white-space: nowrap; }}
+    .count-today {{ font-size: 0.65rem; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); bottom: -16px; white-space: nowrap; letter-spacing: -0.5px; }}
 
+    /* 모바일 환경 세팅 (2열로 축소) */
     @media (max-width: 768px) {{ 
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 6px; }}
         body {{ padding: 6px; }}
@@ -120,8 +126,10 @@ def generate_html():
         .stat-value {{ font-size: 0.9rem; letter-spacing: -0.5px; }}
         .member-module {{ padding: 8px 6px 18px 6px; margin-bottom: 8px; border-radius: 8px; }}
         .member-info {{ margin-bottom: 6px; gap: 2px; }}
+        
+        /* 모바일 침범 방지 */
         .nick {{ font-size: 0.7rem; letter-spacing: -0.8px; padding-right: 2px; }}
-        .count-main {{ font-size: 0.75rem; letter-spacing: -0.8px; padding-left: 0; }}
+        .count-main {{ font-size: 0.75rem; letter-spacing: -0.8px; }}
         .count-today {{ font-size: 0.65rem; bottom: -15px; letter-spacing: -0.5px; }}
     }}
 
