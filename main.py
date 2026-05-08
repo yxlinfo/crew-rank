@@ -11,7 +11,6 @@ COLOR_MAP = {
     "c-green": "#4ade80"
 }
 
-# 🚀 크루 이름 영문 변환 맵핑
 CREW_NAME_MAP = {
     "광우상사": "GW",
     "씨나인": "C9",
@@ -112,6 +111,30 @@ def generate_html():
     
     .grid {{ display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; position: relative; z-index: 1; }}
     
+    /* 🎬 1. 카드 등장 애니메이션 정의 */
+    @keyframes fadeInUp {{
+        0% {{ opacity: 0; transform: translateY(30px) translateZ(0); }}
+        100% {{ opacity: 1; transform: translateY(0) translateZ(0); }}
+    }}
+    
+    /* 👑 2. 1등 크루 후광 펄스 애니메이션 */
+    @keyframes firstPlacePulse {{
+        0%, 100% {{ box-shadow: 0 4px 15px rgba(0,0,0,0.6), inset 0 0 0 transparent; border-color: #1a1a1a; }}
+        50% {{ box-shadow: 0 8px 30px rgba(0,0,0,1), 0 0 12px var(--theme-color), inset 0 0 10px rgba(255, 255, 255, 0.05); border-color: var(--theme-color); }}
+    }}
+    
+    /* 👑 3. 1등 왕관 흔들림 효과 */
+    @keyframes crownShine {{
+        0%, 100% {{ filter: drop-shadow(0 0 2px #fbbf24); transform: rotate(0deg) scale(1); }}
+        50% {{ filter: drop-shadow(0 0 8px #fbbf24) brightness(1.2); transform: rotate(-12deg) scale(1.15); }}
+    }}
+    
+    /* ☄️ 4. 혜성 레이저 발사 (게이지 차오름) 애니메이션 */
+    @keyframes fillGauge {{
+        0% {{ width: 0%; }}
+        100% {{ width: var(--target-width); }}
+    }}
+    
     .crew-card {{ 
         background: #0d0d0d;
         border: 1px solid #1a1a1a;
@@ -119,15 +142,25 @@ def generate_html():
         border-radius: 12px; padding: 12px; 
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
         position: relative; overflow: hidden; 
-        transform: translateZ(0); 
-        will-change: transform; 
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        will-change: transform, opacity; 
+        
+        /* 기본 등장 애니메이션 세팅 (Python에서 delay 부여) */
+        opacity: 0; 
+        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: var(--anim-delay);
     }}
     
+    /* 👑 1등 크루 전용 클래스 (등장 후 후광 펄스 무한 반복) */
+    .crew-card.rank-1 {{
+        animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+                   firstPlacePulse 3s ease-in-out infinite alternate;
+        /* 등장 애니메이션이 끝난 직후부터 펄스 시작 */
+        animation-delay: var(--anim-delay), calc(var(--anim-delay) + 0.7s);
+    }}
+    
+    /* 기존 호버는 1등 펄스와 겹치지 않도록 깔끔하게 유지 */
     .crew-card:hover {{
-        transform: translateY(-2px) translateZ(0); 
-        border-color: #2a2a2a; 
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 1); 
+        transform: translateY(-2px) translateZ(0) !important; 
         z-index: 10; 
     }}
     
@@ -135,34 +168,28 @@ def generate_html():
     
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
     
-    /* 🚀 크루 이름: 빛 퍼짐(Glow) 효과를 절반으로 줄여 차분하게 변경 */
     .crew-title {{ 
         font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; 
         color: #ffffff; 
         text-shadow: 0 0 6px var(--theme-color); 
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
+        display: flex; justify-content: center; align-items: center;
     }}
     
-    /* 🚀 멤버 수: 은은한 깊이감만 남김 */
-    .crew-count {{ 
-        font-size: 0.75rem; color: #e2e8f0; font-weight: 800; 
-        text-shadow: 0 0 3px rgba(255, 255, 255, 0.3);
+    /* 왕관 아이콘 스타일 */
+    .crown-icon {{
+        display: inline-block;
+        margin-right: 6px;
+        font-size: 1.1rem;
+        animation: crownShine 2s infinite ease-in-out;
     }}
+    
+    .crew-count {{ font-size: 0.75rem; color: #e2e8f0; font-weight: 800; text-shadow: 0 0 3px rgba(255, 255, 255, 0.3); }}
     
     .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: #080808; padding: 8px 10px; border-radius: 8px; border: 1px solid #1a1a1a; }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
-    
-    /* 🚀 라벨 (Total, Average): 과한 번쩍임을 제거하고 선명도만 유지 */
-    .stat-label {{ 
-        font-size: 0.65rem; color: #ffffff; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; 
-        text-shadow: 0 0 4px var(--theme-color);
-    }}
-    
-    /* 🚀 수치 (숫자): 눈이 부시지 않게 얇은 테마색 그림자만 적용 */
-    .stat-value {{ 
-        font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; 
-        text-shadow: 0 0 5px var(--theme-color);
-    }}
+    .stat-label {{ font-size: 0.65rem; color: #ffffff; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; text-shadow: 0 0 4px var(--theme-color); }}
+    .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; text-shadow: 0 0 5px var(--theme-color); }}
 
     .member-module {{ 
         position: relative; margin-bottom: 6px; 
@@ -181,12 +208,15 @@ def generate_html():
         z-index: 2; 
     }}
     
+    /* ☄️ 애니메이션으로 0부터 차오르는 혜성 라인 */
     .member-bg-bar {{ 
         position: absolute; left: 0; bottom: 0;
         height: 2px; 
         background: linear-gradient(90deg, transparent, var(--bar-color));
-        transition: width 0.5s ease;
         z-index: 1;
+        width: 0; /* 시작점 0% */
+        animation: fillGauge 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        animation-delay: calc(var(--anim-delay) + 0.3s); /* 카드가 등장한 직후에 발사! */
     }}
     
     .member-bg-bar::after {{
@@ -205,38 +235,19 @@ def generate_html():
         padding: 0 10px; z-index: 2; 
     }}
     
-    .nick {{ 
-        font-size: 0.8rem; font-weight: 800; color: #e2e8f0; 
-        text-shadow: 1px 1px 2px rgba(0,0,0,1);
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
-        flex: 1; padding-right: 8px; letter-spacing: -0.5px;
-        transition: color 0.2s ease, text-shadow 0.2s ease;
-    }}
-    
-    .member-module:hover .nick {{
-        color: #ffffff;
-        text-shadow: 0 0 5px rgba(255,255,255,0.4); 
-    }}
-    
-    .count-main {{ 
-        font-size: 0.9rem; font-weight: 900; color: #ffffff; 
-        font-family: 'Consolas', monospace; letter-spacing: -0.5px;
-        text-shadow: 1px 1px 2px rgba(0,0,0,1);
-        flex-shrink: 0;
-    }}
+    .nick {{ font-size: 0.8rem; font-weight: 800; color: #e2e8f0; text-shadow: 1px 1px 2px rgba(0,0,0,1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; padding-right: 8px; letter-spacing: -0.5px; transition: color 0.2s ease, text-shadow 0.2s ease; }}
+    .member-module:hover .nick {{ color: #ffffff; text-shadow: 0 0 5px rgba(255,255,255,0.4); }}
+    .count-main {{ font-size: 0.9rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; letter-spacing: -0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,1); flex-shrink: 0; }}
 
     @media (max-width: 768px) {{ 
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
         body {{ padding: 6px; }}
         .crew-card {{ padding: 10px; border-radius: 10px; }}
         .crew-title {{ font-size: 1.1rem; }}
-        
         .member-content {{ height: 28px; padding: 0 8px; }}
         .nick {{ font-size: 0.75rem; letter-spacing: -0.8px; padding-right: 4px; }}
         .count-main {{ font-size: 0.85rem; letter-spacing: -0.8px; }}
-        
         .member-module:hover {{ transform: translateX(1px) translateZ(0); }}
-        .crew-card:hover {{ transform: none; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }} 
     }}
 
     .c-red {{ color: #f87171; }} .c-white {{ color: #f8fafc; }} .c-gold {{ color: #fbbf24; }} .c-pink {{ color: #f472b6; }}
@@ -249,18 +260,24 @@ def generate_html():
         </div>
         <div class="grid">"""
 
-    for c in final_data:
+    for card_idx, c in enumerate(final_data):
         theme_hex = COLOR_MAP.get(c['color'], '#ffffff')
-        
-        # 🚀 DB 이름 -> 영문 약칭 이름으로 변환
         display_name = CREW_NAME_MAP.get(c['name'], c['name'])
         
+        # 👑 1등 크루 판별 및 특수 효과 적용
+        is_first_place = (card_idx == 0)
+        rank_class = " rank-1" if is_first_place else ""
+        crown_html = '<span class="crown-icon">👑</span>' if is_first_place else ""
+        
+        # 🎬 등장 애니메이션 딜레이 설정 (0.15초 간격으로 순차적 등장)
+        anim_delay = f"{card_idx * 0.15}s"
+        
         html += f"""
-        <div class="crew-card" style="--theme-color: {theme_hex};">
+        <div class="crew-card{rank_class}" style="--theme-color: {theme_hex}; --anim-delay: {anim_delay};">
             <div class="header">
                 <div class="header-top">
-                    <!-- 🚀 변환된 영문 이름 적용 -->
-                    <div class="crew-title {c['color']}">{display_name}</div>
+                    <!-- 👑 1등 크루 이름 앞에는 흔들리는 왕관 배치 -->
+                    <div class="crew-title {c['color']}">{crown_html}{display_name}</div>
                     <div class="crew-count">{len(c['members'])} MEMBERS</div>
                 </div>
                 <div class="header-stats">
@@ -284,7 +301,8 @@ def generate_html():
             
             html += f"""
             <div class="member-module">
-                <div class="member-bg-bar" style="width:{w}%; --bar-color: {bar_color};"></div>
+                <!-- ☄️ 카드가 나타난 직후, 0%에서 --target-width 까지 애니메이션으로 발사됨 -->
+                <div class="member-bg-bar" style="--target-width:{w}%; --bar-color: {bar_color};"></div>
                 <div class="member-content">
                     <div class="nick">{medal_str}{m['nick']}</div>
                     <div class="count-main">{m['v']['monthly']:,}</div>
@@ -298,4 +316,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 크루명 영문 변환 및 네온 톤 다운 갱신 완료!")
+    print("Success: 오프닝 로딩 & 1위 헌액 애니메이션 갱신 완료!")
