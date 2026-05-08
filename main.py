@@ -44,12 +44,11 @@ def fetch_data(uid, year, month, session):
             time.sleep(0.5)
     return {"monthly": 0}
 
-# 🚀 혜성 꼬리의 '코어 색상'만 심플하게 반환하도록 수정 (백만, 50만, 20만 단위로 세분화)
 def get_gauge_style(count):
-    if count >= 1000000: return "#ef4444" # Red
-    elif count >= 500000: return "#fbbf24"  # Gold
-    elif count >= 200000: return "#38bdf8"  # Sky Blue
-    else: return "#94a3b8" # Slate
+    if count >= 1000000: return "#ef4444" 
+    elif count >= 500000: return "#fbbf24"  
+    elif count >= 200000: return "#38bdf8"  
+    else: return "#94a3b8" 
 
 def generate_html():
     crews_config = load_config_from_db()
@@ -121,17 +120,35 @@ def generate_html():
     .header {{ display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 12px; margin-bottom: 14px; }}
     
     .header-top {{ display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 2px; }}
+    
+    /* 🚀 크루 이름: 순백색 코어 + 테마 컬러 네온 후광 */
     .crew-title {{ 
-        font-size: 1.2rem; font-weight: 900; letter-spacing: -0.5px; 
-        color: var(--theme-color);
+        font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; 
+        color: #ffffff; /* 하얀색 코어 */
+        text-shadow: 0 0 8px var(--theme-color), 0 0 16px var(--theme-color); /* 빛 퍼짐 효과 */
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
     }}
-    .crew-count {{ font-size: 0.7rem; color: #64748b; font-weight: 700; opacity: 1; }}
+    
+    /* 🚀 멤버 수: 은은한 하얀색 글로우 */
+    .crew-count {{ 
+        font-size: 0.75rem; color: #e2e8f0; font-weight: 800; 
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+    }}
     
     .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: #080808; padding: 8px 10px; border-radius: 8px; border: 1px solid #1a1a1a; }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; width: 100%; }}
-    .stat-label {{ font-size: 0.65rem; color: var(--theme-color); font-weight: 800; letter-spacing: 1px; opacity: 1; text-transform: uppercase; }}
-    .stat-value {{ font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; }}
+    
+    /* 🚀 라벨 (Total, Average): 테마 컬러 네온 후광 */
+    .stat-label {{ 
+        font-size: 0.65rem; color: #ffffff; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; 
+        text-shadow: 0 0 6px var(--theme-color), 0 0 10px var(--theme-color);
+    }}
+    
+    /* 🚀 수치 (숫자): 순백색 코어 + 넓게 퍼지는 테마 후광 */
+    .stat-value {{ 
+        font-size: 1.1rem; font-weight: 900; color: #ffffff; font-family: 'Consolas', monospace; white-space: nowrap; letter-spacing: -0.5px; 
+        text-shadow: 0 0 8px var(--theme-color), 0 0 15px rgba(255, 255, 255, 0.3);
+    }}
 
     .member-module {{ 
         position: relative; margin-bottom: 6px; 
@@ -150,23 +167,21 @@ def generate_html():
         z-index: 2; 
     }}
     
-    /* 🚀 새로운 혜성(Comet) 게이지 라인 */
     .member-bg-bar {{ 
         position: absolute; left: 0; bottom: 0;
-        height: 2px; /* 아주 얇고 날렵한 선 */
+        height: 2px; 
         background: linear-gradient(90deg, transparent, var(--bar-color));
         transition: width 0.5s ease;
         z-index: 1;
     }}
     
-    /* 🚀 혜성의 빛나는 코어(머리 부분) */
     .member-bg-bar::after {{
         content: '';
-        position: absolute; right: 0; top: -2px; /* 선의 중앙에 오도록 위로 당김 */
+        position: absolute; right: 0; top: -2px; 
         width: 6px; height: 6px;
         background: #ffffff;
         border-radius: 50%;
-        box-shadow: 0 0 6px 1px var(--bar-color), 0 0 12px 3px var(--bar-color); /* 코어 주변의 네온 글로우 */
+        box-shadow: 0 0 6px 1px var(--bar-color), 0 0 12px 3px var(--bar-color); 
     }}
     
     .member-content {{
@@ -200,7 +215,7 @@ def generate_html():
         .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }}
         body {{ padding: 6px; }}
         .crew-card {{ padding: 10px; border-radius: 10px; }}
-        .crew-title {{ font-size: 1.05rem; }}
+        .crew-title {{ font-size: 1.1rem; }}
         
         .member-content {{ height: 28px; padding: 0 8px; }}
         .nick {{ font-size: 0.75rem; letter-spacing: -0.8px; padding-right: 4px; }}
@@ -242,7 +257,6 @@ def generate_html():
             </div>"""
         
         for i, m in enumerate(c['members']):
-            # 게이지의 테마 컬러 가져오기
             bar_color = get_gauge_style(m['v']['monthly'])
             w = (m['v']['monthly'] / c['max'] * 100) if c['max'] > 0 else 0
             
@@ -265,4 +279,4 @@ if __name__ == "__main__":
     generated_html = generate_html()
     with open("index.html", "w", encoding="utf-8") as f: 
         f.write(generated_html)
-    print("Success: 혜성(Comet) 게이지 갱신 완료!")
+    print("Success: 네온 텍스트 글로우 갱신 완료!")
