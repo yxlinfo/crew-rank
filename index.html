@@ -13,12 +13,13 @@
     .main-title { font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
     .update-time { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 5px; }
 
-    /* ✅ PC 전용: 와이고수 게시글 폭 기준 4열 배치 고정 */
+    /* ✅ PC 기본: 4열 강제 (와이고수 게시판 폭에 최적화) */
     .grid { 
         display: grid; 
-        gap: 10px; 
+        gap: 8px; 
         grid-template-columns: repeat(4, 1fr); 
         padding-bottom: 40px; 
+        width: 100%;
     }
 
     @keyframes rotateCore { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
@@ -27,54 +28,55 @@
 
     .crew-card { 
         background: #0d0d0d; border: 1px solid #1a1a1a; border-top: 4px solid var(--theme-color); 
-        border-radius: 14px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        border-radius: 14px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
         position: relative; overflow: hidden; opacity: 0; 
         animation: fadeInUp 0.5s ease forwards; animation-delay: var(--delay);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.25s ease;
     }
     
     .crew-card:hover { 
-        transform: translateY(-5px); 
+        transform: translateY(-4px); 
         border: 1px solid var(--theme-color);
         border-top: 4px solid var(--theme-color);
         box-shadow: 0 0 15px var(--theme-color);
         z-index: 10;
     }
 
-    .header-card { position: relative; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #222; text-align: center; z-index: 2; }
+    .header-card { position: relative; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #222; text-align: center; z-index: 2; }
     .energy-core {
-        position: absolute; top: 40%; left: 50%; width: 80px; height: 80px;
+        position: absolute; top: 40%; left: 50%; width: 70px; height: 70px;
         background: radial-gradient(circle, var(--theme-color) 0%, transparent 75%);
-        opacity: 0.1; filter: blur(15px); z-index: 0; animation: rotateCore 12s linear infinite;
+        opacity: 0.1; filter: blur(12px); z-index: 0; animation: rotateCore 12s linear infinite;
     }
 
-    .crew-title { font-size: 1.1rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); }
+    .crew-title { font-size: 1rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); }
     
-    .header-stats { display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); }
+    .header-stats { display: flex; flex-direction: column; gap: 4px; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 6px; margin-top: 6px; border: 1px solid rgba(255,255,255,0.05); }
     .stat-item { display: flex; justify-content: space-between; align-items: baseline; }
-    .stat-label { color: var(--theme-color); font-weight: 900; font-size: 0.7rem; letter-spacing: 0.5px; }
-    .stat-value { color: #fff; font-family: 'Consolas', monospace; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+    .stat-label { color: var(--theme-color); font-weight: 900; font-size: 0.65rem; letter-spacing: 0.5px; }
+    .stat-value { color: #fff; font-family: 'Consolas', monospace; font-weight: 900; font-size: 0.95rem; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
 
-    .member-module { position: relative; margin-bottom: 5px; background: #111; border: 1px solid #1e1e1e; border-radius: 4px; overflow: hidden; }
-    .member-bg-bar { position: absolute; left: 0; bottom: 0; height: 1.5px; background: linear-gradient(90deg, transparent, var(--bar-color)); width: 0; animation: fillGauge 1s ease forwards; animation-delay: calc(var(--delay) + 0.5s); }
-    .member-content { display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 8px; position: relative; z-index: 2; }
-    .nick { font-size: 0.7rem; font-weight: 800; color: #cbd5e1; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .count-main { font-size: 0.78rem; font-weight: 900; color: #fff; font-family: 'Consolas', monospace; }
+    .member-module { position: relative; margin-bottom: 4px; background: #111; border: 1px solid #1e1e1e; border-radius: 3px; overflow: hidden; }
+    .member-bg-bar { position: absolute; left: 0; bottom: 0; height: 1.2px; background: linear-gradient(90deg, transparent, var(--bar-color)); width: 0; animation: fillGauge 1s ease forwards; animation-delay: calc(var(--delay) + 0.5s); }
+    .member-content { display: flex; justify-content: space-between; align-items: center; height: 26px; padding: 0 6px; position: relative; z-index: 2; }
+    .nick { font-size: 0.65rem; font-weight: 800; color: #cbd5e1; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .count-main { font-size: 0.72rem; font-weight: 900; color: #fff; font-family: 'Consolas', monospace; }
 
-    /* ✅ 모바일 전용: 1줄당 2개 배치 강제 고정 (태블릿 포함) */
-    @media (max-width: 1024px) { 
+    /* ✅ 모바일: 1줄당 2개 배치 (폭 768px 이하 모바일 환경에서만 전환) */
+    @media (max-width: 768px) { 
         .grid { 
             grid-template-columns: repeat(2, 1fr) !important; 
-            gap: 8px; 
+            gap: 6px; 
         }
-        .main-title { font-size: 1.2rem; }
-        .stat-value { font-size: 1rem; }
+        .main-title { font-size: 1.1rem; }
+        .crew-card { padding: 8px; }
+        .stat-value { font-size: 0.85rem; }
     }
     </style></head><body>
     
     <div class="header-main">
         <div class="main-title">CREW RANKING</div>
-        <div class="update-time">UPDATE: 2026.05.09 12:38 KST</div>
+        <div class="update-time">UPDATE: 2026.05.09 12:44 KST</div>
     </div>
 
     <div class="grid">
