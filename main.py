@@ -89,7 +89,6 @@ def generate_html():
     body {{ background: #000; color: #f8fafc; font-family: 'Pretendard', sans-serif; padding: 10px; overflow-x: hidden; }}
     body::before {{ content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(white, rgba(255,255,255,.05) 1px, transparent 20px); background-size: 300px 300px; opacity: 0.2; pointer-events: none; }}
     
-    /* 상단 중앙 헤더 설정 */
     .header-main {{ 
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.03); 
@@ -98,10 +97,10 @@ def generate_html():
     .main-title {{ font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }}
     .update-time {{ font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 5px; }}
 
-    /* 그리드 레이아웃: PC(4열) */
+    /* ✅ PC 전용: 와이고수 게시글 폭 기준 4열 배치 고정 */
     .grid {{ 
         display: grid; 
-        gap: 12px; 
+        gap: 10px; 
         grid-template-columns: repeat(4, 1fr); 
         padding-bottom: 40px; 
     }}
@@ -118,41 +117,42 @@ def generate_html():
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }}
     
-    /* 마우스 호버 테두리 강화 */
     .crew-card:hover {{ 
         transform: translateY(-5px); 
-        border-color: var(--theme-color);
+        border: 1px solid var(--theme-color);
+        border-top: 4px solid var(--theme-color);
         box-shadow: 0 0 15px var(--theme-color);
         z-index: 10;
     }}
 
     .header-card {{ position: relative; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #222; text-align: center; z-index: 2; }}
     .energy-core {{
-        position: absolute; top: 40%; left: 50%; width: 90px; height: 90px;
+        position: absolute; top: 40%; left: 50%; width: 80px; height: 80px;
         background: radial-gradient(circle, var(--theme-color) 0%, transparent 75%);
         opacity: 0.1; filter: blur(15px); z-index: 0; animation: rotateCore 12s linear infinite;
     }}
 
-    .crew-title {{ font-size: 1.15rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); }}
+    .crew-title {{ font-size: 1.1rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); }}
     
-    /* 상단 통계 수치 확대 */
-    .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); }}
+    .header-stats {{ display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: baseline; }}
-    .stat-label {{ color: var(--theme-color); font-weight: 900; font-size: 0.75rem; letter-spacing: 0.5px; }}
+    .stat-label {{ color: var(--theme-color); font-weight: 900; font-size: 0.7rem; letter-spacing: 0.5px; }}
     .stat-value {{ color: #fff; font-family: 'Consolas', monospace; font-weight: 900; font-size: 1.1rem; text-shadow: 0 0 5px rgba(255,255,255,0.2); }}
 
     .member-module {{ position: relative; margin-bottom: 5px; background: #111; border: 1px solid #1e1e1e; border-radius: 4px; overflow: hidden; }}
     .member-bg-bar {{ position: absolute; left: 0; bottom: 0; height: 1.5px; background: linear-gradient(90deg, transparent, var(--bar-color)); width: 0; animation: fillGauge 1s ease forwards; animation-delay: calc(var(--delay) + 0.5s); }}
     .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 8px; position: relative; z-index: 2; }}
-    .nick {{ font-size: 0.72rem; font-weight: 800; color: #cbd5e1; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
-    .count-main {{ font-size: 0.8rem; font-weight: 900; color: #fff; font-family: 'Consolas', monospace; }}
+    .nick {{ font-size: 0.7rem; font-weight: 800; color: #cbd5e1; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    .count-main {{ font-size: 0.78rem; font-weight: 900; color: #fff; font-family: 'Consolas', monospace; }}
 
-    /* 그리드 레이아웃: 모바일(2열) */
+    /* ✅ 모바일 전용: 1줄당 2개 배치 강제 고정 (태블릿 포함) */
     @media (max-width: 1024px) {{ 
-        .grid {{ grid-template-columns: repeat(2, 1fr); gap: 10px; }}
-        .main-title {{ font-size: 1.25rem; }}
-        .crew-title {{ font-size: 1.1rem; }}
-        .stat-value {{ font-size: 1.05rem; }}
+        .grid {{ 
+            grid-template-columns: repeat(2, 1fr) !important; 
+            gap: 8px; 
+        }}
+        .main-title {{ font-size: 1.2rem; }}
+        .stat-value {{ font-size: 1rem; }}
     }}
     </style></head><body>
     
@@ -194,4 +194,4 @@ def generate_html():
 
 if __name__ == "__main__":
     with open("index.html", "w", encoding="utf-8") as f: f.write(generate_html())
-    print("Final Build Success: PC(4열)/모바일(2열) 및 UI 최적화 완료.")
+    print("✅ 레이아웃 교정 완료: PC(4열) / 모바일(2열)")
