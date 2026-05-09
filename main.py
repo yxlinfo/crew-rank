@@ -74,7 +74,6 @@ def generate_html():
     for c_name, info in crews_config.items():
         m_list = sorted([r for r in results if r['crew'] == c_name], key=lambda x: x['v']['monthly'], reverse=True)
         total = sum(m['v']['monthly'] for m in m_list)
-        # 0 출력 문제 방지: max_val이 0이면 1로 대체하여 나눗셈 오류 방지
         max_val = max([m['v']['monthly'] for m in m_list]) if m_list and any(m['v']['monthly'] > 0 for m in m_list) else 1
         final_data.append({
             "name": c_name, "color": info['color'], "total": total, 
@@ -90,6 +89,15 @@ def generate_html():
     body {{ background: #000; color: #f8fafc; font-family: 'Pretendard', sans-serif; padding: 10px; overflow-x: hidden; }}
     body::before {{ content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(white, rgba(255,255,255,.05) 1px, transparent 20px); background-size: 300px 300px; opacity: 0.2; pointer-events: none; }}
     
+    /* 🚀 2번 개선: 상단 가운데 헤더 및 업데이트 시간 */
+    .header-main {{ 
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.03); 
+        border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px);
+    }}
+    .main-title {{ font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }}
+    .update-time {{ font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 5px; }}
+
     .grid {{ display: grid; gap: 12px; grid-template-columns: repeat(4, 1fr); padding-bottom: 40px; }}
 
     @keyframes rotateCore {{ 0% {{ transform: translate(-50%, -50%) rotate(0deg); }} 100% {{ transform: translate(-50%, -50%) rotate(360deg); }} }}
@@ -97,41 +105,64 @@ def generate_html():
     @keyframes fillGauge {{ 0% {{ width: 0%; }} 100% {{ width: var(--target-width); }} }}
 
     .crew-card {{ 
-        background: #0d0d0d; border: 1px solid #1a1a1a; border-top: 3px solid var(--theme-color); 
-        border-radius: 12px; padding: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        background: #0d0d0d; border: 1px solid #1a1a1a; border-top: 4px solid var(--theme-color); 
+        border-radius: 14px; padding: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
         position: relative; overflow: hidden; opacity: 0; 
         animation: fadeInUp 0.5s ease forwards; animation-delay: var(--delay);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }}
-    .header {{ position: relative; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #222; text-align: center; z-index: 2; }}
+    
+    /* 🚀 3번 개선: 마우스 호버 시 테두리 색상 강조 */
+    .crew-card:hover {{ 
+        transform: translateY(-5px); 
+        border-color: var(--theme-color);
+        box-shadow: 0 0 15px var(--theme-color);
+        z-index: 10;
+    }}
+
+    .header-card {{ position: relative; padding-bottom: 15px; margin-bottom: 15px; border-bottom: 1px solid #222; text-align: center; z-index: 2; }}
     .energy-core {{
         position: absolute; top: 40%; left: 50%; width: 100px; height: 100px;
         background: radial-gradient(circle, var(--theme-color) 0%, transparent 75%);
         opacity: 0.1; filter: blur(15px); z-index: 0; animation: rotateCore 12s linear infinite;
     }}
-    .crew-card:hover .energy-core {{ opacity: 0.25; animation-duration: 5s; }}
 
-    .crew-title {{ font-size: 1.2rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); }}
-    .header-stats {{ display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.03); padding: 8px; border-radius: 8px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); }}
-    .stat-item {{ display: flex; justify-content: space-between; font-size: 0.7rem; }}
-    .stat-label {{ color: var(--theme-color); font-weight: 800; }}
-    .stat-value {{ color: #fff; font-family: 'Consolas', monospace; font-weight: 700; }}
+    .crew-title {{ font-size: 1.3rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); }}
+    
+    /* 🚀 1번 개선: TOTAL 및 AVG 숫자 데이터 확대 */
+    .header-stats {{ display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); }}
+    .stat-item {{ display: flex; justify-content: space-between; align-items: baseline; }}
+    .stat-label {{ color: var(--theme-color); font-weight: 900; font-size: 0.8rem; letter-spacing: 1px; }}
+    .stat-value {{ color: #fff; font-family: 'Consolas', monospace; font-weight: 900; font-size: 1.2rem; text-shadow: 0 0 5px rgba(255,255,255,0.2); }}
 
-    .member-module {{ position: relative; margin-bottom: 6px; background: #111; border: 1px solid #1e1e1e; border-radius: 4px; overflow: hidden; transition: transform 0.2s; }}
-    .member-module:hover {{ transform: translateX(2px); background: #161616; }}
+    .member-module {{ position: relative; margin-bottom: 6px; background: #111; border: 1px solid #1e1e1e; border-radius: 6px; overflow: hidden; }}
     .member-bg-bar {{ position: absolute; left: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--bar-color)); width: 0; animation: fillGauge 1s ease forwards; animation-delay: calc(var(--delay) + 0.5s); }}
-    .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 30px; padding: 0 10px; position: relative; z-index: 2; }}
-    .nick {{ font-size: 0.75rem; font-weight: 800; color: #cbd5e1; text-shadow: 1px 1px 2px #000; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }}
-    .count-main {{ font-size: 0.85rem; font-weight: 900; color: #fff; font-family: 'Consolas', monospace; }}
+    .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 32px; padding: 0 10px; position: relative; z-index: 2; }}
+    .nick {{ font-size: 0.8rem; font-weight: 800; color: #cbd5e1; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    .count-main {{ font-size: 0.9rem; font-weight: 900; color: #fff; font-family: 'Consolas', monospace; }}
 
-    @media (max-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 8px; }} }}
-    </style></head><body><div class="grid">"""
+    @media (max-width: 1200px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); }} }}
+    @media (max-width: 768px) {{ 
+        .grid {{ grid-template-columns: 1fr; gap: 10px; }}
+        .main-title {{ font-size: 1.2rem; }}
+        .stat-value {{ font-size: 1.1rem; }}
+    }}
+    </style></head><body>
+    
+    <!-- 🚀 상단 중앙 헤더 영역 -->
+    <div class="header-main">
+        <div class="main-title">CREW RANKING</div>
+        <div class="update-time">UPDATE: {now.strftime('%Y.%m.%d %H:%M')} KST</div>
+    </div>
+
+    <div class="grid">"""
 
     for i, c in enumerate(final_data):
         theme_hex = COLOR_MAP.get(c['color'], '#fff')
         display_name = CREW_NAME_MAP.get(c['name'], c['name'])
         html += f"""
         <div class="crew-card" style="--theme-color: {theme_hex}; --delay: {i*0.08}s;">
-            <div class="header">
+            <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">{display_name}</div>
                 <div class="header-stats">
@@ -157,4 +188,4 @@ def generate_html():
 
 if __name__ == "__main__":
     with open("index.html", "w", encoding="utf-8") as f: f.write(generate_html())
-    print("Optimization Complete: index.html has been updated.")
+    print("Optimization Complete: PC/Mobile 최적화 및 헤더 정보 업데이트 완료.")
