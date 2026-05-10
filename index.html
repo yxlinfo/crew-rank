@@ -13,13 +13,12 @@
     .main-title { font-size: 1.4rem; font-weight: 900; letter-spacing: 3px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
     .update-time { font-size: 0.75rem; color: #94a3b8; font-weight: 600; margin-top: 5px; }
 
-    /* ✅ PC 기본: 4열 강제 (와이고수 게시판 폭에 최적화) */
+    /* ✅ PC 4열 레이아웃 고정 */
     .grid { 
         display: grid; 
         gap: 8px; 
         grid-template-columns: repeat(4, 1fr); 
         padding-bottom: 40px; 
-        width: 100%;
     }
 
     @keyframes rotateCore { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
@@ -49,12 +48,18 @@
         opacity: 0.1; filter: blur(12px); z-index: 0; animation: rotateCore 12s linear infinite;
     }
 
-    .crew-title { font-size: 1rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); }
+    .crew-title { font-size: 1.05rem; font-weight: 900; color: #fff; text-shadow: 0 0 8px var(--theme-color); line-height: 1.2; }
     
-    .header-stats { display: flex; flex-direction: column; gap: 4px; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 6px; margin-top: 6px; border: 1px solid rgba(255,255,255,0.05); }
+    /* 🚀 MEMBERS 표시 스타일 추가 */
+    .crew-member-count { 
+        font-size: 0.65rem; font-weight: 800; color: #94a3b8; letter-spacing: 1px; margin-top: 2px;
+        text-transform: uppercase; 
+    }
+    
+    .header-stats { display: flex; flex-direction: column; gap: 4px; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 6px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); }
     .stat-item { display: flex; justify-content: space-between; align-items: baseline; }
-    .stat-label { color: var(--theme-color); font-weight: 900; font-size: 0.65rem; letter-spacing: 0.5px; }
-    .stat-value { color: #fff; font-family: 'Consolas', monospace; font-weight: 900; font-size: 0.95rem; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+    .stat-label { color: var(--theme-color); font-weight: 900; font-size: 0.62rem; letter-spacing: 0.5px; }
+    .stat-value { color: #fff; font-family: 'Consolas', monospace; font-weight: 900; font-size: 0.92rem; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
 
     .member-module { position: relative; margin-bottom: 4px; background: #111; border: 1px solid #1e1e1e; border-radius: 3px; overflow: hidden; }
     .member-bg-bar { position: absolute; left: 0; bottom: 0; height: 1.2px; background: linear-gradient(90deg, transparent, var(--bar-color)); width: 0; animation: fillGauge 1s ease forwards; animation-delay: calc(var(--delay) + 0.5s); }
@@ -62,21 +67,21 @@
     .nick { font-size: 0.65rem; font-weight: 800; color: #cbd5e1; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .count-main { font-size: 0.72rem; font-weight: 900; color: #fff; font-family: 'Consolas', monospace; }
 
-    /* ✅ 모바일: 1줄당 2개 배치 (폭 768px 이하 모바일 환경에서만 전환) */
+    /* ✅ 모바일 2열 레이아웃 (폭 768px 이하) */
     @media (max-width: 768px) { 
         .grid { 
             grid-template-columns: repeat(2, 1fr) !important; 
             gap: 6px; 
         }
         .main-title { font-size: 1.1rem; }
-        .crew-card { padding: 8px; }
+        .crew-title { font-size: 0.95rem; }
         .stat-value { font-size: 0.85rem; }
     }
     </style></head><body>
     
     <div class="header-main">
         <div class="main-title">CREW RANKING</div>
-        <div class="update-time">UPDATE: 2026.05.10 18:54 KST</div>
+        <div class="update-time">UPDATE: 2026.05.10 19:03 KST</div>
     </div>
 
     <div class="grid">
@@ -84,6 +89,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">GW</div>
+                <div class="crew-member-count">12 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">3,857,459</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">321,454</span></div>
@@ -177,6 +183,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">C9</div>
+                <div class="crew-member-count">17 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">4,413,052</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">259,591</span></div>
@@ -305,6 +312,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">YXL</div>
+                <div class="crew-member-count">14 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,651,449</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">117,960</span></div>
@@ -412,6 +420,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">INOLABLE</div>
+                <div class="crew-member-count">13 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,429,920</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">109,993</span></div>
@@ -512,6 +521,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">JS</div>
+                <div class="crew-member-count">13 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">992,987</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">76,383</span></div>
@@ -612,6 +622,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">The K</div>
+                <div class="crew-member-count">13 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">941,724</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">72,440</span></div>
@@ -712,6 +723,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">771</div>
+                <div class="crew-member-count">11 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">761,757</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">69,250</span></div>
@@ -798,6 +810,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">GD</div>
+                <div class="crew-member-count">7 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">370,116</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">52,873</span></div>
@@ -856,6 +869,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">Show K</div>
+                <div class="crew-member-count">13 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">535,781</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">41,213</span></div>
@@ -956,6 +970,7 @@
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">Moon A</div>
+                <div class="crew-member-count">16 MEMBERS</div>
                 <div class="header-stats">
                     <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">563,660</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">35,228</span></div>
