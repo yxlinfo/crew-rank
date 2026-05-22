@@ -96,14 +96,12 @@ def generate_html():
         overflow-x: hidden; 
     }}
     
-    /* 미세한 격자 그리드로 힙한 테크 감성 추가 */
     body::before {{ 
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
         background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
         background-size: 20px 20px; pointer-events: none; z-index: 0;
     }}
     
-    /* 🚀 상단 중앙 헤더: 군더더기 없는 미니멀 스타일 */
     .header-main {{ 
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         margin-bottom: 24px; padding: 12px;
@@ -114,7 +112,6 @@ def generate_html():
     .main-title {{ font-size: 1.25rem; font-weight: 800; letter-spacing: 4px; color: #fff; opacity: 0.9; }}
     .update-time {{ font-size: 0.65rem; color: #71717a; font-weight: 500; margin-top: 4px; letter-spacing: 1px; }}
 
-    /* 와이고수 게시글 전용 4열 그리드 */
     .grid {{ 
         display: grid; 
         gap: 10px; 
@@ -127,7 +124,6 @@ def generate_html():
     @keyframes fillGauge {{ 0% {{ width: 0%; }} 100% {{ width: var(--target-width); }} }}
     @keyframes pulseCore {{ 0%, 100% {{ opacity: 0.08; filter: blur(15px); }} 50% {{ opacity: 0.18; filter: blur(12px); }} }}
 
-    /* 🚀 크루 카드: 투명 유리(Glassmorphism) 질감 도입 */
     .crew-card {{ 
         background: rgba(20, 20, 25, 0.7); 
         border: 1px solid rgba(255, 255, 255, 0.04);
@@ -140,7 +136,6 @@ def generate_html():
         backdrop-filter: blur(10px);
     }}
     
-    /* 호버 시 세련된 오프셋 투명 테두리 강조 */
     .crew-card:hover {{ 
         transform: translateY(-3px); 
         border-color: var(--theme-color);
@@ -148,9 +143,24 @@ def generate_html():
         z-index: 10;
     }}
 
-    .header-card {{ position: relative; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }}
+    /* 🚀 상단 왼쪽 모서리 '보더 슬릿' 인덱스 UI */
+    .rank-tag {{
+        position: absolute;
+        top: 0; left: 14px;
+        background: #09090b; /* 배경색과 일치시켜 선이 잘린 듯한 슬릿 효과 연출 */
+        padding: 0 6px;
+        font-family: 'SF Pro Display', 'Consolas', monospace;
+        font-size: 0.6rem;
+        font-weight: 900;
+        color: var(--theme-color);
+        letter-spacing: 0.5px;
+        transform: translateY(-50%); /* 상단 보더 라인 정중앙에 걸치기 */
+        z-index: 5;
+        border-radius: 2px;
+    }}
+
+    .header-card {{ position: relative; padding-top: 4px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }}
     
-    /* 코어를 왼쪽 상단 은은한 그라데이션 번짐 효과로 교체 */
     .energy-core {{
         position: absolute; top: -20px; left: -20px; width: 80px; height: 80px;
         background: radial-gradient(circle, var(--theme-color) 0%, transparent 80%);
@@ -161,24 +171,20 @@ def generate_html():
     .crew-title {{ font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }}
     .crew-member-count {{ font-size: 0.6rem; font-weight: 700; color: #52525b; letter-spacing: 0.5px; margin-top: 1px; }}
     
-    /* 스탯 창 보더를 없애고 미니멀하게 정리 */
     .header-stats {{ display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 10px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.03); }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; }}
     .stat-label {{ color: #71717a; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.5px; }}
     .stat-value {{ color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; font-weight: 700; font-size: 1.05rem; }}
 
-    /* 스트리머 모듈: 테두리를 지우고 여백을 넓혀 시원하게 변경 */
     .member-module {{ position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; }}
     .member-module:hover {{ background: rgba(255,255,255,0.03); }}
     
-    /* 게이지 바를 바닥에 아주 얇게 깔아서 미니멀 무드 연출 */
     .member-bg-bar {{ position: absolute; left: 0; bottom: 0; height: 1.5px; background: var(--bar-color); opacity: 0.8; width: 0; animation: fillGauge 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: calc(var(--delay) + 0.3s); }}
     .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 2; }}
     
     .nick {{ font-size: 0.68rem; font-weight: 600; color: #e4e4e7; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
     .count-main {{ font-size: 0.78rem; font-weight: 700; color: #f4f4f5; font-family: 'SF Pro Display', 'Consolas', monospace; }}
 
-    /* ✅ 모바일 2열 레이아웃 (폭 768px 이하 와이고수 앱/모바일 브라우저 대응) */
     @media (max-width: 768px) {{ 
         .grid {{ 
             grid-template-columns: repeat(2, 1fr) !important; 
@@ -187,6 +193,7 @@ def generate_html():
         .main-title {{ font-size: 1.1rem; letter-spacing: 2px; }}
         .crew-title {{ font-size: 1rem; }}
         .stat-value {{ font-size: 0.95rem; }}
+        .rank-tag {{ left: 10px; font-size: 0.55rem; }}
     }}
     </style></head><body>
     
@@ -200,8 +207,14 @@ def generate_html():
     for i, c in enumerate(final_data):
         theme_hex = COLOR_MAP.get(c['color'], '#fff')
         display_name = CREW_NAME_MAP.get(c['name'], c['name'])
+        
+        # 01, 02 형식의 두 자릿수 인덱스 문자열 생성
+        rank_str = f"{i+1:02d}"
+
         html += f"""
         <div class="crew-card" style="--theme-color: {theme_hex}; --delay: {i*0.06}s;">
+            <div class="rank-tag">#{rank_str}</div>
+            
             <div class="header-card">
                 <div class="energy-core"></div>
                 <div class="crew-title">{display_name}</div>
@@ -229,4 +242,3 @@ def generate_html():
 
 if __name__ == "__main__":
     with open("index.html", "w", encoding="utf-8") as f: f.write(generate_html())
-    print("🚀 '느좋' 감성 하이엔드 테크 UI 최적화 본 컴파일 완료!")
