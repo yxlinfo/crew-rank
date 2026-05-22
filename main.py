@@ -96,9 +96,10 @@ def generate_html():
         overflow-x: hidden; 
     }}
     
+    /* 🚀 3번 반영: 시선을 해치지 않는 하이엔드 마이크로 도트 매트릭스 배경 */
     body::before {{ 
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-        background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+        background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
         background-size: 20px 20px; pointer-events: none; z-index: 0;
     }}
     
@@ -114,7 +115,7 @@ def generate_html():
 
     .grid {{ 
         display: grid; 
-        gap: 10px; 
+        gap: 12px; 
         grid-template-columns: repeat(4, 1fr); 
         padding-bottom: 40px; 
         width: 100%;
@@ -122,10 +123,14 @@ def generate_html():
 
     @keyframes fadeInUp {{ 0% {{ opacity: 0; transform: translateY(10px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
     @keyframes fillGauge {{ 0% {{ width: 0%; }} 100% {{ width: var(--target-width); }} }}
+    @keyframes pulseCore {{ 0%, 100% {{ opacity: 0.12; filter: blur(15px); transform: scale(1); }} 50% {{ opacity: 0.25; filter: blur(10px); transform: scale(1.1); }} }}
+    @keyframes topRankBreathing {{ 0%, 100% {{ background: rgba(20, 20, 25, 0.7); }} 50% {{ background: rgba(25, 25, 35, 0.75); }} }}
     
-    /* 🚀 3번 반영: 상위 3개 크루를 위한 아우라 브리딩 모션 */
-    @keyframes pulseCore {{ 0%, 100% {{ opacity: 0.12; filter: blur(15px); transform: scale(1); }} 50% {{ opacity: 0.28; filter: blur(10px); transform: scale(1.15); }} }}
-    @keyframes topRankBreathing {{ 0%, 100% {{ border-color: rgba(255, 255, 255, 0.04); }} 50% {{ border-color: rgba(255, 255, 255, 0.12); }} }}
+    /* 🚀 1번 반영: 테두리를 순회하는 레이저 플로우 애니메이션 */
+    @keyframes laserRotate {{
+        0% {{ transform: rotate(0deg); }}
+        100% {{ transform: rotate(360deg); }}
+    }}
 
     .crew-card {{ 
         background: rgba(20, 20, 25, 0.7); 
@@ -139,11 +144,26 @@ def generate_html():
         backdrop-filter: blur(10px);
     }}
     
-    /* 🚀 3번 반영: 1~3위 크루 상시 브리딩 활성화 클래스 */
+    /* 1~3위 크루 상시 브리딩 효과 */
     .top-rank-glow {{
-        background: rgba(24, 24, 32, 0.75); /* 조금 더 선명한 고밀도 유리 질감 */
         animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, topRankBreathing 4s ease-in-out infinite;
         animation-delay: var(--delay), var(--delay);
+    }}
+    
+    /* 🚀 1번 반영: 1~3위 크루 카드 뒤쪽에 회전하는 레이저 광원 배치 가이드 트랙 */
+    .top-rank-glow::before {{
+        content: ""; position: absolute;
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background: conic-gradient(transparent, var(--theme-color), transparent 30%);
+        animation: laserRotate 6s linear infinite;
+        z-index: 0; pointer-events: none; opacity: 0.25;
+    }}
+    /* 카드 내부 콘텐츠를 감싸 레이저 선이 바깥 테두리 1px 형태로만 남기도록 마스킹 처리 */
+    .top-rank-glow::after {{
+        content: ""; position: absolute;
+        top: 1px; left: 1px; right: 1px; bottom: 1px;
+        background: #0d0d11; border-radius: 15px;
+        z-index: 1; pointer-events: none; opacity: 0.93;
     }}
 
     .crew-card:hover {{ 
@@ -167,6 +187,7 @@ def generate_html():
         font-size: 0.58rem; font-weight: 900; color: #fff; opacity: 0.8; z-index: 5; letter-spacing: -0.5px;
     }}
 
+    /* 레이저 마스킹 레이어 위로 콘텐츠들을 띄우기 위해 z-index 조정 */
     .header-card {{ position: relative; padding-top: 4px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }}
     
     .energy-core {{
@@ -184,17 +205,14 @@ def generate_html():
     .stat-label {{ color: #71717a; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.5px; }}
     .stat-value {{ color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; font-weight: 700; font-size: 1.05rem; }}
 
-    /* 스트리머 모듈 기본 백그라운드 */
-    .member-module {{ position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; }}
+    .member-module {{ position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; z-index: 2; }}
     .member-module:hover {{ background: rgba(255,255,255,0.03); }}
     
-    /* 🚀 2번 반영: 인버스 트랙 가이드 (기본 바닥 투명 실선 고정) */
     .member-track-guide {{
         position: absolute; left: 0; bottom: 0; width: 100%; height: 1.5px;
         background: rgba(255, 255, 255, 0.03); z-index: 1;
     }}
     
-    /* 실제 채워지는 컬러 게이지 레이어 */
     .member-bg-bar {{ 
         position: absolute; left: 0; bottom: 0; height: 1.5px; 
         background: var(--bar-color); opacity: 0.85; width: 0; 
@@ -205,7 +223,6 @@ def generate_html():
     
     .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 3; }}
     
-    /* 🚀 1번 반영: 모노 하이라이트 (닉네임 톤다운하여 주연인 숫자를 대폭 강조) */
     .nick {{ font-size: 0.68rem; font-weight: 600; color: #a1a1aa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
     .count-main {{ font-size: 0.78rem; font-weight: 850; color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; }}
 
@@ -231,7 +248,7 @@ def generate_html():
         theme_hex = COLOR_MAP.get(c['color'], '#fff')
         display_name = CREW_NAME_MAP.get(c['name'], c['name'])
 
-        # 1등, 2등, 3등 크루 카드에만 특별 상시 브리딩 클래스 부여
+        # 1~3위 크루 카드에만 레이저 가이드 트랙과 브리딩 동시 부여
         top_rank_class = "top-rank-glow" if i < 3 else ""
 
         html += f"""
