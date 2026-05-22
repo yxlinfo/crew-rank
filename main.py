@@ -96,7 +96,6 @@ def generate_html():
         overflow-x: hidden; 
     }}
     
-    /* 🚀 3번 반영: 시선을 해치지 않는 하이엔드 마이크로 도트 매트릭스 배경 */
     body::before {{ 
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
         background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
@@ -121,16 +120,16 @@ def generate_html():
         width: 100%;
     }}
 
+    /* 🚀 2번 반영: 은은한 하이엔드 테크 스켈레톤 로딩 모션 */
+    @keyframes shimmer {{
+        0% {{ background-position: -200% 0; }}
+        100% {{ background-position: 200% 0; }}
+    }}
     @keyframes fadeInUp {{ 0% {{ opacity: 0; transform: translateY(10px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
     @keyframes fillGauge {{ 0% {{ width: 0%; }} 100% {{ width: var(--target-width); }} }}
     @keyframes pulseCore {{ 0%, 100% {{ opacity: 0.12; filter: blur(15px); transform: scale(1); }} 50% {{ opacity: 0.25; filter: blur(10px); transform: scale(1.1); }} }}
     @keyframes topRankBreathing {{ 0%, 100% {{ background: rgba(20, 20, 25, 0.7); }} 50% {{ background: rgba(25, 25, 35, 0.75); }} }}
-    
-    /* 🚀 1번 반영: 테두리를 순회하는 레이저 플로우 애니메이션 */
-    @keyframes laserRotate {{
-        0% {{ transform: rotate(0deg); }}
-        100% {{ transform: rotate(360deg); }}
-    }}
+    @keyframes laserRotate {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
 
     .crew-card {{ 
         background: rgba(20, 20, 25, 0.7); 
@@ -139,18 +138,27 @@ def generate_html():
         border-radius: 16px; padding: 14px; 
         box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
         position: relative; overflow: hidden; opacity: 0; 
-        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: var(--delay);
-        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        
+        /* 🚀 2번 반영: 첫 진입 시 스켈레톤 셔머 그라데이션 광선 베이스 적용 */
+        background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0) 100%);
+        background-size: 200% 100%;
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, shimmer 1.5s ease-in-out infinite;
+        animation-delay: var(--delay), 0s;
         backdrop-filter: blur(10px);
     }}
     
-    /* 1~3위 크루 상시 브리딩 효과 */
+    /* 데이터 렌더링 완료 타이밍에 스켈레톤 셔머 배경 제거 */
+    .crew-card.loaded {{
+        background-image: none;
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: var(--delay);
+    }}
+
     .top-rank-glow {{
         animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, topRankBreathing 4s ease-in-out infinite;
         animation-delay: var(--delay), var(--delay);
     }}
     
-    /* 🚀 1번 반영: 1~3위 크루 카드 뒤쪽에 회전하는 레이저 광원 배치 가이드 트랙 */
     .top-rank-glow::before {{
         content: ""; position: absolute;
         top: -50%; left: -50%; width: 200%; height: 200%;
@@ -158,7 +166,6 @@ def generate_html():
         animation: laserRotate 6s linear infinite;
         z-index: 0; pointer-events: none; opacity: 0.25;
     }}
-    /* 카드 내부 콘텐츠를 감싸 레이저 선이 바깥 테두리 1px 형태로만 남기도록 마스킹 처리 */
     .top-rank-glow::after {{
         content: ""; position: absolute;
         top: 1px; left: 1px; right: 1px; bottom: 1px;
@@ -187,7 +194,6 @@ def generate_html():
         font-size: 0.58rem; font-weight: 900; color: #fff; opacity: 0.8; z-index: 5; letter-spacing: -0.5px;
     }}
 
-    /* 레이저 마스킹 레이어 위로 콘텐츠들을 띄우기 위해 z-index 조정 */
     .header-card {{ position: relative; padding-top: 4px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }}
     
     .energy-core {{
@@ -205,8 +211,16 @@ def generate_html():
     .stat-label {{ color: #71717a; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.5px; }}
     .stat-value {{ color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; font-weight: 700; font-size: 1.05rem; }}
 
-    .member-module {{ position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; z-index: 2; }}
-    .member-module:hover {{ background: rgba(255,255,255,0.03); }}
+    .member-module {{ position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; z-index: 2; transition: background 0.2s ease; }}
+    
+    /* 🚀 1번 반영: 스트리머 행 마우스 호버 시 배경 발광 및 컬러 펄스 연출 */
+    .member-module:hover {{ 
+        background: rgba(255, 255, 255, 0.04); 
+    }}
+    .member-module:hover .member-bg-bar {{
+        opacity: 1;
+        filter: drop-shadow(0 0 4px var(--bar-color)); /* 게이지 라인 네온 발광 강제 유도 */
+    }}
     
     .member-track-guide {{
         position: absolute; left: 0; bottom: 0; width: 100%; height: 1.5px;
@@ -219,11 +233,14 @@ def generate_html():
         animation: fillGauge 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         animation-delay: calc(var(--delay) + 0.3s); 
         z-index: 2;
+        transition: opacity 0.2s ease, filter 0.2s ease;
     }}
     
     .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 3; }}
     
-    .nick {{ font-size: 0.68rem; font-weight: 600; color: #a1a1aa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    .nick {{ font-size: 0.68rem; font-weight: 600; color: #a1a1aa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.2s ease; }}
+    .member-module:hover .nick {{ color: #ffffff; }} /* 호버 시 포커스 체감 상승 */
+    
     .count-main {{ font-size: 0.78rem; font-weight: 850; color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; }}
 
     @media (max-width: 768px) {{ 
@@ -248,11 +265,11 @@ def generate_html():
         theme_hex = COLOR_MAP.get(c['color'], '#fff')
         display_name = CREW_NAME_MAP.get(c['name'], c['name'])
 
-        # 1~3위 크루 카드에만 레이저 가이드 트랙과 브리딩 동시 부여
+        # 🚀 1~3위 브리딩 스티커와 로딩 완료 태그(`loaded`) 결합
         top_rank_class = "top-rank-glow" if i < 3 else ""
 
         html += f"""
-        <div class="crew-card {top_rank_class}" style="--theme-color: {theme_hex}; --delay: {i*0.06}s;">
+        <div class="crew-card {top_rank_class} loaded" style="--theme-color: {theme_hex}; --delay: {i*0.06}s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">{i+1}</div>
             
@@ -270,7 +287,7 @@ def generate_html():
             w = (m['v']['monthly'] / c['max'] * 100)
             medal = ["🥇", "🥈", "🥉"][j] if j < 3 else ""
             html += f"""
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: {bar_color};">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:{w}%; --bar-color: {bar_color};"></div>
                 <div class="member-content">
