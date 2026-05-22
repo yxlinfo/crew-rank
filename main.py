@@ -122,7 +122,10 @@ def generate_html():
 
     @keyframes fadeInUp {{ 0% {{ opacity: 0; transform: translateY(10px); }} 100% {{ opacity: 1; transform: translateY(0); }} }}
     @keyframes fillGauge {{ 0% {{ width: 0%; }} 100% {{ width: var(--target-width); }} }}
-    @keyframes pulseCore {{ 0%, 100% {{ opacity: 0.08; filter: blur(15px); }} 50% {{ opacity: 0.18; filter: blur(12px); }} }}
+    
+    /* 🚀 3번 반영: 상위 3개 크루를 위한 아우라 브리딩 모션 */
+    @keyframes pulseCore {{ 0%, 100% {{ opacity: 0.12; filter: blur(15px); transform: scale(1); }} 50% {{ opacity: 0.28; filter: blur(10px); transform: scale(1.15); }} }}
+    @keyframes topRankBreathing {{ 0%, 100% {{ border-color: rgba(255, 255, 255, 0.04); }} 50% {{ border-color: rgba(255, 255, 255, 0.12); }} }}
 
     .crew-card {{ 
         background: rgba(20, 20, 25, 0.7); 
@@ -136,39 +139,32 @@ def generate_html():
         backdrop-filter: blur(10px);
     }}
     
+    /* 🚀 3번 반영: 1~3위 크루 상시 브리딩 활성화 클래스 */
+    .top-rank-glow {{
+        background: rgba(24, 24, 32, 0.75); /* 조금 더 선명한 고밀도 유리 질감 */
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, topRankBreathing 4s ease-in-out infinite;
+        animation-delay: var(--delay), var(--delay);
+    }}
+
     .crew-card:hover {{ 
         transform: translateY(-3px); 
-        border-color: var(--theme-color);
+        border-color: var(--theme-color) !important;
         box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.8), 0 0 15px -3px var(--theme-color);
         z-index: 10;
     }}
 
-    /* 🚀 2번 반영: 상단 왼쪽 모서리 "트라이앵글 폴드 네온 삼각 탭" */
     .corner-rank-tab {{
         position: absolute;
-        top: 0; left: 0;
-        width: 32px; height: 32px;
-        /* 대각선 컷을 만들어주는 트릭 */
+        top: 0; left: 0; width: 32px; height: 32px;
         background: linear-gradient(135deg, var(--theme-color) 50%, transparent 50%);
-        opacity: 0.18; /* 은은한 네온 투명 광택 */
-        z-index: 4;
-        transition: opacity 0.25s ease;
+        opacity: 0.18; z-index: 4; transition: opacity 0.25s ease;
     }}
-    .crew-card:hover .corner-rank-tab {{
-        opacity: 0.4; /* 호버 시 네온빛이 더 선명해지는 인터랙션 */
-    }}
+    .crew-card:hover .corner-rank-tab {{ opacity: 0.4; }}
     
-    /* 삼각 탭 위에 얹어질 비대칭 소형 등수 텍스트 */
     .corner-rank-text {{
-        position: absolute;
-        top: 3px; left: 5px;
+        position: absolute; top: 3px; left: 5px;
         font-family: 'SF Pro Display', 'Consolas', monospace;
-        font-size: 0.58rem;
-        font-weight: 900;
-        color: #fff;
-        opacity: 0.8;
-        z-index: 5;
-        letter-spacing: -0.5px;
+        font-size: 0.58rem; font-weight: 900; color: #fff; opacity: 0.8; z-index: 5; letter-spacing: -0.5px;
     }}
 
     .header-card {{ position: relative; padding-top: 4px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }}
@@ -180,7 +176,6 @@ def generate_html():
         animation: pulseCore 4s ease-in-out infinite;
     }}
 
-    /* 삼각 탭 레이아웃 간섭을 피하기 위한 여백 확보 */
     .crew-title {{ font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; padding-left: 12px; }}
     .crew-member-count {{ font-size: 0.6rem; font-weight: 700; color: #52525b; letter-spacing: 0.5px; margin-top: 1px; padding-left: 12px; }}
     
@@ -189,14 +184,30 @@ def generate_html():
     .stat-label {{ color: #71717a; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.5px; }}
     .stat-value {{ color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; font-weight: 700; font-size: 1.05rem; }}
 
+    /* 스트리머 모듈 기본 백그라운드 */
     .member-module {{ position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; }}
     .member-module:hover {{ background: rgba(255,255,255,0.03); }}
     
-    .member-bg-bar {{ position: absolute; left: 0; bottom: 0; height: 1.5px; background: var(--bar-color); opacity: 0.8; width: 0; animation: fillGauge 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: calc(var(--delay) + 0.3s); }}
-    .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 2; }}
+    /* 🚀 2번 반영: 인버스 트랙 가이드 (기본 바닥 투명 실선 고정) */
+    .member-track-guide {{
+        position: absolute; left: 0; bottom: 0; width: 100%; height: 1.5px;
+        background: rgba(255, 255, 255, 0.03); z-index: 1;
+    }}
     
-    .nick {{ font-size: 0.68rem; font-weight: 600; color: #e4e4e7; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
-    .count-main {{ font-size: 0.78rem; font-weight: 700; color: #f4f4f5; font-family: 'SF Pro Display', 'Consolas', monospace; }}
+    /* 실제 채워지는 컬러 게이지 레이어 */
+    .member-bg-bar {{ 
+        position: absolute; left: 0; bottom: 0; height: 1.5px; 
+        background: var(--bar-color); opacity: 0.85; width: 0; 
+        animation: fillGauge 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+        animation-delay: calc(var(--delay) + 0.3s); 
+        z-index: 2;
+    }}
+    
+    .member-content {{ display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 3; }}
+    
+    /* 🚀 1번 반영: 모노 하이라이트 (닉네임 톤다운하여 주연인 숫자를 대폭 강조) */
+    .nick {{ font-size: 0.68rem; font-weight: 600; color: #a1a1aa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    .count-main {{ font-size: 0.78rem; font-weight: 850; color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; }}
 
     @media (max-width: 768px) {{ 
         .grid {{ 
@@ -220,8 +231,11 @@ def generate_html():
         theme_hex = COLOR_MAP.get(c['color'], '#fff')
         display_name = CREW_NAME_MAP.get(c['name'], c['name'])
 
+        # 1등, 2등, 3등 크루 카드에만 특별 상시 브리딩 클래스 부여
+        top_rank_class = "top-rank-glow" if i < 3 else ""
+
         html += f"""
-        <div class="crew-card" style="--theme-color: {theme_hex}; --delay: {i*0.06}s;">
+        <div class="crew-card {top_rank_class}" style="--theme-color: {theme_hex}; --delay: {i*0.06}s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">{i+1}</div>
             
@@ -240,6 +254,7 @@ def generate_html():
             medal = ["🥇", "🥈", "🥉"][j] if j < 3 else ""
             html += f"""
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:{w}%; --bar-color: {bar_color};"></div>
                 <div class="member-content">
                     <div class="nick">{medal} {m['nick']}</div>
