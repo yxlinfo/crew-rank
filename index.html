@@ -11,7 +11,6 @@
         overflow-x: hidden; 
     }
     
-    /* 🚀 3번 반영: 시선을 해치지 않는 하이엔드 마이크로 도트 매트릭스 배경 */
     body::before { 
         content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
         background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
@@ -36,16 +35,16 @@
         width: 100%;
     }
 
+    /* 🚀 2번 반영: 은은한 하이엔드 테크 스켈레톤 로딩 모션 */
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
     @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes fillGauge { 0% { width: 0%; } 100% { width: var(--target-width); } }
     @keyframes pulseCore { 0%, 100% { opacity: 0.12; filter: blur(15px); transform: scale(1); } 50% { opacity: 0.25; filter: blur(10px); transform: scale(1.1); } }
     @keyframes topRankBreathing { 0%, 100% { background: rgba(20, 20, 25, 0.7); } 50% { background: rgba(25, 25, 35, 0.75); } }
-    
-    /* 🚀 1번 반영: 테두리를 순회하는 레이저 플로우 애니메이션 */
-    @keyframes laserRotate {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+    @keyframes laserRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     .crew-card { 
         background: rgba(20, 20, 25, 0.7); 
@@ -54,18 +53,27 @@
         border-radius: 16px; padding: 14px; 
         box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
         position: relative; overflow: hidden; opacity: 0; 
-        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: var(--delay);
-        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        
+        /* 🚀 2번 반영: 첫 진입 시 스켈레톤 셔머 그라데이션 광선 베이스 적용 */
+        background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0) 100%);
+        background-size: 200% 100%;
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, shimmer 1.5s ease-in-out infinite;
+        animation-delay: var(--delay), 0s;
         backdrop-filter: blur(10px);
     }
     
-    /* 1~3위 크루 상시 브리딩 효과 */
+    /* 데이터 렌더링 완료 타이밍에 스켈레톤 셔머 배경 제거 */
+    .crew-card.loaded {
+        background-image: none;
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation-delay: var(--delay);
+    }
+
     .top-rank-glow {
         animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, topRankBreathing 4s ease-in-out infinite;
         animation-delay: var(--delay), var(--delay);
     }
     
-    /* 🚀 1번 반영: 1~3위 크루 카드 뒤쪽에 회전하는 레이저 광원 배치 가이드 트랙 */
     .top-rank-glow::before {
         content: ""; position: absolute;
         top: -50%; left: -50%; width: 200%; height: 200%;
@@ -73,7 +81,6 @@
         animation: laserRotate 6s linear infinite;
         z-index: 0; pointer-events: none; opacity: 0.25;
     }
-    /* 카드 내부 콘텐츠를 감싸 레이저 선이 바깥 테두리 1px 형태로만 남기도록 마스킹 처리 */
     .top-rank-glow::after {
         content: ""; position: absolute;
         top: 1px; left: 1px; right: 1px; bottom: 1px;
@@ -102,7 +109,6 @@
         font-size: 0.58rem; font-weight: 900; color: #fff; opacity: 0.8; z-index: 5; letter-spacing: -0.5px;
     }
 
-    /* 레이저 마스킹 레이어 위로 콘텐츠들을 띄우기 위해 z-index 조정 */
     .header-card { position: relative; padding-top: 4px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }
     
     .energy-core {
@@ -120,8 +126,16 @@
     .stat-label { color: #71717a; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.5px; }
     .stat-value { color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; font-weight: 700; font-size: 1.05rem; }
 
-    .member-module { position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; z-index: 2; }
-    .member-module:hover { background: rgba(255,255,255,0.03); }
+    .member-module { position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; z-index: 2; transition: background 0.2s ease; }
+    
+    /* 🚀 1번 반영: 스트리머 행 마우스 호버 시 배경 발광 및 컬러 펄스 연출 */
+    .member-module:hover { 
+        background: rgba(255, 255, 255, 0.04); 
+    }
+    .member-module:hover .member-bg-bar {
+        opacity: 1;
+        filter: drop-shadow(0 0 4px var(--bar-color)); /* 게이지 라인 네온 발광 강제 유도 */
+    }
     
     .member-track-guide {
         position: absolute; left: 0; bottom: 0; width: 100%; height: 1.5px;
@@ -134,11 +148,14 @@
         animation: fillGauge 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
         animation-delay: calc(var(--delay) + 0.3s); 
         z-index: 2;
+        transition: opacity 0.2s ease, filter 0.2s ease;
     }
     
     .member-content { display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 3; }
     
-    .nick { font-size: 0.68rem; font-weight: 600; color: #a1a1aa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .nick { font-size: 0.68rem; font-weight: 600; color: #a1a1aa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color 0.2s ease; }
+    .member-module:hover .nick { color: #ffffff; } /* 호버 시 포커스 체감 상승 */
+    
     .count-main { font-size: 0.78rem; font-weight: 850; color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; }
 
     @media (max-width: 768px) { 
@@ -154,11 +171,11 @@
     
     <div class="header-main">
         <div class="main-title">CREW RANKING</div>
-        <div class="update-time">LATEST UPDATE: 2026.05.22 16:14 KST</div>
+        <div class="update-time">LATEST UPDATE: 2026.05.22 16:18 KST</div>
     </div>
 
     <div class="grid">
-        <div class="crew-card top-rank-glow" style="--theme-color: #ff6b6b; --delay: 0.0s;">
+        <div class="crew-card top-rank-glow loaded" style="--theme-color: #ff6b6b; --delay: 0.0s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">1</div>
             
@@ -171,7 +188,7 @@
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">661,123</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -179,7 +196,7 @@
                     <div class="count-main">911,092</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:94.47366456954951%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -187,7 +204,7 @@
                     <div class="count-main">860,742</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:91.18508339443217%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -195,7 +212,7 @@
                     <div class="count-main">830,780</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:90.6639505121327%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -203,7 +220,7 @@
                     <div class="count-main">826,032</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:88.18549608601546%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -211,7 +228,7 @@
                     <div class="count-main">803,451</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.24819008398713%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -219,7 +236,7 @@
                     <div class="count-main">712,913</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:65.43027487893649%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -227,7 +244,7 @@
                     <div class="count-main">596,130</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:56.8620951561423%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -235,7 +252,7 @@
                     <div class="count-main">518,066</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.18286627475601%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -243,7 +260,7 @@
                     <div class="count-main">466,323</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:9.407392447744026%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -251,7 +268,7 @@
                     <div class="count-main">85,710</div>
                 </div>
             </div></div>
-        <div class="crew-card top-rank-glow" style="--theme-color: #f1f5f9; --delay: 0.06s;">
+        <div class="crew-card top-rank-glow loaded" style="--theme-color: #f1f5f9; --delay: 0.06s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">2</div>
             
@@ -260,11 +277,11 @@
                 <div class="crew-title">C9</div>
                 <div class="crew-member-count">16 MEMBERS</div>
                 <div class="header-stats">
-                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">9,255,748</span></div>
-                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">578,484</span></div>
+                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">9,239,670</span></div>
+                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">577,479</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #ff6b6b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #ff6b6b;"></div>
                 <div class="member-content">
@@ -272,7 +289,7 @@
                     <div class="count-main">1,781,396</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #ff6b6b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:72.71123321260404%; --bar-color: #ff6b6b;"></div>
                 <div class="member-content">
@@ -280,15 +297,15 @@
                     <div class="count-main">1,295,275</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #ff6b6b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:57.95252711918069%; --bar-color: #ff6b6b;"></div>
+                <div class="member-bg-bar" style="--target-width:57.41081713442716%; --bar-color: #ff6b6b;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 송채연</div>
-                    <div class="count-main">1,032,364</div>
+                    <div class="count-main">1,022,714</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:40.186348234755215%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -296,15 +313,15 @@
                     <div class="count-main">715,878</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:37.98666888215759%; --bar-color: #f59e0b;"></div>
+                <div class="member-bg-bar" style="--target-width:37.98116757868548%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 체온_♡</div>
-                    <div class="count-main">676,693</div>
+                    <div class="count-main">676,595</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:31.0983633060813%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -312,7 +329,7 @@
                     <div class="count-main">553,985</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.732241455577533%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -320,7 +337,7 @@
                     <div class="count-main">511,835</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.247565392534845%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -328,15 +345,15 @@
                     <div class="count-main">503,201</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:27.170825577243914%; --bar-color: #38bdf8;"></div>
+                <div class="member-bg-bar" style="--target-width:27.170769441494198%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 설윤이♥</div>
-                    <div class="count-main">484,020</div>
+                    <div class="count-main">484,019</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.245706176504267%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -344,7 +361,7 @@
                     <div class="count-main">449,726</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.846893110796252%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -352,15 +369,15 @@
                     <div class="count-main">246,668</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:13.225582632946296%; --bar-color: #38bdf8;"></div>
+                <div class="member-bg-bar" style="--target-width:13.208685772281964%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 히나_♥</div>
-                    <div class="count-main">235,600</div>
+                    <div class="count-main">235,299</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.103824191813612%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -368,7 +385,7 @@
                     <div class="count-main">233,431</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:11.422333944838767%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -376,15 +393,15 @@
                     <div class="count-main">203,477</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:10.330605884373828%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:9.992219585089448%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 리하♥</div>
-                    <div class="count-main">184,029</div>
+                    <div class="count-main">178,001</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:8.317634035329595%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -392,7 +409,7 @@
                     <div class="count-main">148,170</div>
                 </div>
             </div></div>
-        <div class="crew-card top-rank-glow" style="--theme-color: #06b6d4; --delay: 0.12s;">
+        <div class="crew-card top-rank-glow loaded" style="--theme-color: #06b6d4; --delay: 0.12s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">3</div>
             
@@ -405,7 +422,7 @@
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">232,331</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -413,7 +430,7 @@
                     <div class="count-main">456,719</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.83994315979848%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -421,7 +438,7 @@
                     <div class="count-main">360,077</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:64.93642699340295%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -429,7 +446,7 @@
                     <div class="count-main">296,577</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:60.84441418027278%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -437,7 +454,7 @@
                     <div class="count-main">277,888</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:48.32840324138037%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -445,7 +462,7 @@
                     <div class="count-main">220,725</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:45.2400710283566%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -453,7 +470,7 @@
                     <div class="count-main">206,620</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:42.247640233929395%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -461,7 +478,7 @@
                     <div class="count-main">192,953</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:41.232136171256286%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -469,7 +486,7 @@
                     <div class="count-main">188,315</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:35.63350769291402%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -477,7 +494,7 @@
                     <div class="count-main">162,745</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:24.527773094616165%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -485,7 +502,7 @@
                     <div class="count-main">112,023</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:17.7367265211213%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -493,7 +510,7 @@
                     <div class="count-main">81,007</div>
                 </div>
             </div></div>
-        <div class="crew-card " style="--theme-color: #a855f7; --delay: 0.18s;">
+        <div class="crew-card  loaded" style="--theme-color: #a855f7; --delay: 0.18s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">4</div>
             
@@ -502,11 +519,11 @@
                 <div class="crew-title">INOLABLE</div>
                 <div class="crew-member-count">13 MEMBERS</div>
                 <div class="header-stats">
-                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">2,789,177</span></div>
-                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">214,552</span></div>
+                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">2,787,230</span></div>
+                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">214,402</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #f59e0b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
@@ -514,7 +531,7 @@
                     <div class="count-main">518,304</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.28398005803544%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -522,7 +539,7 @@
                     <div class="count-main">405,749</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:69.62805612150397%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -530,7 +547,7 @@
                     <div class="count-main">360,885</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:60.19903377168612%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -538,7 +555,7 @@
                     <div class="count-main">312,014</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:53.47942520219794%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -546,7 +563,7 @@
                     <div class="count-main">277,186</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:49.644610112983884%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -554,15 +571,15 @@
                     <div class="count-main">257,310</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:35.00744736679632%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:34.733091004507%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 리에♡</div>
-                    <div class="count-main">181,445</div>
+                    <div class="count-main">180,023</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.436423411742915%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -570,15 +587,15 @@
                     <div class="count-main">131,838</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:23.354054763227758%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:23.252762857319258%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 이리원♥</div>
-                    <div class="count-main">121,045</div>
+                    <div class="count-main">120,520</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:20.126991109464715%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -586,7 +603,7 @@
                     <div class="count-main">104,319</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:11.849030684694696%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -594,7 +611,7 @@
                     <div class="count-main">61,414</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:6.6362598011977525%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -602,7 +619,7 @@
                     <div class="count-main">34,396</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:4.490029017719331%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -610,7 +627,7 @@
                     <div class="count-main">23,272</div>
                 </div>
             </div></div>
-        <div class="crew-card " style="--theme-color: #f472b6; --delay: 0.24s;">
+        <div class="crew-card  loaded" style="--theme-color: #f472b6; --delay: 0.24s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">5</div>
             
@@ -619,11 +636,11 @@
                 <div class="crew-title">JS</div>
                 <div class="crew-member-count">14 MEMBERS</div>
                 <div class="header-stats">
-                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">2,247,758</span></div>
-                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">160,554</span></div>
+                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">2,244,645</span></div>
+                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">160,331</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -631,15 +648,15 @@
                     <div class="count-main">342,806</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:76.02638226868841%; --bar-color: #38bdf8;"></div>
+                <div class="member-bg-bar" style="--target-width:75.99166875725629%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 ♥백설♥</div>
-                    <div class="count-main">260,623</div>
+                    <div class="count-main">260,504</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:63.320070243811365%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -647,31 +664,31 @@
                     <div class="count-main">217,065</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:62.09663774846415%; --bar-color: #38bdf8;"></div>
-                <div class="member-content">
-                    <div class="nick"> 유서림♥</div>
-                    <div class="count-main">212,871</div>
-                </div>
-            </div>
-            <div class="member-module">
-                <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:62.06513304901314%; --bar-color: #38bdf8;"></div>
+                <div class="member-bg-bar" style="--target-width:62.06425791847284%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 아유님♥</div>
-                    <div class="count-main">212,763</div>
+                    <div class="count-main">212,760</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:55.28812214488661%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:61.76292130242761%; --bar-color: #38bdf8;"></div>
+                <div class="member-content">
+                    <div class="nick"> 유서림♥</div>
+                    <div class="count-main">211,727</div>
+                </div>
+            </div>
+            <div class="member-module" style="--bar-color: #64748b;">
+                <div class="member-track-guide"></div>
+                <div class="member-bg-bar" style="--target-width:55.25515889453511%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 김규리♥</div>
-                    <div class="count-main">189,531</div>
+                    <div class="count-main">189,418</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.946582031819744%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -679,7 +696,7 @@
                     <div class="count-main">178,076</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:50.47752956482675%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -687,23 +704,23 @@
                     <div class="count-main">173,040</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:41.24986143766446%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:41.24956972748435%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 윤세빈♥</div>
-                    <div class="count-main">141,407</div>
+                    <div class="count-main">141,406</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:29.740727991925464%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:29.46039450884757%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 당신의채안♥</div>
-                    <div class="count-main">101,953</div>
+                    <div class="count-main">100,992</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.671901892032224%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -711,31 +728,31 @@
                     <div class="count-main">98,289</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:15.769268915946629%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:15.649084321744661%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> ♥유메이♥</div>
-                    <div class="count-main">54,058</div>
+                    <div class="count-main">53,646</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:10.857744613571525%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:10.755937760715973%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 채보미=3=</div>
-                    <div class="count-main">37,221</div>
+                    <div class="count-main">36,872</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:8.183929102757828%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:8.180720290776708%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 나의유주♥</div>
-                    <div class="count-main">28,055</div>
+                    <div class="count-main">28,044</div>
                 </div>
             </div></div>
-        <div class="crew-card " style="--theme-color: #f59e0b; --delay: 0.3s;">
+        <div class="crew-card  loaded" style="--theme-color: #f59e0b; --delay: 0.3s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">6</div>
             
@@ -744,11 +761,11 @@
                 <div class="crew-title">The K</div>
                 <div class="crew-member-count">13 MEMBERS</div>
                 <div class="header-stats">
-                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,854,898</span></div>
+                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,854,894</span></div>
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">142,684</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -756,7 +773,7 @@
                     <div class="count-main">375,909</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:74.31692244665598%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -764,7 +781,7 @@
                     <div class="count-main">279,364</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:53.16127041385016%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -772,7 +789,7 @@
                     <div class="count-main">199,838</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:50.70216461962869%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -780,7 +797,7 @@
                     <div class="count-main">190,594</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:40.00090447422116%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -788,15 +805,15 @@
                     <div class="count-main">150,367</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:37.583032063611135%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:37.581967976292134%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 엘♥</div>
-                    <div class="count-main">141,278</div>
+                    <div class="count-main">141,274</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:27.74554479940624%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -804,7 +821,7 @@
                     <div class="count-main">104,298</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.77778132473551%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -812,7 +829,7 @@
                     <div class="count-main">96,901</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:24.623512605444404%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -820,7 +837,7 @@
                     <div class="count-main">92,562</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:22.81988459973025%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -828,7 +845,7 @@
                     <div class="count-main">85,782</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:19.83671580089862%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -836,7 +853,7 @@
                     <div class="count-main">74,568</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:8.517752966808455%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -844,7 +861,7 @@
                     <div class="count-main">32,019</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:8.357873847127896%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -852,7 +869,7 @@
                     <div class="count-main">31,418</div>
                 </div>
             </div></div>
-        <div class="crew-card " style="--theme-color: #22c55e; --delay: 0.36s;">
+        <div class="crew-card  loaded" style="--theme-color: #22c55e; --delay: 0.36s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">7</div>
             
@@ -865,7 +882,7 @@
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">125,612</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -873,7 +890,7 @@
                     <div class="count-main">360,816</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:81.27743780763602%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -881,7 +898,7 @@
                     <div class="count-main">293,262</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.73653053079686%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -889,7 +906,7 @@
                     <div class="count-main">284,094</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:29.674404682719167%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -897,7 +914,7 @@
                     <div class="count-main">107,070</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:26.629085184692475%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -905,7 +922,7 @@
                     <div class="count-main">96,082</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:20.346658684758992%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -913,7 +930,7 @@
                     <div class="count-main">73,414</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.820063411822092%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -921,7 +938,7 @@
                     <div class="count-main">49,865</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.649062125848078%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -929,7 +946,7 @@
                     <div class="count-main">49,248</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:12.494179858986296%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -937,7 +954,7 @@
                     <div class="count-main">45,081</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:3.4446920313955034%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -945,7 +962,7 @@
                     <div class="count-main">12,429</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:2.8748725111968425%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -953,7 +970,7 @@
                     <div class="count-main">10,373</div>
                 </div>
             </div></div>
-        <div class="crew-card " style="--theme-color: #f97316; --delay: 0.42s;">
+        <div class="crew-card  loaded" style="--theme-color: #f97316; --delay: 0.42s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">8</div>
             
@@ -966,7 +983,7 @@
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">100,009</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -974,7 +991,7 @@
                     <div class="count-main">165,428</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:97.40249534540708%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -982,7 +999,7 @@
                     <div class="count-main">161,131</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:92.8917716468796%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -990,7 +1007,7 @@
                     <div class="count-main">153,669</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:84.59934231206326%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -998,7 +1015,7 @@
                     <div class="count-main">139,951</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:77.01900524699568%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1006,7 +1023,7 @@
                     <div class="count-main">127,411</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:22.947143168024763%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1014,7 +1031,7 @@
                     <div class="count-main">37,961</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:6.651231955896221%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1022,7 +1039,7 @@
                     <div class="count-main">11,003</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:2.129627390768189%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1030,7 +1047,7 @@
                     <div class="count-main">3,523</div>
                 </div>
             </div></div>
-        <div class="crew-card " style="--theme-color: #84cc16; --delay: 0.48s;">
+        <div class="crew-card  loaded" style="--theme-color: #84cc16; --delay: 0.48s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">9</div>
             
@@ -1039,11 +1056,11 @@
                 <div class="crew-title">Moon A</div>
                 <div class="crew-member-count">17 MEMBERS</div>
                 <div class="header-stats">
-                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,463,909</span></div>
-                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">86,112</span></div>
+                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,462,650</span></div>
+                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">86,038</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #38bdf8;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
@@ -1051,7 +1068,7 @@
                     <div class="count-main">247,161</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.67279627449315%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1059,23 +1076,23 @@
                     <div class="count-main">127,715</div>
                 </div>
             </div>
-            <div class="member-module">
-                <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:51.41709250245792%; --bar-color: #64748b;"></div>
-                <div class="member-content">
-                    <div class="nick">🥉 하임*</div>
-                    <div class="count-main">127,083</div>
-                </div>
-            </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.071973329125555%; --bar-color: #64748b;"></div>
                 <div class="member-content">
-                    <div class="nick"> 햄벅</div>
+                    <div class="nick">🥉 햄벅</div>
                     <div class="count-main">126,230</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
+                <div class="member-track-guide"></div>
+                <div class="member-bg-bar" style="--target-width:50.91175387702752%; --bar-color: #64748b;"></div>
+                <div class="member-content">
+                    <div class="nick"> 하임*</div>
+                    <div class="count-main">125,834</div>
+                </div>
+            </div>
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:43.87018987623452%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1083,15 +1100,15 @@
                     <div class="count-main">108,430</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
-                <div class="member-bg-bar" style="--target-width:41.02791297979859%; --bar-color: #64748b;"></div>
+                <div class="member-bg-bar" style="--target-width:41.02386703403854%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 슈나♥</div>
-                    <div class="count-main">101,405</div>
+                    <div class="count-main">101,395</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:33.49962170407144%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1099,7 +1116,7 @@
                     <div class="count-main">82,798</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:29.100060284591823%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1107,7 +1124,7 @@
                     <div class="count-main">71,924</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.891289483373185%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1115,7 +1132,7 @@
                     <div class="count-main">71,408</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.664311926234316%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1123,7 +1140,7 @@
                     <div class="count-main">70,847</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.446975857841647%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1131,7 +1148,7 @@
                     <div class="count-main">62,895</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.245892353567108%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1139,7 +1156,7 @@
                     <div class="count-main">62,398</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:24.049506192319985%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1147,7 +1164,7 @@
                     <div class="count-main">59,441</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:21.282079292445005%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1155,7 +1172,7 @@
                     <div class="count-main">52,601</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:17.09331164706406%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1163,7 +1180,7 @@
                     <div class="count-main">42,248</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:16.34885762721465%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1171,7 +1188,7 @@
                     <div class="count-main">40,408</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:3.6077698342376023%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1179,7 +1196,7 @@
                     <div class="count-main">8,917</div>
                 </div>
             </div></div>
-        <div class="crew-card " style="--theme-color: #14b8a6; --delay: 0.54s;">
+        <div class="crew-card  loaded" style="--theme-color: #14b8a6; --delay: 0.54s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">10</div>
             
@@ -1192,7 +1209,7 @@
                     <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">72,017</span></div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1200,7 +1217,7 @@
                     <div class="count-main">193,795</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:58.84001135220207%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1208,7 +1225,7 @@
                     <div class="count-main">114,029</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:49.3738228540468%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1216,7 +1233,7 @@
                     <div class="count-main">95,684</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:49.26288087927965%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1224,7 +1241,7 @@
                     <div class="count-main">95,469</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:45.67971309889316%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1232,7 +1249,7 @@
                     <div class="count-main">88,525</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:41.583632188652956%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1240,7 +1257,7 @@
                     <div class="count-main">80,587</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:40.855543228669475%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1248,7 +1265,7 @@
                     <div class="count-main">79,176</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:34.688717459170775%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1256,7 +1273,7 @@
                     <div class="count-main">67,225</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:31.127738073737714%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1264,7 +1281,7 @@
                     <div class="count-main">60,324</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:27.482133181970642%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1272,7 +1289,7 @@
                     <div class="count-main">53,259</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.208080703836526%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1280,7 +1297,7 @@
                     <div class="count-main">48,852</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:16.160375654686653%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1288,7 +1305,7 @@
                     <div class="count-main">31,318</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:0.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
@@ -1296,7 +1313,7 @@
                     <div class="count-main">0</div>
                 </div>
             </div>
-            <div class="member-module">
+            <div class="member-module" style="--bar-color: #64748b;">
                 <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:0.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
