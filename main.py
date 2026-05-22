@@ -143,20 +143,32 @@ def generate_html():
         z-index: 10;
     }}
 
-    /* 🚀 상단 왼쪽 모서리 '보더 슬릿' 인덱스 UI */
-    .rank-tag {{
+    /* 🚀 2번 반영: 상단 왼쪽 모서리 "트라이앵글 폴드 네온 삼각 탭" */
+    .corner-rank-tab {{
         position: absolute;
-        top: 0; left: 14px;
-        background: #09090b; /* 배경색과 일치시켜 선이 잘린 듯한 슬릿 효과 연출 */
-        padding: 0 6px;
+        top: 0; left: 0;
+        width: 32px; height: 32px;
+        /* 대각선 컷을 만들어주는 트릭 */
+        background: linear-gradient(135deg, var(--theme-color) 50%, transparent 50%);
+        opacity: 0.18; /* 은은한 네온 투명 광택 */
+        z-index: 4;
+        transition: opacity 0.25s ease;
+    }}
+    .crew-card:hover .corner-rank-tab {{
+        opacity: 0.4; /* 호버 시 네온빛이 더 선명해지는 인터랙션 */
+    }}
+    
+    /* 삼각 탭 위에 얹어질 비대칭 소형 등수 텍스트 */
+    .corner-rank-text {{
+        position: absolute;
+        top: 3px; left: 5px;
         font-family: 'SF Pro Display', 'Consolas', monospace;
-        font-size: 0.6rem;
+        font-size: 0.58rem;
         font-weight: 900;
-        color: var(--theme-color);
-        letter-spacing: 0.5px;
-        transform: translateY(-50%); /* 상단 보더 라인 정중앙에 걸치기 */
+        color: #fff;
+        opacity: 0.8;
         z-index: 5;
-        border-radius: 2px;
+        letter-spacing: -0.5px;
     }}
 
     .header-card {{ position: relative; padding-top: 4px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }}
@@ -168,8 +180,9 @@ def generate_html():
         animation: pulseCore 4s ease-in-out infinite;
     }}
 
-    .crew-title {{ font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; }}
-    .crew-member-count {{ font-size: 0.6rem; font-weight: 700; color: #52525b; letter-spacing: 0.5px; margin-top: 1px; }}
+    /* 삼각 탭 레이아웃 간섭을 피하기 위한 여백 확보 */
+    .crew-title {{ font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; padding-left: 12px; }}
+    .crew-member-count {{ font-size: 0.6rem; font-weight: 700; color: #52525b; letter-spacing: 0.5px; margin-top: 1px; padding-left: 12px; }}
     
     .header-stats {{ display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02); padding: 8px 10px; border-radius: 10px; margin-top: 8px; border: 1px solid rgba(255,255,255,0.03); }}
     .stat-item {{ display: flex; justify-content: space-between; align-items: center; }}
@@ -193,7 +206,6 @@ def generate_html():
         .main-title {{ font-size: 1.1rem; letter-spacing: 2px; }}
         .crew-title {{ font-size: 1rem; }}
         .stat-value {{ font-size: 0.95rem; }}
-        .rank-tag {{ left: 10px; font-size: 0.55rem; }}
     }}
     </style></head><body>
     
@@ -207,13 +219,11 @@ def generate_html():
     for i, c in enumerate(final_data):
         theme_hex = COLOR_MAP.get(c['color'], '#fff')
         display_name = CREW_NAME_MAP.get(c['name'], c['name'])
-        
-        # 01, 02 형식의 두 자릿수 인덱스 문자열 생성
-        rank_str = f"{i+1:02d}"
 
         html += f"""
         <div class="crew-card" style="--theme-color: {theme_hex}; --delay: {i*0.06}s;">
-            <div class="rank-tag">#{rank_str}</div>
+            <div class="corner-rank-tab"></div>
+            <div class="corner-rank-text">{i+1}</div>
             
             <div class="header-card">
                 <div class="energy-core"></div>
