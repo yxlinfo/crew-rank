@@ -37,7 +37,10 @@
 
     @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes fillGauge { 0% { width: 0%; } 100% { width: var(--target-width); } }
-    @keyframes pulseCore { 0%, 100% { opacity: 0.08; filter: blur(15px); } 50% { opacity: 0.18; filter: blur(12px); } }
+    
+    /* 🚀 3번 반영: 상위 3개 크루를 위한 아우라 브리딩 모션 */
+    @keyframes pulseCore { 0%, 100% { opacity: 0.12; filter: blur(15px); transform: scale(1); } 50% { opacity: 0.28; filter: blur(10px); transform: scale(1.15); } }
+    @keyframes topRankBreathing { 0%, 100% { border-color: rgba(255, 255, 255, 0.04); } 50% { border-color: rgba(255, 255, 255, 0.12); } }
 
     .crew-card { 
         background: rgba(20, 20, 25, 0.7); 
@@ -51,39 +54,32 @@
         backdrop-filter: blur(10px);
     }
     
+    /* 🚀 3번 반영: 1~3위 크루 상시 브리딩 활성화 클래스 */
+    .top-rank-glow {
+        background: rgba(24, 24, 32, 0.75); /* 조금 더 선명한 고밀도 유리 질감 */
+        animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards, topRankBreathing 4s ease-in-out infinite;
+        animation-delay: var(--delay), var(--delay);
+    }
+
     .crew-card:hover { 
         transform: translateY(-3px); 
-        border-color: var(--theme-color);
+        border-color: var(--theme-color) !important;
         box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.8), 0 0 15px -3px var(--theme-color);
         z-index: 10;
     }
 
-    /* 🚀 2번 반영: 상단 왼쪽 모서리 "트라이앵글 폴드 네온 삼각 탭" */
     .corner-rank-tab {
         position: absolute;
-        top: 0; left: 0;
-        width: 32px; height: 32px;
-        /* 대각선 컷을 만들어주는 트릭 */
+        top: 0; left: 0; width: 32px; height: 32px;
         background: linear-gradient(135deg, var(--theme-color) 50%, transparent 50%);
-        opacity: 0.18; /* 은은한 네온 투명 광택 */
-        z-index: 4;
-        transition: opacity 0.25s ease;
+        opacity: 0.18; z-index: 4; transition: opacity 0.25s ease;
     }
-    .crew-card:hover .corner-rank-tab {
-        opacity: 0.4; /* 호버 시 네온빛이 더 선명해지는 인터랙션 */
-    }
+    .crew-card:hover .corner-rank-tab { opacity: 0.4; }
     
-    /* 삼각 탭 위에 얹어질 비대칭 소형 등수 텍스트 */
     .corner-rank-text {
-        position: absolute;
-        top: 3px; left: 5px;
+        position: absolute; top: 3px; left: 5px;
         font-family: 'SF Pro Display', 'Consolas', monospace;
-        font-size: 0.58rem;
-        font-weight: 900;
-        color: #fff;
-        opacity: 0.8;
-        z-index: 5;
-        letter-spacing: -0.5px;
+        font-size: 0.58rem; font-weight: 900; color: #fff; opacity: 0.8; z-index: 5; letter-spacing: -0.5px;
     }
 
     .header-card { position: relative; padding-top: 4px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; z-index: 2; }
@@ -95,7 +91,6 @@
         animation: pulseCore 4s ease-in-out infinite;
     }
 
-    /* 삼각 탭 레이아웃 간섭을 피하기 위한 여백 확보 */
     .crew-title { font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; padding-left: 12px; }
     .crew-member-count { font-size: 0.6rem; font-weight: 700; color: #52525b; letter-spacing: 0.5px; margin-top: 1px; padding-left: 12px; }
     
@@ -104,14 +99,30 @@
     .stat-label { color: #71717a; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.5px; }
     .stat-value { color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; font-weight: 700; font-size: 1.05rem; }
 
+    /* 스트리머 모듈 기본 백그라운드 */
     .member-module { position: relative; margin-bottom: 5px; background: rgba(255,255,255,0.01); border-radius: 8px; overflow: hidden; }
     .member-module:hover { background: rgba(255,255,255,0.03); }
     
-    .member-bg-bar { position: absolute; left: 0; bottom: 0; height: 1.5px; background: var(--bar-color); opacity: 0.8; width: 0; animation: fillGauge 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: calc(var(--delay) + 0.3s); }
-    .member-content { display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 2; }
+    /* 🚀 2번 반영: 인버스 트랙 가이드 (기본 바닥 투명 실선 고정) */
+    .member-track-guide {
+        position: absolute; left: 0; bottom: 0; width: 100%; height: 1.5px;
+        background: rgba(255, 255, 255, 0.03); z-index: 1;
+    }
     
-    .nick { font-size: 0.68rem; font-weight: 600; color: #e4e4e7; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .count-main { font-size: 0.78rem; font-weight: 700; color: #f4f4f5; font-family: 'SF Pro Display', 'Consolas', monospace; }
+    /* 실제 채워지는 컬러 게이지 레이어 */
+    .member-bg-bar { 
+        position: absolute; left: 0; bottom: 0; height: 1.5px; 
+        background: var(--bar-color); opacity: 0.85; width: 0; 
+        animation: fillGauge 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+        animation-delay: calc(var(--delay) + 0.3s); 
+        z-index: 2;
+    }
+    
+    .member-content { display: flex; justify-content: space-between; align-items: center; height: 28px; padding: 0 6px; position: relative; z-index: 3; }
+    
+    /* 🚀 1번 반영: 모노 하이라이트 (닉네임 톤다운하여 주연인 숫자를 대폭 강조) */
+    .nick { font-size: 0.68rem; font-weight: 600; color: #a1a1aa; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .count-main { font-size: 0.78rem; font-weight: 850; color: #ffffff; font-family: 'SF Pro Display', 'Consolas', monospace; }
 
     @media (max-width: 768px) { 
         .grid { 
@@ -126,11 +137,11 @@
     
     <div class="header-main">
         <div class="main-title">CREW RANKING</div>
-        <div class="update-time">LATEST UPDATE: 2026.05.22 16:01 KST</div>
+        <div class="update-time">LATEST UPDATE: 2026.05.22 16:08 KST</div>
     </div>
 
     <div class="grid">
-        <div class="crew-card" style="--theme-color: #ff6b6b; --delay: 0.0s;">
+        <div class="crew-card top-rank-glow" style="--theme-color: #ff6b6b; --delay: 0.0s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">1</div>
             
@@ -144,6 +155,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 함지아♥</div>
@@ -151,6 +163,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:94.47366456954951%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 미디♡.</div>
@@ -158,6 +171,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:91.18508339443217%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 안둥♥</div>
@@ -165,6 +179,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:90.6639505121327%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 임주연♥</div>
@@ -172,6 +187,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:88.18549608601546%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 아이빈</div>
@@ -179,6 +195,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.24819008398713%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 원영님♥</div>
@@ -186,6 +203,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:65.43027487893649%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 이온♥</div>
@@ -193,6 +211,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:56.8620951561423%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 가을이♡</div>
@@ -200,6 +219,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.18286627475601%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 서윤슬@</div>
@@ -207,13 +227,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:9.407392447744026%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 숨댕♥</div>
                     <div class="count-main">85,710</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #f1f5f9; --delay: 0.06s;">
+        <div class="crew-card top-rank-glow" style="--theme-color: #f1f5f9; --delay: 0.06s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">2</div>
             
@@ -227,6 +248,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #ff6b6b;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 이다니♥</div>
@@ -234,6 +256,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:72.71123321260404%; --bar-color: #ff6b6b;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 혜루찡</div>
@@ -241,6 +264,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:57.41081713442716%; --bar-color: #ff6b6b;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 송채연</div>
@@ -248,6 +272,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:40.186348234755215%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 쁠리vvely</div>
@@ -255,6 +280,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:37.98116757868548%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 체온_♡</div>
@@ -262,6 +288,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:31.0983633060813%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 하이희야♡</div>
@@ -269,6 +296,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.732241455577533%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> BJ채리</div>
@@ -276,6 +304,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.247565392534845%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick"> 인지연JYEON</div>
@@ -283,6 +312,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:27.170769441494198%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 설윤이♥</div>
@@ -290,6 +320,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.245706176504267%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 초초</div>
@@ -297,6 +328,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.846893110796252%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 애순이</div>
@@ -304,6 +336,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.208685772281964%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 히나_♥</div>
@@ -311,6 +344,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.103824191813612%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 아윤♡</div>
@@ -318,6 +352,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:11.422333944838767%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> ε연두з</div>
@@ -325,6 +360,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:9.992219585089448%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 리하♥</div>
@@ -332,13 +368,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:8.317634035329595%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> #초린</div>
                     <div class="count-main">148,170</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #06b6d4; --delay: 0.12s;">
+        <div class="crew-card top-rank-glow" style="--theme-color: #06b6d4; --delay: 0.12s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">3</div>
             
@@ -352,6 +389,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 후잉♥</div>
@@ -359,6 +397,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.83994315979848%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 류서하♥</div>
@@ -366,6 +405,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:64.93642699340295%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 너의˚멜로디</div>
@@ -373,6 +413,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:60.84441418027278%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 냥냥수주</div>
@@ -380,6 +421,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:48.32840324138037%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 미로。</div>
@@ -387,6 +429,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:45.2400710283566%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 백나현</div>
@@ -394,6 +437,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:42.247640233929395%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 소다♥</div>
@@ -401,6 +445,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:41.232136171256286%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 김유정S2</div>
@@ -408,6 +453,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:35.63350769291402%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 서니_♥</div>
@@ -415,6 +461,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:24.527773094616165%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 하랑짱♥</div>
@@ -422,13 +469,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:17.7367265211213%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> ZO아름♡</div>
                     <div class="count-main">81,007</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #a855f7; --delay: 0.18s;">
+        <div class="crew-card " style="--theme-color: #a855f7; --delay: 0.18s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">4</div>
             
@@ -442,6 +490,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #f59e0b;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 애지니♡</div>
@@ -449,6 +498,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.28398005803544%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 히냥이♥</div>
@@ -456,6 +506,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:69.62805612150397%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 설탱♥</div>
@@ -463,6 +514,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:60.19903377168612%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 이월♥</div>
@@ -470,6 +522,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:53.47942520219794%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 꽃부기♥</div>
@@ -477,6 +530,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:49.644610112983884%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> #누리-</div>
@@ -484,6 +538,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:34.733091004507%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 리에♡</div>
@@ -491,6 +546,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.436423411742915%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 설인_♥</div>
@@ -498,6 +554,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:23.252762857319258%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 이리원♥</div>
@@ -505,6 +562,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:20.126991109464715%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 밤비♥</div>
@@ -512,6 +570,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:11.849030684694696%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> ♥밍초♥</div>
@@ -519,6 +578,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:6.6362598011977525%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 연보민</div>
@@ -526,13 +586,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:4.490029017719331%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> [SO]박소연</div>
                     <div class="count-main">23,272</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #f472b6; --delay: 0.24s;">
+        <div class="crew-card " style="--theme-color: #f472b6; --delay: 0.24s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">5</div>
             
@@ -546,6 +607,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 서이안</div>
@@ -553,6 +615,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:75.99166875725629%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 ♥백설♥</div>
@@ -560,6 +623,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:63.320070243811365%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 윤수♥</div>
@@ -567,6 +631,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:62.06425791847284%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 아유님♥</div>
@@ -574,6 +639,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:61.76292130242761%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick"> 유서림♥</div>
@@ -581,6 +647,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:55.25515889453511%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 김규리♥</div>
@@ -588,6 +655,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.946582031819744%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 햇동이♥</div>
@@ -595,6 +663,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:50.47752956482675%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 율비♡</div>
@@ -602,6 +671,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:41.24956972748435%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 윤세빈♥</div>
@@ -609,6 +679,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:29.46039450884757%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 당신의채안♥</div>
@@ -616,6 +687,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.671901892032224%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> ♡김베리♡</div>
@@ -623,6 +695,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:15.649084321744661%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> ♥유메이♥</div>
@@ -630,6 +703,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:10.755937760715973%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 채보미=3=</div>
@@ -637,13 +711,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:8.180720290776708%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 나의유주♥</div>
                     <div class="count-main">28,044</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #f59e0b; --delay: 0.3s;">
+        <div class="crew-card " style="--theme-color: #f59e0b; --delay: 0.3s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">6</div>
             
@@ -657,6 +732,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 ! 채채</div>
@@ -664,6 +740,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:74.31692244665598%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 [BJ]에디양</div>
@@ -671,6 +748,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:53.16127041385016%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 지아콩</div>
@@ -678,6 +756,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:50.70216461962869%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 강한빛♡</div>
@@ -685,6 +764,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:40.00090447422116%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 포카린</div>
@@ -692,6 +772,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:37.581967976292134%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 엘♥</div>
@@ -699,6 +780,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:27.74554479940624%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 퀸다미♧</div>
@@ -706,6 +788,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.77778132473551%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 차시월</div>
@@ -713,6 +796,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:24.623512605444404%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 한슬댕</div>
@@ -720,6 +804,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:22.81988459973025%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 푸린♡</div>
@@ -727,6 +812,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:19.83671580089862%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 채리나</div>
@@ -734,6 +820,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:8.517752966808455%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 쑤♥</div>
@@ -741,13 +828,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:8.357873847127896%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 소냥이에요</div>
                     <div class="count-main">31,418</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #22c55e; --delay: 0.36s;">
+        <div class="crew-card " style="--theme-color: #22c55e; --delay: 0.36s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">7</div>
             
@@ -761,6 +849,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 예란</div>
@@ -768,6 +857,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:81.27743780763602%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 이나율♥</div>
@@ -775,6 +865,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:78.73653053079686%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 푸글리♡</div>
@@ -782,6 +873,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:29.674404682719167%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 나래♡</div>
@@ -789,6 +881,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:26.629085184692475%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 지숙♥_.</div>
@@ -796,6 +889,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:20.346658684758992%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 예수</div>
@@ -803,6 +897,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.820063411822092%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 나래님♥</div>
@@ -810,6 +905,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:13.649062125848078%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 김봄비</div>
@@ -817,6 +913,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:12.494179858986296%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 한채아♥</div>
@@ -824,6 +921,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:3.4446920313955034%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 박예솜:)</div>
@@ -831,13 +929,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:2.8748725111968425%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 이밍+♥</div>
                     <div class="count-main">10,373</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #f97316; --delay: 0.42s;">
+        <div class="crew-card " style="--theme-color: #f97316; --delay: 0.42s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">8</div>
             
@@ -851,6 +950,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 아링</div>
@@ -858,6 +958,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:97.40249534540708%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 ♥유현♥</div>
@@ -865,6 +966,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:92.8917716468796%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 쥬브리</div>
@@ -872,6 +974,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:84.59934231206326%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 해리님♥</div>
@@ -879,6 +982,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:77.01900524699568%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 은아린!!</div>
@@ -886,6 +990,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:22.947143168024763%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> E윤아♡</div>
@@ -893,6 +998,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:6.651231955896221%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 채아님♥</div>
@@ -900,13 +1006,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:2.129627390768189%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 유나라♥</div>
                     <div class="count-main">3,523</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #84cc16; --delay: 0.48s;">
+        <div class="crew-card " style="--theme-color: #84cc16; --delay: 0.48s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">9</div>
             
@@ -920,6 +1027,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #38bdf8;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 미지수♥</div>
@@ -927,6 +1035,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.67279627449315%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 현강림2</div>
@@ -934,6 +1043,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:51.071973329125555%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 햄벅</div>
@@ -941,6 +1051,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:50.91175387702752%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 하임*</div>
@@ -948,6 +1059,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:43.87018987623452%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> ♥채화</div>
@@ -955,6 +1067,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:41.02386703403854%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 슈나♥</div>
@@ -962,6 +1075,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:33.49962170407144%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 강형민이</div>
@@ -969,6 +1083,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:29.100060284591823%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 예니__</div>
@@ -976,6 +1091,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.891289483373185%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 뮤엘♥</div>
@@ -983,6 +1099,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:28.664311926234316%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 서언수</div>
@@ -990,6 +1107,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.446975857841647%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 설현미</div>
@@ -997,6 +1115,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.245892353567108%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> E-;이은♥</div>
@@ -1004,6 +1123,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:24.049506192319985%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 박재열</div>
@@ -1011,6 +1131,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:21.282079292445005%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> .장지민</div>
@@ -1018,6 +1139,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:17.09331164706406%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 천시아S2</div>
@@ -1025,6 +1147,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:16.34885762721465%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> lm미나</div>
@@ -1032,13 +1155,14 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:3.6077698342376023%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> #다인</div>
                     <div class="count-main">8,917</div>
                 </div>
             </div></div>
-        <div class="crew-card" style="--theme-color: #14b8a6; --delay: 0.54s;">
+        <div class="crew-card " style="--theme-color: #14b8a6; --delay: 0.54s;">
             <div class="corner-rank-tab"></div>
             <div class="corner-rank-text">10</div>
             
@@ -1047,11 +1171,12 @@
                 <div class="crew-title">Show K</div>
                 <div class="crew-member-count">14 MEMBERS</div>
                 <div class="header-stats">
-                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,007,676</span></div>
-                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">71,976</span></div>
+                    <div class="stat-item"><span class="stat-label">TOTAL</span><span class="stat-value">1,008,243</span></div>
+                    <div class="stat-item"><span class="stat-label">AVG</span><span class="stat-value">72,017</span></div>
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:100.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥇 ＠서단</div>
@@ -1059,6 +1184,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:58.84001135220207%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥈 재온ly</div>
@@ -1066,6 +1192,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:49.3738228540468%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick">🥉 송유이♥</div>
@@ -1073,13 +1200,15 @@
                 </div>
             </div>
             <div class="member-module">
-                <div class="member-bg-bar" style="--target-width:48.970303671405354%; --bar-color: #64748b;"></div>
+                <div class="member-track-guide"></div>
+                <div class="member-bg-bar" style="--target-width:49.26288087927965%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 유이나.♡</div>
-                    <div class="count-main">94,902</div>
+                    <div class="count-main">95,469</div>
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:45.67971309889316%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 도예빈♥</div>
@@ -1087,6 +1216,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:41.583632188652956%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 쏘피♥</div>
@@ -1094,6 +1224,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:40.855543228669475%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 송화양</div>
@@ -1101,6 +1232,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:34.688717459170775%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 정인♥</div>
@@ -1108,6 +1240,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:31.127738073737714%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 새봄_♡</div>
@@ -1115,6 +1248,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:27.482133181970642%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 코코_♥</div>
@@ -1122,6 +1256,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:25.208080703836526%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> ♥제니♥</div>
@@ -1129,6 +1264,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:16.160375654686653%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 이로♥</div>
@@ -1136,6 +1272,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:0.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> 도하정♥</div>
@@ -1143,6 +1280,7 @@
                 </div>
             </div>
             <div class="member-module">
+                <div class="member-track-guide"></div>
                 <div class="member-bg-bar" style="--target-width:0.0%; --bar-color: #64748b;"></div>
                 <div class="member-content">
                     <div class="nick"> @유톨</div>
