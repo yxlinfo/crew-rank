@@ -10,7 +10,7 @@ initial_data = {
     "GD컴퍼니": {"color": "c-orange", "members": { "♥유현♥": "kyhkyh825", "E윤아♡": "jssisabel", "쥬브리": "dbswn2312", "은아린!!": "pinepine0", "아링": "jungym0116", "채아님♥": "kcvelyvely", "유나라♥": "moment4242"}},
     "쇼케이": {"color": "c-teal", "members": {"송화양": "sejin453", "＠서단": "banghyo9724", "쏘피♥": "1frogmonkey1", "도하정♥": "pig24680", "♥제니♥": "dooly44", "송유이♥": "dm0229", "재온ly": "awdrgy45", "도예빈♥": "doyebean", "정인♥": "wjddls10", "이로♥": "akikxxo", "♥제니♥": "dooly44", "유이나.♡": "todayjm", "새봄_♡": "fm0307", "코코_♥": "soyeon1210"}},
     "문에이": {"color": "c-lime", "members": {"♥채화": "tnwls8137", "서언수": "talmud98", "박재열": "woduf1365", "하임*": "y0urxixi", "#다인": "mrk9178", "뮤엘♥": "qordjrxhfl", "천시아S2": "kakaak2457", "미지수♥": "zxll6721", "현강림2": "hkl1102", "설현미": "wkdalgusrla", "슈나♥": "dbstldbs", "강형민이": "hhmmnn", "E-;이은♥": "salgu1004", ".장지민": "lillillll", "예니__": "songlime1126", "햄벅": "ehwjrgusgh", "lm미나": "kimmin6536"}},
-    "771": {"color": "c-green", "members": {"예란": "jyssing", "나래♡": "narae282", "이밍+♥": "aighty9", "지숙♥_.": "uyrt8888", "푸글리♡": "vnfmadl93", "한채아♥": "snfkddl1024", "김봄비": "bombbi", "나래님♥": "sssukki", "예수": "dokko5", "도예솔": "znddl7878", "츠밍": "mlnsxo"}}
+    "771": {"color": "c-green", "members": {"예란": "jyssing", "나래♡": "narae282", "이밍+♥": "aighty9", "지숙♥_.": "uyrt8888", "푸글리♡": "vnfmadl93", "한채아♥": "snfkddl1024", "김봄비": "bombbi", "나래님♥": "sssukki", "예수": "dokko5", "도예솔": "znddl7878", "츠밍": "mlnsxo"}},
     "판타지유": {"color": "c-silver", "members": {"파나나_": "tigger950312", "이소원♥": "kiss2514", "김뽀뇨": "boyun96", "가비[♥]": "mining97", "만다♥": "kangjikk", "유별♡": "pofo40", "파닥♥": "dbwlsqwe", "#한시온": "dlrjdpqksepd", "김그루♡": "kmoodandj", "한세은♥": "hhyounooo", "윤아현": "hio0ochu", "미숑.♥": "pms999", "쑤지": "tnwl9630"}}
 }
 
